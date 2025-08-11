@@ -153,10 +153,10 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
                         help="Polygon file to use for getting observations. It must contain a JSON list of WGS85 coordinates and the first and last coordinates must be the same")
     args = parser.parse_args()
     if not species_api_key():
-        print("Error: Environment variable ADB_SPECIES_API_KEY not set.")
+        print("Error: Environment variable ARTPORTALEN_SPECIES_API_KEY not set.")
         sys.exit(1)
     if not observations_api_key():
-        print("Error: Environment variable ADB_OBSERVATIONS_API_KEY not set.")
+        print("Error: Environment variable ARTPORTALEN_OBSERVATIONS_API_KEY not set.")
         sys.exit(1)
     sapi = artportalen.SpeciesAPI(species_api_key())
     oapi = artportalen.ObservationsAPI(observations_api_key())
