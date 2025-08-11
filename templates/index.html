@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SthlmBetong</title>
+    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-100">
+    
+    <!-- Header -->
+    <header class="bg-gray-200 black xt- p-4 flex justify-between items-center">
+        <img src="./resources/sthlmbetong-ny-logo-transparent.png" style=max-height:32px;padding-left:16px;/>
+        
+        <nav class="hidden md:flex space-x-4">
+            <button class="text-blue-800 px-3">Obsar</button>
+            <button class="text-blue-800 px-3">Listor</button>
+            <button class="text-blue-800 px-3">Karta</button>
+            <button class="text-blue-800 px-3">Om</button>
+        </nav>
+        
+        <!-- Mobile Menu Button -->
+        <button class="md:hidden text-black" onclick="toggleMenu()">☰</button>
+    </header>
+    
+    <!-- Mobile Menu -->
+    <nav id="mobile-menu" class="hidden bg-gray-300 text-black p-4 flex flex-col space-y-2 md:hidden">
+        <button class="text-black px-3">Obsar</button>
+        <button class="text-black px-3">Listor</button>
+        <button class="text-black px-3">Karta</button>
+        <button class="text-black px-3">Om</button>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-4 flex flex-col md:flex-row gap-6">
+        <!-- Latest Bird Observations -->
+        <section class="md:w-2/3 w-full">
+            <div class="bg-white shadow-lg rounded-lg p-4">
+                <h2 class="text-lg font-semibold mb-2" style="display:inline-block;">Obsar</h2>
+                {% include "index-page-date-selector.html" %}
+<!--                <button class="text-blue-800 px-3" type="button">&#x27E8; Dagen före</button>
+                    <span>{{ day }}</span>
+                <button class="text-blue-800 px-3" type="button">Dagen efter &#x27E9;</button>-->
+
+                <table class="w-full border-collapse border border-gray-300 text-sm">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border p-2">Namn</th>
+                            <th class="border p-2">Lokal</th>
+                            <th class="border p-2">Datum & tid</th>
+                            <th class="border p-2">Observatör(er)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="observations" hx-get="/latest-observations" hx-trigger="load" hx-swap="innerHTML">
+                        {% if observations %}
+                            {% include 'index-page-observations.html' %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Rankings -->
+        <aside class="md:w-1/3 w-full">
+            <div class="bg-white shadow-lg rounded-lg p-4 mb-4">
+                <h2 class="text-lg font-semibold mb-2">Årslistan</h2>
+                <table class="w-full border-collapse border border-gray-300 text-sm">
+                    <tbody id="yearly-rankings" hx-get="/yearly-rankings" hx-trigger="load" hx-swap="innerHTML">
+                        <tr>
+                            <td class="border p-2">Funkar inte pga brister i Artportalens API</td>
+                            <td class="border p-2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="bg-white shadow-lg rounded-lg p-4">
+                <h2 class="text-lg font-semibold mb-2">Totallistan</h2>
+                <table class="w-full border-collapse border border-gray-300 text-sm">
+                    <tbody id="alltime-rankings" hx-get="/alltime-rankings" hx-trigger="load" hx-swap="innerHTML">
+                        <tr>
+                            <td class="border p-2">Funkar inte pga brister i Artportalens API</td>
+                            <td class="border p-2"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </aside>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-100 text-black p-4 text-center">
+        <p>© 2025 SthlmBetong</p>
+    </footer>
+</body>
+</html>

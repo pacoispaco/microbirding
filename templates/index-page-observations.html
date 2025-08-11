@@ -1,0 +1,8 @@
+{% for o in observations %}
+  <tr>
+    <td class="border p-2">{{ o.name }} (Rarity: {{  o.rarity }})</td>
+    <td class="border p-2">{{ o.location }}</td>
+    <td class="border p-2">{{ o.time }}</td>
+    <td class="border p-2">{{ o.observers }}</td>
+  </tr>
+{% endfor %}
