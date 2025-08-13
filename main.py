@@ -22,6 +22,32 @@ from datetime import date as dt
 import artportalen
 
 
+# Constants
+secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
+           "ARTPORTALEN_SPECIES_API_KEY"]
+
+
+def file_secret_as_env(var_name: str):
+    """Reads a secret from a textfile - if that file exists - and then ads the secret to the
+       "environment" of this program. This is used to enable this program to read secrets from
+       textfiles when it is packaged as a Docker image and run as a Docker container."""
+    # The convention for Docker compose files is to name these files *_FILE and provide that name
+    # and its value - a file path - as an environment variable.
+    file_var = f"{var_name}_FILE"
+    if file_path := os.getenv(file_var):
+        with open(file_path) as f:
+            value = f.read().strip()
+            os.environ[var_name] = value
+        print(f"Secrets file '{file_var}' contains '{value}'")
+    else:
+        print(f"No secrets file: '{file_var}'")
+
+
+# Read in the secrets from files, if they exist, as environment variables. They will then be picked
+# up by Settings below.
+[file_secret_as_env(var) for var in secrets]
+
+
 class Settings(BaseSettings):
     """Provides configuration and environment variables via the Pydantic BaseSettings class. Values
        are read in this order:
