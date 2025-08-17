@@ -46,8 +46,9 @@ def pretty_print_taxon(t, redlistinfo=False):
     print("Taxon: %s (%s) taxon id: %s" % (t['swedishName'].capitalize(),
                                            t['scientificName'],
                                            t['taxonId']))
-    print(" Förekomst: %s (%s)" % (t['speciesData']['taxonRelatedInformation']['swedishPresence'],
-                                   t['speciesData']['taxonRelatedInformation']['immigrationHistory']))
+    swedishPresence = t['speciesData']['taxonRelatedInformation']['swedishPresence']
+    immigrationHistory = t['speciesData']['taxonRelatedInformation']['immigrationHistory']
+    print(" Förekomst: %s (%s)" % (swedishPresence, immigrationHistory))
     if redlistinfo:
         for item in t['speciesData']['redlistInfo']:
             print("%s:" % (item['period']['name']))
@@ -150,7 +151,9 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
     parser.add_argument('--limit', default=200,
                         help="Limit of observations [200]")
     parser.add_argument('--polygon-file',
-                        help="Polygon file to use for getting observations. It must contain a JSON list of WGS85 coordinates and the first and last coordinates must be the same")
+                        help="Polygon file to use for getting observations. It must contain a\
+                              JSON list of WGS85 coordinates and the first and last coordinates\
+                              must be the same")
     args = parser.parse_args()
     if not species_api_key():
         print("Error: Environment variable ARTPORTALEN_SPECIES_API_KEY not set.")
