@@ -28,7 +28,7 @@ jobs:
           pip install flake8 pytest
 
       - name: Run flake8
-        run: flake8 .
+        run: flake8 --config flake8.conf 
 
       # --- Placeholder tests step ---
       # Replace this with real tests later (and remove the `|| echo ...` so failures fail CI)
