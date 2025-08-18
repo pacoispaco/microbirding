@@ -37,6 +37,7 @@ def release_tag():
     else:
         return "No RELEASE_TAG_FILE found"
 
+
 def file_secret_as_env(var_name: str):
     """Reads a secret from a textfile - if that file exists - and then ads the secret to the
        "environment" of this program. This is used to enable this program to read secrets from
