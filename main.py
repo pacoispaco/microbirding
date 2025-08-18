@@ -38,9 +38,6 @@ def file_secret_as_env(var_name: str):
         with open(file_path) as f:
             value = f.read().strip()
             os.environ[var_name] = value
-        print(f"Secrets file '{file_var}' contains '{value}'")
-    else:
-        print(f"No secrets file: '{file_var}'")
 
 
 # Read in the secrets from files, if they exist, as environment variables. They will then be picked
