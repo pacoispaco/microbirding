@@ -45,6 +45,13 @@ COPY resources ./resources
 # Expose port
 EXPOSE 8000
 
+# Add the release tag file. This assumes that you or the build script has the environment
+# variable set and that the docker build command uses the argument:
+# --build-arg RELEASE_TAG="$RELEASE_TAG"
+ARG RELEASE_TAG
+# Create the file that the app will read
+RUN printf '%s\n' "${RELEASE_TAG}" > /app/RELEASE_TAG_FILE
+
 # Create and run as a non-root user
 RUN useradd --create-home appuser
 USER appuser

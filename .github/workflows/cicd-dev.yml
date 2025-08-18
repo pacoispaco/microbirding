@@ -63,15 +63,17 @@ jobs:
           if [[ "$VERSION" == "unreleased" ]]; then
             TAG_FIXED="${IMAGE_NAME}:unreleased-${{ github.sha }}"
             TAG_MOVING="${IMAGE_NAME}:unreleased"
+            RELEASE_TAG="${TAG_FIXED}"
             echo "Tagging as Docker image with: $TAG_FIXED and $TAG_MOVING"
-            docker build --pull -t "$TAG_FIXED" -t "$TAG_MOVING" .
+            docker build --pull -t "$TAG_FIXED" -t "$TAG_MOVING" --build-arg RELEASE_TAG="$RELEASE_TAG" .
             docker push "$TAG_FIXED"
             docker push "$TAG_MOVING"
           else  # Numbered version is tagged with version number and with "latest"
             TAG_FIXED="${IMAGE_NAME}:${VERSION}"
             TAG_MOVING="${IMAGE_NAME}:latest"
+            RELEASE_TAG="${TAG_FIXED}"
             echo "Tagging as Docker image with: $TAG_FIXED and $TAG_MOVING"
-            docker build --pull -t "$TAG_FIXED" -t "$TAG_MOVING" .
+            docker build --pull -t "$TAG_FIXED" -t "$TAG_MOVING" --build-arg RELEASE_TAG="$RELEASE_TAG" .
             docker push "$TAG_FIXED"
             docker push "$TAG_MOVING"
           fi
