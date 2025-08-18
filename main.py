@@ -154,10 +154,16 @@ def transformed_observations(artportalen_observations):
     for o in artportalen_observations["records"]:
         # Fix a compact representation of the time of the observation
         t = o["event"]["endDate"]
+        import pprint
+        pprint.pprint(o)
+        if "recordedBy" in o.get("occurrence", {}):
+            observers = o["occurrence"]["recordedBy"]
+        else:
+            observers = o["datasetName"]
         x = {"name": o["taxon"]["vernacularName"].capitalize(),
              "location": o["location"],
              "time": t,
-             "observers": o["occurrence"]["recordedBy"]}
+             "observers": observers}
         # Add the rarity level
         if x["name"] == "Ringnäbbad mås":
             x["rarity"] = 10
