@@ -218,6 +218,7 @@ async def get_index_file(request: Request, date: str = Query(None)):
     result = templates.TemplateResponse("index.html",
                                         {"request": request,
                                          "day": daystr,
+                                         "year": observations_date.year,
                                          "is_today": is_today,
                                          "observations": observations,
                                          "release": release_tag()})
