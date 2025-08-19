@@ -18,6 +18,7 @@ import logging
 import logging.config
 import time
 from datetime import date as dt
+from datetime import datetime as dtime
 # Application modules
 import artportalen
 
@@ -153,11 +154,22 @@ def transformed_observations(artportalen_observations):
     result = []
     for o in artportalen_observations["records"]:
         # Fix a compact representation of the time of the observation
-        t = o["event"]["endDate"]
+        d = dtime.fromisoformat(o["event"]["startDate"])
+        starttime = d.astimezone().strftime("%H:%M")
+        d = dtime.fromisoformat(o["event"]["endDate"])
+        endtime = d.astimezone().strftime("%H:%M")
+        if starttime == "00:00" and endtime == "23:59":
+            t = ""
+        elif starttime == endtime:
+            t = starttime
+        else:
+            t = f"{starttime}-{endtime}"
+        # Establish observers or data source
         if "recordedBy" in o.get("occurrence", {}):
             observers = o["occurrence"]["recordedBy"]
         else:
             observers = o["datasetName"]
+        # Establish what name of the taxon to use
         if "vernacularName" in o.get("taxon", {}):
             name = o["taxon"]["vernacularName"].capitalize()
         else:
