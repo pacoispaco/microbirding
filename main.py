@@ -191,6 +191,11 @@ async def get_index_file(request: Request, date: str = Query(None)):
     # Redirect to "/" if there are unrecognized query parameters
     # TBD
 
+    if not date:
+        today = dt.today().isoformat()
+        url = request.url.include_query_params(date=today)
+        return RedirectResponse(str(url), status_code=307)
+
     # Figure out which date to get observations for
     if date:
         try:
