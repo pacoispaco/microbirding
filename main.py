@@ -3,7 +3,7 @@
 """This is the SthlmBetong web app."""
 
 # FastAPI and Pydantic
-from fastapi import FastAPI, Request, Query
+from fastapi import FastAPI, status, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -206,17 +206,17 @@ async def get_index_file(request: Request, date: str = Query(None)):
     if not date:
         today = dt.today().isoformat()
         url = request.url.include_query_params(date=today)
-        return RedirectResponse(str(url), status_code=307)
+        return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
     # Figure out which date to get observations for
     if date:
         try:
             observations_date = dt.fromisoformat(date)
             if observations_date > dt.today():
-                return RedirectResponse(url="/", status_code=302)
+                return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
         except ValueError:
             # Redirect to root without query parameters
-            return RedirectResponse(url="/", status_code=302)
+            return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     else:
         observations_date = dt.today()
     is_today = observations_date == dt.today()
