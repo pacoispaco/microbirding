@@ -158,7 +158,11 @@ def transformed_observations(artportalen_observations):
             observers = o["occurrence"]["recordedBy"]
         else:
             observers = o["datasetName"]
-        x = {"name": o["taxon"]["vernacularName"].capitalize(),
+        if "vernacularName" in o.get("taxon", {}):
+            name = o["taxon"]["vernacularName"].capitalize()
+        else:
+            name = o["taxon"]["scientificName"]
+        x = {"name": name,
              "location": o["location"],
              "time": t,
              "observers": observers}
