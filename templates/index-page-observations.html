@@ -1,8 +1,9 @@
 {% for o in observations %}
   <tr>
-    <td class="border p-2">{{ o.name }} (Rarity: {{  o.rarity }})</td>
-    <td class="border p-2">{{ o.location }}</td>
-    <td class="border p-2">{{ o.time }}</td>
-    <td class="border p-2">{{ o.observers }}</td>
+    <!--<td class="border p-2">{{ o.name }} (Rarity: {{  o.rarity }})</td>-->
+    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">{{ o.name }} (Rarity: {{  o.rarity }})</td>
+    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">{{ o.location }}</td>
+    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">{{ o.time }}</td>
+    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">{{ o.observers }}</td>
   </tr>
 {% endfor %}

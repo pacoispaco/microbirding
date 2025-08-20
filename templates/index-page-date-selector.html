@@ -1,8 +1,8 @@
                 {% if is_today %}
-                    <button class="text-blue-800 px-3" type="button">&#x27E8; Dagen före</button>
-                    <span>{{ day }}</span>
+                    <a href="#" class="text-xs px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">&#x27E8; Dagen före</a>
+                    <span class="text-xs">{{ day }}</span>
                 {% else %}
-                    <button class="text-blue-800 px-3" type="button">&#x27E8; Dagen före</button>
-                    <span>{{ day }}</span>
-                    <button class="text-blue-800 px-3" type="button">Dagen efter &#x27E9;</button>
+                    <a href="#" class="text-xs px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">&#x27E8; Dagen före</a>
+                    <span class="text-xs">{{ day }}</span>
+                    <a href="#" class="text-xs px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Dagen efter &#x27E9</a>
                 {% endif %}

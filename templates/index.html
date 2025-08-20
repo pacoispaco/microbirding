@@ -1,108 +1,187 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv" class="h-full">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SthlmBetong</title>
-    <!-- Fallback for legacy browsers -->
-    <link rel="icon" href="./resources/favicon.ico" sizes="any">
-    <!-- Modern favicons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="./resources/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="./resources/favicon-16x16.png">
-    <script src="https://unpkg.com/htmx.org@1.9.4"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        function toggleMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-    </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-</head>
-<body class="min-h-screen flex flex-col bg-gray-100">
-    
-    <!-- Header -->
-    <header class="bg-gray-200 black xt- p-4 flex justify-between items-center">
-        <img src="./resources/sthlmbetong-ny-logo-transparent.png" style=max-height:32px;padding-left:16px;/>
-        
-        <nav class="hidden md:flex space-x-4">
-            <button class="text-blue-800 px-3">Obsar</button>
-            <button class="text-blue-800 px-3">Listor</button>
-            <button class="text-blue-800 px-3">Karta</button>
-            <button class="text-blue-800 px-3">Om</button>
-        </nav>
-        
-        <!-- Mobile Menu Button -->
-        <button class="md:hidden text-black" onclick="toggleMenu()">☰</button>
-    </header>
-    
-    <!-- Mobile Menu -->
-    <nav id="mobile-menu" class="hidden bg-gray-300 text-black p-4 flex flex-col space-y-2 md:hidden">
-        <button class="text-black px-3">Obsar</button>
-        <button class="text-black px-3">Listor</button>
-        <button class="text-black px-3">Karta</button>
-        <button class="text-black px-3">Om</button>
-    </nav>
-    
-    <!-- Main Content -->
-    <main class="flex-1 p-4 flex flex-col md:flex-row gap-6">
-        <!-- Latest Bird Observations -->
-        <section class="md:w-2/3 w-full">
-            <div class="bg-white shadow-lg rounded-lg p-4">
-                <h2 class="text-lg font-semibold mb-2" style="display:inline-block;">Obsar {{ year }} </h2>
-                {% include "index-page-date-selector.html" %}
-                <table class="w-full border-collapse border border-gray-300 text-sm">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="border p-2">Namn</th>
-                            <th class="border p-2">Lokal</th>
-                            <th class="border p-2">Tid</th>
-                            <th class="border p-2">Observatör(er)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="observations" hx-get="/latest-observations" hx-trigger="load" hx-swap="innerHTML">
-                        {% if observations %}
-                            {% include 'index-page-observations.html' %}
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SthlmBetong</title>
 
-        <!-- Rankings -->
-        <aside class="md:w-1/3 w-full">
-            <div class="bg-white shadow-lg rounded-lg p-4 mb-4">
-                <h2 class="text-lg font-semibold mb-2">Årslistan</h2>
-                <table class="w-full border-collapse border border-gray-300 text-sm">
-                    <tbody id="yearly-rankings" hx-get="/yearly-rankings" hx-trigger="load" hx-swap="innerHTML">
-                        <tr>
-                            <td class="border p-2">Funkar inte pga brister i Artportalens API</td>
-                            <td class="border p-2"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="bg-white shadow-lg rounded-lg p-4">
-                <h2 class="text-lg font-semibold mb-2">Totallistan</h2>
-                <table class="w-full border-collapse border border-gray-300 text-sm">
-                    <tbody id="alltime-rankings" hx-get="/alltime-rankings" hx-trigger="load" hx-swap="innerHTML">
-                        <tr>
-                            <td class="border p-2">Funkar inte pga brister i Artportalens API</td>
-                            <td class="border p-2"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </aside>
-    </main>
-    
-    <!-- Footer -->
-    <footer class="bg-gray-100 text-black p-4 text-center">
-            <p>Put together by <a href="https://paulcohen.se/" target="_blank" class="text-blue-800"> Paul Cohen</a>,
-               <span> Release: {{ release }} </span>
-               <a href="https://github.com/pacoispaco/microbirding" target="_blank" class="text-blue-800">
-                   <i class="fab fa-github"></i>
-               </a>
-            </p>
-    </footer>
+  <!-- Fallback + modern favicons -->
+  <link rel="icon" href="./resources/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./resources/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./resources/favicon-16x16.png" />
+
+  <!-- HTMX & Tailwind (CDN) -->
+  <script>
+    // Early theme set to avoid flashes and ensure Tailwind sees the class
+    (function() {
+      try {
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var isDark = stored ? stored === 'dark' : prefersDark;
+        if (isDark) document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+  <script src="https://unpkg.com/htmx.org@1.9.4"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind CDN config AFTER loading the script
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    /* Minimal, system font stack for a Google/GitHub-like feel */
+    :root { color-scheme: light dark; }
+    html, body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    /* Reduce tap highlight on mobile */
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
+</head>
+<body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-neutral-200 dark:bg-neutral-800/90 dark:border-neutral-600">
+    <div class="w-full px-3 sm:px-4 lg:px-6 h-14 flex items-center">
+      <div class="flex items-center gap-3">
+  <!-- Light logo -->
+  <img id="logo-light" src="./resources/sthlmbetong-ny-logo-transparent.png" alt="SthlmBetong" class="h-6 w-auto dark:hidden" />
+  <!-- Dark logo (preferred). If not available, falls back to filtered light logo -->
+  <img id="logo-dark" src="./resources/sthlmbetong-logo-lightblue.png" alt="SthlmBetong" class="h-6 w-auto hidden dark:inline" onerror="(function(el){ el.onerror=null; var light=document.getElementById('logo-light'); el.src=light.src; el.classList.add('filter','invert','brightness-110','saturate-150','hue-rotate-180'); })(this)" />
+  <span class="sr-only">SthlmBetong</span>
+</div>
+
+      <!-- Right cluster: nav + actions -->
+      <div class="ml-auto flex items-center gap-2">
+        <!-- Desktop nav (right-aligned) -->
+        <nav class="hidden md:flex items-center gap-1 text-sm mr-1">
+          <a href="#" class="text-sm px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Obsar</a>
+          <a href="#" class="text-sm px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Listor</a>
+          <a href="#" class="text-sm px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Kartor</a>
+          <a href="#" class="text-sm px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Om</a>
+        </nav>
+
+        <!-- Theme toggle -->
+        <button id="theme-toggle" class="h-9 w-9 grid place-items-center rounded-md border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600" aria-label="Växla tema" aria-pressed="false">
+          <i class="fa-solid fa-sun block dark:hidden"></i>
+          <i class="fa-solid fa-moon hidden dark:block"></i>
+        </button>
+
+        <!-- Mobile menu button -->
+        <button class="md:hidden h-9 w-9 grid place-items-center rounded-md border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600" aria-label="Meny" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <nav id="mobile-menu" class="hidden md:hidden border-t border-neutral-200 dark:border-neutral-700">
+      <div class="w-full px-3 sm:px-4 lg:px-6 py-2 flex flex-col">
+        <a href="#" class="px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700">Obsar</a>
+        <a href="#" class="px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700">Listor</a>
+        <a href="#" class="px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700">Karta</a>
+        <a href="#" class="px-3 py-2 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-700">Om</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main class="flex-1 w-full px-3 sm:px-4 lg:px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+    <!-- Observations -->
+    <section class="md:col-span-2">
+      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+        <div class="p-4 py-0 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
+          <h2 class="text-sm font-semibold">Obsar {{ year }}</h2>
+          <!-- Inline date selector include -->
+          {% include "index-page-date-selector.html" %}
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+              <tr>
+                <th class="text-left font-medium px-3 py-2">Art</th>
+                <th class="text-left font-medium px-3 py-2">Lokal</th>
+                <th class="text-left font-medium px-3 py-2">Tid</th>
+                <th class="text-left font-medium px-3 py-2">Observatör</th>
+              </tr>
+            </thead>
+            <tbody id="observations" hx-get="/latest-observations" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+              {% if observations %}
+                {% include 'index-page-observations.html' %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rankings -->
+    <aside class="md:col-span-1 space-y-6">
+      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+        <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
+          <h2 class="text-sm font-semibold">Årslistan</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody id="yearly-rankings" hx-get="/yearly-rankings" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <tr>
+                <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
+                <td class="px-3 py-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+        <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
+          <h2 class="text-sm font-semibold">Totallistan</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody id="alltime-rankings" hx-get="/alltime-rankings" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <tr>
+                <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
+                <td class="px-3 py-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-neutral-200 dark:border-neutral-700">
+    <div class="w-full px-3 sm:px-4 lg:px-6 py-6 text-center text-xs text-neutral-600 dark:text-neutral-400">
+      <p>
+        Put together by
+        <a href="https://paulcohen.se/" target="_blank" class="text-xs px-1 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Paul Cohen</a>,
+        <span>Release: {{ release }}</span>
+        <a href="https://github.com/pacoispaco/microbirding" target="_blank" class="text-sm px-1 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          <i class="fab fa-github"></i>
+          <span class="sr-only">GitHub</span>
+        </a>
+      </p>
+    </div>
+  </footer>
+
+  <script>
+  // Robust theme toggle: works even if header is re-rendered (HTMX swaps)
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('#theme-toggle');
+    if (!btn) return;
+    var html = document.documentElement;
+    var isDark = html.classList.toggle('dark');
+    var next = isDark ? 'dark' : 'light';
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    html.style.colorScheme = next;
+    btn.setAttribute('aria-pressed', String(isDark));
+  });
+</script>
 </body>
 </html>
+
