@@ -196,7 +196,7 @@ app.mount("/resources", StaticFiles(directory="resources"), name="resources")
 
 # Implement the application resources
 @app.get("/", response_class=HTMLResponse)
-async def get_index_file(request: Request, date: str = Query(None)):
+async def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
     """The main application page (index.html)."""
     tic = time.perf_counter_ns()
 
@@ -207,6 +207,9 @@ async def get_index_file(request: Request, date: str = Query(None)):
         today = dt.today().isoformat()
         url = request.url.include_query_params(date=today)
         return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+    if not index_page:
+        index_page = "index.html"
 
     # Figure out which date to get observations for
     if date:
@@ -236,7 +239,7 @@ async def get_index_file(request: Request, date: str = Query(None)):
     print("========================")
     # Filter the observations so we can display them nicely in the UI
     observations = transformed_observations(observations)
-    result = templates.TemplateResponse("index.html",
+    result = templates.TemplateResponse(index_page,
                                         {"request": request,
                                          "day": daystr,
                                          "year": observations_date.year,
