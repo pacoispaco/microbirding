@@ -1,6 +1,6 @@
 # Changelog for microbirding
 
-All notable changes to this project will be documented in this file.
+All notable changes to the webapp will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -8,7 +8,7 @@ This file is used by the main build script (currently [this Github actions file]
 
 ## [unreleased]
 
-A first proof-of-concept prototype release.
+The first proof-of-concept prototype release.
 
 ### Added
 
