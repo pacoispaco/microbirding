@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ main ]   # only build on pushes to main
+    branches: [ main ]   # Only build on pushes to main
 
 permissions:
   contents: read
@@ -11,6 +11,9 @@ permissions:
 jobs:
   build-dev:
     runs-on: ubuntu-latest
+
+    env:
+        TZ: Europe/Stockholm
 
     steps:
       - name: Check out code
