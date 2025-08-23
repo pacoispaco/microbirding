@@ -18,5 +18,6 @@ The first proof-of-concept prototype release.
 - Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - Simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
 - Navigate to previous and next days observations.
+- Include links to observation in Artportalen.
 - Show basic information on each observation, but not observer name.
 - Main app page shows observations from Artportalen, for today and within the SthlmBetong geopolygon area.
