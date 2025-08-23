@@ -42,19 +42,21 @@
     * { -webkit-tap-highlight-color: transparent; }
   </style>
 </head>
+
 <body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
-  <!-- Top bar -->
+  
+  <!-- Header -->
   <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-neutral-200 dark:bg-neutral-800/90 dark:border-neutral-600">
     <div class="w-full px-3 sm:px-4 lg:px-6 h-14 flex items-center">
       <div class="flex items-center gap-3">
-  <!-- Light logo -->
-  <img id="logo-light" src="./resources/sthlmbetong-ny-logo-transparent.png" alt="SthlmBetong" class="h-6 w-auto dark:hidden" />
-  <!-- Dark logo (preferred). If not available, falls back to filtered light logo -->
-  <img id="logo-dark" src="./resources/sthlmbetong-logo-lightblue.png" alt="SthlmBetong" class="h-6 w-auto hidden dark:inline" onerror="(function(el){ el.onerror=null; var light=document.getElementById('logo-light'); el.src=light.src; el.classList.add('filter','invert','brightness-110','saturate-150','hue-rotate-180'); })(this)" />
-  <span class="sr-only">SthlmBetong</span>
-</div>
+        <!-- Light logo -->
+        <img id="logo-light" src="./resources/sthlmbetong-ny-logo-transparent.png" alt="SthlmBetong" class="h-6 w-auto dark:hidden" />
+        <!-- Dark logo (preferred). If not available, falls back to filtered light logo -->
+        <img id="logo-dark" src="./resources/sthlmbetong-logo-lightblue.png" alt="SthlmBetong" class="h-6 w-auto hidden dark:inline" onerror="(function(el){ el.onerror=null; var light=document.getElementById('logo-light'); el.src=light.src; el.classList.add('filter','invert','brightness-110','saturate-150','hue-rotate-180'); })(this)" />
+        <span class="sr-only">SthlmBetong</span>
+      </div>
 
-      <!-- Right cluster: nav + actions -->
+      <!-- Main menu; links to other pages and theme toggle button -->
       <div class="ml-auto flex items-center gap-2">
         <!-- Desktop nav (right-aligned) -->
         <nav class="hidden md:flex items-center gap-1 text-sm mr-1">
@@ -64,7 +66,7 @@
           <a href="#" class="text-sm px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">Om</a>
         </nav>
 
-        <!-- Theme toggle -->
+        <!-- Theme toggle button-->
         <button id="theme-toggle" class="h-9 w-9 grid place-items-center rounded-md border border-neutral-200 hover:bg-neutral-100 active:bg-neutral-200 dark:border-neutral-600 dark:hover:bg-neutral-700 dark:active:bg-neutral-600" aria-label="Växla tema" aria-pressed="false">
           <i class="fa-solid fa-sun block dark:hidden"></i>
           <i class="fa-solid fa-moon hidden dark:block"></i>
@@ -76,6 +78,7 @@
         </button>
       </div>
     </div>
+
     <!-- Mobile menu -->
     <nav id="mobile-menu" class="hidden md:hidden border-t border-neutral-200 dark:border-neutral-700">
       <div class="w-full px-3 sm:px-4 lg:px-6 py-2 flex flex-col">
