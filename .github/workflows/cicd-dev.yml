@@ -60,7 +60,7 @@ jobs:
           echo "Building version: $VERSION"
           # Get the build datetime
           BUILD_DATETIME=$(date +"%Y-%m-%d %H:%M")
-          echo "Build datetime: $BUILD_DATETIME
+          echo "Build datetime: $BUILD_DATETIME"
 
           # Unreleased version is tagged with "unreleased" and Git sha
           if [[ "$VERSION" == "unreleased" ]]; then
