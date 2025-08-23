@@ -47,10 +47,12 @@ EXPOSE 8000
 
 # Add the release tag file. This assumes that you or the build script has the environment
 # variable set and that the docker build command uses the argument:
-# --build-arg RELEASE_TAG="$RELEASE_TAG"
+# --build-arg RELEASE_TAG="$RELEASE_TAG" --build-arg BUILD_DATETIME="$BUILD_DATETIME"
 ARG RELEASE_TAG
+ARG BUILD_DATETIME
 # Create the file that the app will read
 RUN printf '%s\n' "${RELEASE_TAG}" > /app/RELEASE_TAG_FILE
+RUN printf '%s\n' "${BUILD_DATETIME}" > /app/BUILD_DATETIME_FILE
 
 # Create and run as a non-root user
 RUN useradd --create-home appuser
