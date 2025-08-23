@@ -17,7 +17,7 @@ import json
 import logging
 import logging.config
 import time
-from datetime import date as dt
+from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
 import artportalen
@@ -149,8 +149,7 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
 
 
 def transformed_observations(artportalen_observations):
-    """List of transformed observations. We transform every observation to a object representation
-       suitable for the Jinja2 template to consume and generate a nice UI representation of."""
+    """List of transformed observations suitable for rendering in HTML with a Jinja2 template."""
     result = []
     for o in artportalen_observations["records"]:
         # Fix a compact representation of the time of the observation
@@ -187,6 +186,29 @@ def transformed_observations(artportalen_observations):
     return result
 
 
+def observations_for_presentation(observations_date):
+    """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
+       all attribute values needed for the Jinja2 template file
+       "index-page-observations-section.html" to render HTML."""
+    previous_date = (observations_date - timedelta(days=1)).isoformat()
+    next_date = (observations_date + timedelta(days=1)).isoformat()
+
+    # Get obeservations from the Artportalen API
+    observations = get_observations(observations_date.isoformat(),
+                                    observations_date.isoformat(),
+                                    None,
+                                    None)
+    # Transform the observations to representations suitable for Jinja2
+    observations = transformed_observations(observations)
+    return {"day": observations_date.strftime('%A, %-d %B').capitalize(),
+            "is_today": observations_date == dt.today(),
+            "year": observations_date.year,
+            "previous_date": previous_date,
+            "date": observations_date.isoformat(),
+            "next_date": next_date,
+            "observations": observations}
+
+
 # Set up FastAPI
 app = FastAPI(
     title="Microbirding SthlmBetong",
@@ -194,14 +216,16 @@ app = FastAPI(
 app.mount("/resources", StaticFiles(directory="resources"), name="resources")
 
 
-# Implement the application resources
+# The application resources
 @app.get("/", response_class=HTMLResponse)
 async def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
-    """The main application page (index.html)."""
+    """The main application page (index.html) with observations for the given `date`. The
+       `index_page` query parameter is a development for easily chosing which Jinja2 template
+       to use as the index_page."""
     tic = time.perf_counter_ns()
 
-    # Redirect to "/" if there are unrecognized query parameters
-    # TBD
+    # TBD: Redirect to this page removing unrecognized query parameters or simply remove them by
+    # pushing a path that only contains the valid query parameters.
 
     if not date:
         today = dt.today().isoformat()
@@ -222,32 +246,38 @@ async def get_index_file(request: Request, date: str = Query(None), index_page: 
             return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     else:
         observations_date = dt.today()
-    is_today = observations_date == dt.today()
 
-    # Get obeservations from the Artportalen API
-    observations = get_observations(observations_date.isoformat(),
-                                    observations_date.isoformat(),
-                                    None,
-                                    None)
-    daystr = observations_date.strftime('%A, %-d %B').capitalize()
-    print("========================")
-    print(f"date: {date}")
-    print(f"observations_date: {observations_date}")
-    print(f"Today: {observations_date.strftime('%A, %-d %B').capitalize()}")
-    print(f"Query parameters: {request.query_params}")
-    print(f"Query parameters: {type(request.query_params)}")
-    print("========================")
-    # Filter the observations so we can display them nicely in the UI
-    observations = transformed_observations(observations)
+    obs = observations_for_presentation(observations_date)
     result = templates.TemplateResponse(index_page,
                                         {"request": request,
-                                         "day": daystr,
-                                         "year": observations_date.year,
-                                         "is_today": is_today,
-                                         "observations": observations,
+                                         "day": obs["day"],
+                                         "is_today": obs["is_today"],
+                                         "previous_date": obs["previous_date"],
+                                         "date": obs["date"],
+                                         "next_date": obs["next_date"],
+                                         "observations": obs["observations"],
                                          "release": release_tag()})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
     result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
     return result
+
+
+# The application hypermedia control resources.
+# All of these resources have the prefix "/hx/" in their URL path.
+
+@app.get("/hx/observations-section", response_class=HTMLResponse)
+async def hx_observations_section(request: Request, date: str = Query(None)):
+    """The observations HTML <section> element with the observations for the given `date`."""
+    # We assume we have a valid date that isn't ahead of today's date.
+    observations_date = dt.fromisoformat(date)
+    obs = observations_for_presentation(observations_date)
+    return templates.TemplateResponse("index-page-observations-section.html",
+                                      {"request": request,
+                                       "day": obs["day"],
+                                       "is_today": obs["is_today"],
+                                       "previous_date": obs["previous_date"],
+                                       "date": obs["date"],
+                                       "next_date": obs["next_date"],
+                                       "observations": obs["observations"]})

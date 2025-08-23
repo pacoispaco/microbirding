@@ -94,33 +94,7 @@
   <main class="flex-1 w-full px-3 sm:px-4 lg:px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
 
     <!-- Main left area: Observations -->
-    <section class="md:col-span-2">
-      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
-        <div class="p-4 pb-0 pt-1 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
-          <h2 class="text-sm font-semibold">Obsar {{ year }}</h2>
-          <!-- Inline date selector include -->
-          {% include "index-page-date-selector.html" %}
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-              <tr>
-                <th class="text-left font-medium px-3 py-2">Art</th>
-                <th class="text-left font-medium px-3 py-2">Lokal</th>
-                <th class="text-left font-medium px-3 py-2">Tid</th>
-                <th class="text-left font-medium px-3 py-2">Observatör</th>
-              </tr>
-            </thead>
-            <tbody id="observations" hx-get="/latest-observations" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
-              {% if observations %}
-                {% include 'index-page-observations.html' %}
-              {% endif %}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+    {% include 'index-page-observations-section.html' %}
 
     <!-- Right hand area: Rankings -->
     <div class="md:col-span-1 space-y-6">
@@ -130,7 +104,7 @@
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <tbody id="yearly-rankings" hx-get="/yearly-rankings" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+            <tbody id="yearly-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
               <tr>
                 <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
                 <td class="px-3 py-2"></td>
@@ -146,7 +120,7 @@
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
-            <tbody id="alltime-rankings" hx-get="/alltime-rankings" hx-trigger="load" hx-swap="innerHTML" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+            <tbody id="alltime-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
               <tr>
                 <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
                 <td class="px-3 py-2"></td>

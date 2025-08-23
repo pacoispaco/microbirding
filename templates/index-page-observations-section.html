@@ -1,0 +1,73 @@
+<section id="observations-section" class="md:col-span-2">
+  <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+
+    <!-- Section header with date links -->
+    <div class="p-4 pb-2 pt-1 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
+      <h2 class="text-sm font-semibold">Obsar {{ year }}</h2>
+      {% if is_today %}
+        <button
+          hx-get="/hx/observations-section?date={{ previous_date }}"
+          hx-push-url="?date={{ previous_date }}"
+          hx-trigger="click"
+          hx-target="#observations-section"
+          class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          &#x27E8; Dagen före
+        </button>
+        <span class="text-xs">{{ day }}</span>
+      {% else %}
+        <button
+          hx-get="/hx/observations-section?date={{ previous_date }}"
+          hx-push-url="?date={{ previous_date }}"
+          hx-trigger="click"
+          hx-target="#observations-section"
+          class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          &#x27E8; Dagen före
+        </button>
+        <span class="text-xs">{{ day }}</span>
+        <button
+          hx-get="/hx/observations-section?date={{ next_date }}"
+          hx-push-url="?date={{ next_date }}"
+          hx-trigger="click"
+          hx-target="#observations-section"
+          class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          Dagen efter &#x27E9
+        </button>
+      {% endif %}
+    </div>
+
+    <!-- Section table with observations -->
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <!-- Table header -->
+        <thead class="bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+          <tr>
+            <th class="text-left font-medium px-3 py-2">Art</th>
+            <th class="text-left font-medium px-3 py-2">Lokal</th>
+            <th class="text-left font-medium px-3 py-2">Tid</th>
+            <th class="text-left font-medium px-3 py-2">Observatör</th>
+          </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
+          {% if observations %}
+            {% for o in observations %}
+              <tr>
+                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                  {{ o.name }} (Rarity: {{  o.rarity }})
+                </td>
+                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                  {{ o.location }}</td>
+                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                  {{ o.time }}
+                </td>
+                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                  {{ o.observers }}
+                </td>
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
