@@ -240,7 +240,10 @@ def transformed_observations(artportalen_observations):
                 info["occurrence"] = obs["occurrence"]
                 locality = obs["location"]["locality"]
                 is_redlisted = obs["taxon"]["attributes"]["isRedlisted"]
-                redlist_category = obs["taxon"]["attributes"]["redlistCategory"]
+                if is_redlisted:
+                    redlist_category = obs["taxon"]["attributes"]["redlistCategory"]
+                else:
+                    redlist_category = None
 
             # Set redlist info
             info["isRedlisted"] = is_redlisted
