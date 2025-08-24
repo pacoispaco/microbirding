@@ -22,7 +22,6 @@ from datetime import datetime as dtime
 # Application modules
 import artportalen
 
-
 # Constants
 secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
            "ARTPORTALEN_SPECIES_API_KEY"]
@@ -30,9 +29,6 @@ secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
 # build script(s).
 RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
-MALE_SIGN = "&#2642;"
-FEMALE_SIGN = "&#2640;"
-INTERLOCKED_FEMALE_AND_MALE_SIGN = "&#26A4;"
 
 
 def release_tag():
@@ -251,7 +247,14 @@ def transformed_observations(artportalen_observations):
 
             # Set number of indviduals, sex, age and activity
             info["number"] = obs["occurrence"]["organismQuantity"]
-            info["sex"] = None
+            if "sex" in obs["occurrence"]:
+                sex = obs["occurrence"]["sex"]["id"]
+                if not artportalen.vocabulary_sex[sex]["symbol"]:
+                    info["sex"] = sex
+                else:
+                    info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
+            else:
+                info["sex"] = None
             if "lifeStage" in obs["occurrence"]:
                 info["age"] = obs["occurrence"]["lifeStage"]["value"]
             else:
