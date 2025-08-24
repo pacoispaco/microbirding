@@ -1,6 +1,6 @@
 # README file for the Microbirding SthlmBetong app
 
-The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm with an web app for:
+The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm with an web app for getting bird observations from Artportalens API and:
 
   * Keeping track of bird observations done within the central parts of Stockholm.
   * Keeping tack of year and total lists for individual birders for that area, as well as keeping a total list of all birds seen in the area.
@@ -16,7 +16,7 @@ Eventually it should support multiple different microbirding and urban locations
 
 # Design and implementation
 
-This web app is meant to be a simple clean mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It would eventually need to persist some data which could be stored in a SQLite or MongoDB database. 
+This web app is meant to be a clean HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It would eventually need to persist some data which could be stored in a SQLite or MongoDB database. 
 
 It is meant to use the Swedish Artportalen APIs to get information on registered observations and species data. However due to limitations in the Artportalen Observations API it is currently not possible to develop an app like this with all the desired features.
 
