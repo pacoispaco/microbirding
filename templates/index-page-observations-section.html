@@ -10,8 +10,16 @@
           hx-push-url="?date={{ previous_date }}"
           hx-trigger="click"
           hx-target="#observations-section"
+          hx-disabled-elt="this"
           class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+
           &#x27E8; Dagen före
+
+          <!-- inline spinner (shown only while request runs) -->
+          <svg class="htmx-indicator animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
         </button>
         <span class="text-xs">{{ day }}</span>
       {% else %}
@@ -20,8 +28,16 @@
           hx-push-url="?date={{ previous_date }}"
           hx-trigger="click"
           hx-target="#observations-section"
+          hx-disabled-elt="this"
           class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+
           &#x27E8; Dagen före
+
+          <!-- inline spinner (shown only while request runs) -->
+          <svg class="htmx-indicator animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
         </button>
         <span class="text-xs">{{ day }}</span>
         <button
@@ -29,8 +45,16 @@
           hx-push-url="?date={{ next_date }}"
           hx-trigger="click"
           hx-target="#observations-section"
+          hx-disabled-elt="this"
           class="text-xs px-3 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+
           Dagen efter &#x27E9
+
+          <!-- inline spinner (shown only while request runs) -->
+          <svg class="htmx-indicator animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+          </svg>
         </button>
       {% endif %}
     </div>

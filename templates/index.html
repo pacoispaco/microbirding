@@ -30,7 +30,6 @@
     tailwind.config = { darkMode: 'class' };
   </script>
   
-
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
@@ -41,6 +40,16 @@
     /* Reduce tap highlight on mobile */
     * { -webkit-tap-highlight-color: transparent; }
   </style>
+
+  <style>
+    /* This is for showing a spinner for HTMX requests that take a little time */
+    /* Hide all indicators by default */
+    .htmx-indicator { display: none; }
+
+    /* When the button (requesting element) is in-flight, show its spinner */
+    button.htmx-request .htmx-indicator { display: inline-flex; }
+  </style>
+
 </head>
 
 <body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
