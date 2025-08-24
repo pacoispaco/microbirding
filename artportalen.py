@@ -15,6 +15,7 @@ API_ROOT_URL = 'https://api.artdatabanken.se'
 API_COORDINATSYSTEM_WGS_84_ID = 10
 API_AVES_TAXON_ID = 4000104
 
+API_OUTPUTFIELDSET_VALUES = ["Minimium", "Extended", "AllWithValues", "All", "None"]
 EXAMPLE_SPECIES = "Tajgasångare"
 EXAMPLE_TAXON_ID = 205835  # Id för Tajgasångare
 EXAMPLE_SEARCH_FILTER_STR = """{
@@ -274,6 +275,7 @@ class ObservationsAPI:
         self.key = api_key
         self.url = API_ROOT_URL + "/species-observation-system/v1/"
         self.search_url = self.url + "Observations/Search"
+        self.observation_url = self.url + "Observations/{id}"
         self.headers = auth_headers(self.key)
 
     def last_response(self):
@@ -372,3 +374,27 @@ class ObservationsAPI:
 
     def observations_by_geopolygon(self, from_date: str, to_date: str, polygon: list):
         """Returns the observations within a specified geographical polygon."""
+
+    def observation_by_id(self, id: str, outputFieldSet: str, verbose=False):
+        """Returns the observation with the given `id`, where `outputFieldSet` specifies how many
+           attributes with values to return for the observation. `
+           See: https://api-portal.artdatabanken.se/api-details#
+           api=sos-api-v1&operation=Observations_GetObservationById"""
+        if outputFieldSet not in API_OUTPUTFIELDSET_VALUES:
+            return None
+        url = self.observation_url.replace("{id}", id)
+        params = {"outputFieldSet": outputFieldSet,
+                  "translationCultureCode": "sv-SE",
+                  "sensitiveObservations": "false",
+                  "resolveGeneralizedObservations": "false"}
+        headers = self.headers | {"Content-Type": "application/json"}
+        if verbose:
+            print(f"HTTP request: GET {url}")
+        r = requests.get(url, params=params, headers=headers)
+        self.last_response = r
+        if r.ok:
+            if verbose:
+                print_http_response(r)
+            return r.json()
+        else:
+            return None
