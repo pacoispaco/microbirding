@@ -30,6 +30,9 @@ secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
 # build script(s).
 RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
+MALE_SIGN = "&#2642;"
+FEMALE_SIGN = "&#2640;"
+INTERLOCKED_FEMALE_AND_MALE_SIGN = "&#26A4;"
 
 
 def release_tag():
@@ -159,10 +162,42 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
     return observations
 
 
+def summarized_taxa_info(name,
+                         is_redlisted=False,
+                         redlist_category=None,
+                         sex=None,
+                         number=None,
+                         age=None,
+                         activity=None):
+    """Formatted string with taxa info on observation, for Jinja2 to use in UI presentation.
+       Eg. 'Östersjötrut, 1 födosökande'."""
+    result = f"{name}"
+    if number or sex or age or activity:
+        result += ","
+    if number:
+        result += f" {number}"
+    if age:
+        result += f" {age}"
+    if sex:
+        result += f" {sex}"
+    if activity:
+        result += f" {activity}"
+    if is_redlisted:
+        result += f" ({redlist_category})"
+    return result.strip(",")
+
+
 def transformed_observations(artportalen_observations):
     """List of transformed observations suitable for rendering in HTML with a Jinja2 template."""
     result = []
     for o in artportalen_observations["records"]:
+        # Establish what name of the taxon to use
+        if "vernacularName" in o.get("taxon", {}):
+            name = o["taxon"]["vernacularName"].capitalize()
+        else:
+            name = o["taxon"]["scientificName"]
+        info = {"name": name}
+
         # Fix a compact representation of the time of the observation
         d = dtime.fromisoformat(o["event"]["startDate"])
         starttime = d.astimezone().strftime("%H:%M")
@@ -174,26 +209,133 @@ def transformed_observations(artportalen_observations):
             t = starttime
         else:
             t = f"{starttime}-{endtime}"
+        info["time"] = t
+
         # Establish observers or data source
         if "recordedBy" in o.get("occurrence", {}):
             observers = o["occurrence"]["recordedBy"]
         else:
             observers = o["datasetName"]
-        # Establish what name of the taxon to use
-        if "vernacularName" in o.get("taxon", {}):
-            name = o["taxon"]["vernacularName"].capitalize()
-        else:
-            name = o["taxon"]["scientificName"]
-        x = {"name": name,
-             "location": o["location"],
-             "time": t,
-             "observers": observers}
-        # Add the rarity level
-        if x["name"] == "Ringnäbbad mås":
-            x["rarity"] = 10
-        else:
-            x["rarity"] = 1
-        result.append(x)
+        info["observers"] = observers
+
+        # Establish longitude and latitude
+        info["longitude"] = o["location"]["decimalLongitude"]
+        info["latitude"] = o["location"]["decimalLatitude"]
+
+        # Establish dataset name, eg. "Artportalen", "iNaturalist" etc.
+        info["data_source"] = o["datasetName"]
+
+        # Establish id in data set
+        info["id"] = o["occurrence"]["occurrenceId"]
+
+        # Get additional data on the observation from Artportalen
+        if o["datasetName"] == "Artportalen":
+            obs = oapi.observation_by_id(info["id"], "Extended")
+
+            if not obs:
+                pass  # And crash for now
+#                pprint.pprint("No obs for this o:")
+#                pprint.pprint(o)
+            else:
+                info["occurrence"] = obs["occurrence"]
+                locality = obs["location"]["locality"]
+                is_redlisted = obs["taxon"]["attributes"]["isRedlisted"]
+                redlist_category = obs["taxon"]["attributes"]["redlistCategory"]
+
+            # Set redlist info
+            info["isRedlisted"] = is_redlisted
+            info["redlistCategory"] = redlist_category
+
+            # Set number of indviduals, sex, age and activity
+            info["number"] = obs["occurrence"]["organismQuantity"]
+            info["sex"] = None
+            if "lifeStage" in obs["occurrence"]:
+                info["age"] = obs["occurrence"]["lifeStage"]["value"]
+            else:
+                info["age"] = None
+            if "activity" in obs["occurrence"]:
+                info["activity"] = obs["occurrence"]["activity"]["value"]
+            else:
+                info["activity"] = None
+            info["taxa_summary"] = summarized_taxa_info(info["name"],
+                                                        is_redlisted=is_redlisted,
+                                                        redlist_category=redlist_category,
+                                                        number=info["number"],
+                                                        age=info["age"],
+                                                        sex=info["sex"],
+                                                        activity=info["activity"])
+
+            # Set locality info
+            info["locality"] = locality
+            info["longitude"] = None
+            info["latitude"] = None
+
+            # Set URL to observation info at source
+            info["data_source_observation_url"] = obs["occurrence"]["url"]
+
+        elif o["datasetName"] == "iNaturalist":
+            # Set number of indviduals, sex, age and activity
+            info["number"] = None
+            info["sex"] = None
+            info["age"] = None
+            info["activity"] = None
+            # There's no info in these records about redlisting, sof or now we just ignore it
+            info["taxa_summary"] = summarized_taxa_info(info["name"],
+                                                        is_redlisted=False,
+                                                        redlist_category=None,
+                                                        number=info["number"],
+                                                        age=info["age"],
+                                                        sex=info["sex"],
+                                                        activity=info["activity"])
+
+            # Set locality info
+            municipality = o['location']['municipality']['name']
+            county = o['location']['county']['name']
+            info["locality"] = f"{municipality}, {county}"
+
+            # Set URL to observation info at source
+            info["data_source_observation_url"] = o["occurrence"]["occurrenceId"]
+
+        elif o["datasetName"] == "Bird ringing centre in Sweden, via GBIF":
+            obs = oapi.observation_by_id(info["id"], "Extended")
+
+            # No info on observers
+            info["observers"] = ""
+
+            # Set redlist info
+            info["isRedlisted"] = is_redlisted
+            info["redlistCategory"] = redlist_category
+
+            # Set number of indviduals, sex, age and activity
+            info["number"] = obs["occurrence"]["individualCount"]
+            info["sex"] = None
+            info["age"] = None
+            info["activity"] = None
+            info["taxa_summary"] = summarized_taxa_info(info["name"],
+                                                        is_redlisted=is_redlisted,
+                                                        redlist_category=redlist_category,
+                                                        number=info["number"],
+                                                        age=info["age"],
+                                                        sex=info["sex"],
+                                                        activity=info["activity"])
+
+            # Set locality info
+            municipality = o['location']['municipality']['name']
+            county = o['location']['county']['name']
+            info["locality"] = f"{municipality}, {county}"
+
+            # Set URL to observation info at source. The Jinja2 template will only create links
+            # if info["id"] begins with "http".
+            info["data_source_observation_url"] = info["id"]
+
+        # Add the rarity level according to some model not yet decided!
+        # TBD
+#        if info["name"] == "Ringnäbbad mås":
+#            info["rarity"] = 10
+#        else:
+#            info["rarity"] = 1
+
+        result.append(info)
     return result
 
 
@@ -262,6 +404,7 @@ async def get_index_file(request: Request, date: str = Query(None), index_page: 
     result = templates.TemplateResponse(index_page,
                                         {"request": request,
                                          "day": obs["day"],
+                                         "year": observations_date.year,
                                          "is_today": obs["is_today"],
                                          "previous_date": obs["previous_date"],
                                          "date": obs["date"],
@@ -288,6 +431,7 @@ async def hx_observations_section(request: Request, date: str = Query(None)):
     return templates.TemplateResponse("index-page-observations-section.html",
                                       {"request": request,
                                        "day": obs["day"],
+                                       "year": observations_date.year,
                                        "is_today": obs["is_today"],
                                        "previous_date": obs["previous_date"],
                                        "date": obs["date"],
