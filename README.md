@@ -51,6 +51,19 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
+# Run and debug
+
+To run the app locally in development:
+```
+uvicorn main:app --reload
+```
+
+To build and then run the Docker image locally:
+```
+docker build -t microbirding-app 
+docker run --rm --name="sthlmbetong" -p 8000:8000 -e ARTPORTALEN_OBSERVATIONS_API_KEY=<SECRET-KEY> -e ARTPORTALEN_SPECIES_API_KEY=<SECRETKEY microbirding-app
+```
+
 # The apps
 
 There are two apps here. One is command line program `apget.py` which can get observations and info on species from the Artportalen Observations API and the Artportalen Species API. The other is a prototype web app interacts with the Artportalen API:s.
