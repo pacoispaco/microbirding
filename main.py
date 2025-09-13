@@ -262,7 +262,8 @@ def transformed_observations(artportalen_observations):
         if o["datasetName"] == "Artportalen":
             obs = oapi.observation_by_id(info["id"], "Extended")
             if not obs:
-                extra = {"attributes": {"artportalen_observations": artportalen_observations}}
+                extra = {"info": "Failed to get data on individual observation",
+                         "id": f"{info['id']}"}
                 logger.warning("Call to main.transformed_observations()",
                                extra=extra)
             else:
@@ -274,43 +275,43 @@ def transformed_observations(artportalen_observations):
                 else:
                     redlist_category = None
 
-            # Set redlist info
-            info["isRedlisted"] = is_redlisted
-            info["redlistCategory"] = redlist_category
+                # Set redlist info
+                info["isRedlisted"] = is_redlisted
+                info["redlistCategory"] = redlist_category
 
-            # Set number of indviduals, sex, age and activity
-            info["number"] = obs["occurrence"]["organismQuantity"]
-            if "sex" in obs["occurrence"]:
-                sex = obs["occurrence"]["sex"]["id"]
-                if not artportalen.vocabulary_sex[sex]["symbol"]:
-                    info["sex"] = sex
+                # Set number of indviduals, sex, age and activity
+                info["number"] = obs["occurrence"]["organismQuantity"]
+                if "sex" in obs["occurrence"]:
+                    sex = obs["occurrence"]["sex"]["id"]
+                    if not artportalen.vocabulary_sex[sex]["symbol"]:
+                        info["sex"] = sex
+                    else:
+                        info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
                 else:
-                    info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
-            else:
-                info["sex"] = None
-            if "lifeStage" in obs["occurrence"]:
-                info["age"] = obs["occurrence"]["lifeStage"]["value"]
-            else:
-                info["age"] = None
-            if "activity" in obs["occurrence"]:
-                info["activity"] = obs["occurrence"]["activity"]["value"]
-            else:
-                info["activity"] = None
-            info["taxa_summary"] = summarized_taxa_info(info["name"],
-                                                        is_redlisted=is_redlisted,
-                                                        redlist_category=redlist_category,
-                                                        number=info["number"],
-                                                        age=info["age"],
-                                                        sex=info["sex"],
-                                                        activity=info["activity"])
+                    info["sex"] = None
+                if "lifeStage" in obs["occurrence"]:
+                    info["age"] = obs["occurrence"]["lifeStage"]["value"]
+                else:
+                    info["age"] = None
+                if "activity" in obs["occurrence"]:
+                    info["activity"] = obs["occurrence"]["activity"]["value"]
+                else:
+                    info["activity"] = None
+                info["taxa_summary"] = summarized_taxa_info(info["name"],
+                                                            is_redlisted=is_redlisted,
+                                                            redlist_category=redlist_category,
+                                                            number=info["number"],
+                                                            age=info["age"],
+                                                            sex=info["sex"],
+                                                            activity=info["activity"])
 
-            # Set locality info
-            info["locality"] = locality
-            info["longitude"] = None
-            info["latitude"] = None
+                # Set locality info
+                info["locality"] = locality
+                info["longitude"] = None
+                info["latitude"] = None
 
-            # Set URL to observation info at source
-            info["data_source_observation_url"] = obs["occurrence"]["url"]
+                # Set URL to observation info at source
+                info["data_source_observation_url"] = obs["occurrence"]["url"]
 
         elif o["datasetName"] == "iNaturalist":
             # Set number of indviduals, sex, age and activity

@@ -5,6 +5,7 @@ Module for interacting with Artportalens API.
 from __future__ import annotations
 import logging
 import requests
+from urllib3.exceptions import HTTPError
 import json
 from datetime import datetime
 import httplogs
@@ -405,16 +406,24 @@ class ObservationsAPI:
                   "sensitiveObservations": "false",
                   "resolveGeneralizedObservations": "false"}
         headers = self.headers | {"Content-Type": "application/json"}
-        r = requests.get(url, params=params, headers=headers)
-        logger.info("Call to artportalen.observation_by_id()",
-                    extra={"attributes": {"id": id,
-                                          "outputFieldSet": outputFieldSet}})
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Observations API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
-        self.last_response = r
-        if r.ok:
-            return r.json()
-        else:
+        try:
+            r = requests.get(url, params=params, headers=headers)
+            r.raise_for_status()
+            logger.info("Call to artportalen.observation_by_id()",
+                        extra={"attributes": {"id": id,
+                                              "outputFieldSet": outputFieldSet}})
+            httplogs.log_request(logger,
+                                 r,
+                                 message="HTTP request to Observations API",
+                                 request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+            self.last_response = r
+        except HTTPError as e:
+            logger.warning("HTTPError in artportalen.observation_by_id()",
+                           extra={"exception": e})
+        except Exception as e:
+            logger.warning("Exception caught in artportalen.observation_by_id()",
+                           exc_info=True,
+                           extra={"exception": e})
             return None
+        else:
+            return r.json()
