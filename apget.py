@@ -174,8 +174,7 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
         sys.exit(1)
     if args.taxon_name:
         taxa = sapi.taxa_by_name(args.taxon_name,
-                                 exact_match=args.exact_match,
-                                 verbose=args.verbose)
+                                 exact_match=args.exact_match)
         if not taxa:
             errmsg = (f"No taxon/taxa with name '{args.taxon_name}' found "
                       "in Artdatabankens Species API.")
@@ -215,8 +214,7 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
         result = None
         if args.taxon_name:
             taxa = sapi.taxa_by_name(args.taxon_name,
-                                     exact_match=args.exact_match,
-                                     verbose=args.verbose)
+                                     exact_match=args.exact_match)
             if not taxa:
                 errmsg = (f"Error: No taxon with name '{args.taxon_name}' found "
                           "in Artdatabankens Species API.")

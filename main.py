@@ -14,6 +14,7 @@ import sys
 import os.path
 import locale
 import json
+import atexit
 import logging
 import logging.config
 import time
@@ -29,6 +30,40 @@ secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
 # build script(s).
 RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
+
+
+logger = logging.getLogger(__name__)
+
+
+def get_handler_by_name(name: str):
+    """This can be removed in Python 3.12 since there we have logging.getHandlerByName."""
+    for logger_name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(logger_name)
+        for handler in logger.handlers:
+            if handler.name == name:
+                return handler
+    # also check root logger
+    for handler in logging.getLogger().handlers:
+        if handler.name == name:
+            return handler
+    return None
+
+
+def setup_logging(config_filepath):
+    """Set up logging. If no logging config file is found, set up default logging."""
+    if os.path.exists(config_filepath):
+        with open(config_filepath) as f:
+            config = json.load(f)
+        logging.config.dictConfig(config)
+#        queue_handler = logging.getHandlerByName("queue_handler")
+        queue_handler = get_handler_by_name("queue_handler")
+        if queue_handler is not None:
+            queue_handler.listener.start()
+            atexit.register(queue_handler.listener.stop)
+    else:
+        logger.setLevel("DEBUG")
+        logger.warning(f"Configuration file '{config_filepath}' for logging not found. "
+                       "Using default logging settings.")
 
 
 def release_tag():
@@ -81,9 +116,7 @@ class Settings(BaseSettings):
     POLYGON_FILE: str = "./conf/polygon.sthlmbetong.json"
     DEFAULT_TAXON_SEARCH_ID: int = 4000104  # Id of the taxon "Aves" in the Artportalen Species API.
     DEFAULT_NUMBER_OF_OBSERVATIONS: int = 50
-    LOGGING_LEVEL: str = "DEBUG"
-    logger: logging.Logger = logging.getLogger(__name__)
-    logger.setLevel(LOGGING_LEVEL)
+    LOGGING_CONFIG_FILE: str = "./conf/logging-config.json"
 
     class ConfigDict:
         env_file = ".env"
@@ -106,6 +139,7 @@ def polygon_coordinates(filename):
 
 # Set up some application globals
 settings = Settings()
+setup_logging(settings.LOGGING_CONFIG_FILE)
 if not settings.ARTPORTALEN_OBSERVATIONS_API_KEY:
     settings.logger.error("Environment variable 'ARTPORTALEN_OBSERVATIONS_API_KEY' not set")
     sys.exit(1)
@@ -122,6 +156,7 @@ polygon = polygon_coordinates(settings.POLYGON_FILE)
 if not polygon:
     settings.logger.error(f"Failed to read polygon coordinates from {settings.POLYGON_FILE}.")
 locale.setlocale(locale.LC_TIME, 'sv_SE.UTF-8')
+logger.info("Application initialized.")
 
 
 def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
@@ -153,8 +188,7 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
     observations = oapi.observations(sfilter,
                                      skip=0,
                                      take=1000,
-                                     sort_descending=True,
-                                     verbose=False)
+                                     sort_descending=True)
     return observations
 
 
@@ -227,11 +261,10 @@ def transformed_observations(artportalen_observations):
         # Get additional data on the observation from Artportalen
         if o["datasetName"] == "Artportalen":
             obs = oapi.observation_by_id(info["id"], "Extended")
-
             if not obs:
-                pass  # And crash for now
-#                pprint.pprint("No obs for this o:")
-#                pprint.pprint(o)
+                extra = {"attributes": {"artportalen_observations": artportalen_observations}}
+                logger.warning("Call to main.transformed_observations()",
+                               extra=extra)
             else:
                 info["occurrence"] = obs["occurrence"]
                 locality = obs["location"]["locality"]
@@ -377,7 +410,7 @@ app.mount("/resources", StaticFiles(directory="resources"), name="resources")
 
 # The application resources
 @app.get("/", response_class=HTMLResponse)
-async def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
+def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
     """The main application page (index.html) with observations for the given `date`. The
        `index_page` query parameter is a development for easily chosing which Jinja2 template
        to use as the index_page."""
@@ -429,7 +462,7 @@ async def get_index_file(request: Request, date: str = Query(None), index_page: 
 # All of these resources have the prefix "/hx/" in their URL path.
 
 @app.get("/hx/observations-section", response_class=HTMLResponse)
-async def hx_observations_section(request: Request, date: str = Query(None)):
+def hx_observations_section(request: Request, date: str = Query(None)):
     """The observations HTML <section> element with the observations for the given `date`."""
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)

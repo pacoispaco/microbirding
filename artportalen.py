@@ -1,17 +1,18 @@
-#!/usr/bin/env python
-
 """
-Python module for interacting with Artportalens API. This is the new implementation.
+Module for interacting with Artportalens API.
 """
 
+from __future__ import annotations
+import logging
 import requests
-import pprint
 import json
 from datetime import datetime
+import httplogs
 
 # Constants
 DEFAULT_FROM_DATE_RFC3339 = '1900-01-01T00:00'
 API_ROOT_URL = 'https://api.artdatabanken.se'
+API_KEY_HTTP_HEADER = 'Ocp-Apim-Subscription-Key'
 API_COORDINATSYSTEM_WGS_84_ID = 10
 API_AVES_TAXON_ID = 4000104
 
@@ -76,6 +77,8 @@ EXAMPLE_SEARCH_FILTER_STR = """{
     }
 }"""
 
+logger = logging.getLogger(__name__)
+
 
 class Taxon:
 
@@ -100,22 +103,10 @@ class Person:
 
 def auth_headers(api_key, auth_token=None):
     """Dictionary of authentication headers for API requests."""
-    h = {'Ocp-Apim-Subscription-Key': api_key}
+    h = {API_KEY_HTTP_HEADER: api_key}
     if auth_token:
         h['Authorization'] = 'Bearer {%s}' % (auth_token)
     return h
-
-
-def print_http_response(r):
-    """Print the HTTP resonse (from a requests.get call) to stdout."""
-    print('HTTP Status code: %s' % (r.status_code))
-    print('HTTP Response headers:')
-    pprint.pprint(r.headers)
-    print('HTTP Response body:')
-    if r.headers["Content-Type"] == "application/json":
-        pprint.pprint(r.json())
-    else:  # get the body but assume it can be decoded as a string
-        pprint.pprint(r.content.decode())
 
 
 class SpeciesAPI:
@@ -128,13 +119,14 @@ class SpeciesAPI:
         self.search_url = self.url + "speciesdata"
         self.headers = auth_headers(self.key)
 
-    def taxa_by_name(self, name, exact_match=True, verbose=False):
+    def taxa_by_name(self, name, exact_match=True):
         """Returns list of all taxa that match the name."""
         url = self.search_url + f"/search?searchString={name}"
         r = requests.get(url, headers=self.headers)
-        if verbose:
-            print('GET %s' % url)
-            print_http_response(r)
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Species API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         if r.status_code == 200:
             for d in r.json():
                 if exact_match:
@@ -143,17 +135,16 @@ class SpeciesAPI:
                 else:
                     return r.json()
         else:
-            if verbose:
-                print("Something went wrong in the API request.")
-        return None
+            return None
 
-    def taxon_by_id(self, id, verbose=False):
+    def taxon_by_id(self, id):
         """Returns the taxon with the given id."""
         url = self.search_url + f"?taxa={id}"
         r = requests.get(url, headers=self.headers)
-        if verbose:
-            print('GET %s' % url)
-            print_http_response(r)
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Species API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         if r.json() == []:
             return None
         else:
@@ -304,29 +295,31 @@ class ObservationsAPI:
            out more. See: https://requests.readthedocs.io/en/latest/api/#requests.Response"""
         return self.last_response
 
-    def version(self, verbose=False):
+    def version(self):
         """Returns version of the API. This can be used to ping the API.
            See: https://api-portal.artdatabanken.se/api-details#
            api=sos-api-v1&operation=ApiInfo_GetApiInfo"""
         url = self.url + "api/ApiInfo"
         r = requests.get(url, headers=self.headers)
-        if verbose:
-            print('GET %s' % url)
-            print_http_response(r)
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Observations API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         return r.json()
 
-    def data_providers(self, verbose=False):
+    def data_providers(self):
         """Returns a list of data providers that have observations in the API.
            See: https://api-portal.artdatabanken.se/api-details#
            api=sos-api-v1&operation=DataProviders_GetDataProviders"""
         url = self.url + "/DataProviders"
         r = requests.get(url, headers=self.headers)
-        if verbose:
-            print('GET %s' % url)
-            print_http_response(r)
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Observations API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         return r.json()
 
-    def observations_test(self, verbose=False):
+    def observations_test(self):
         """Returns the observations based on a hard coded search filter."""
         url = self.search_url
         params = {"skip": 0,
@@ -335,30 +328,26 @@ class ObservationsAPI:
                   "sortOrder": "Desc"}
         headers = self.headers | {"Content-Type": "application/json"}
         search_filter = EXAMPLE_SEARCH_FILTER_STR
-        if verbose:
-            print(f"HTTP request: POST {url}")
-            print(f"HTTP headers: {headers}")
-            print(f"HTTP body: {search_filter}")
         r = requests.post(url, params=params, headers=headers, data=search_filter)
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Observations API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         self.last_response = r
         if r.ok:
-            self.last_response = r
-            if verbose:
-                print_http_response(r)
             return r.json()
         else:
             return None
 
-    def observations(self, search_filter: SearchFilter,
+    def observations(self, searchFilter: SearchFilter,
                      skip: int = 0,
                      take: int = 100,  # Maximum is 1000
                      sortBy: str = DEFAULT_SORT_BY_ATTRIBUTE_FOR_OBSERVATIONS,
                      sort_descending: bool = True,
-                     validateSearchFilter: bool = False,  # Validation will be done.
-                     translationCultureCode: str = None,  # "sv-SE" or "en-GB"
-                     sensitiveObservations: bool = False,  # If true, only sensitive observations
-                                                           # will be searched.
-                     verbose=False):
+                     validateSearchFilter: bool = False,    # Validation will be done.
+                     translationCultureCode: str = None,    # "sv-SE" or "en-GB"
+                     # If the below is true, only sensitive observations will be searched
+                     sensitiveObservations: bool = False):
         """Returns `take` observations starting at `skip` + 1 according to the criteria in
            the `search_filter` and the other request parameters.
            See: https://api-portal.artdatabanken.se/api-details#
@@ -375,15 +364,22 @@ class ObservationsAPI:
                   "validateSearchFilter": validateSearchFilter,
                   "translationCultureCode": translationCultureCode}
         headers = self.headers | {"Content-Type": "application/json"}
-        if verbose:
-            print(f"HTTP request: POST {url}")
-            print(f"HTTP headers: {headers}")
-            print(f"HTTP body: {search_filter.json_string()}")
-        r = requests.post(url, params=params, headers=headers, data=search_filter.json_string())
+        r = requests.post(url, params=params, headers=headers, data=searchFilter.json_string())
+        logger.info("Call to artportalen.observations()",
+                    extra={"attributes": {"searchFilter": searchFilter.filter,
+                                          "skip": skip,
+                                          "take": take,
+                                          "sortBy": sortBy,
+                                          "sort_descending": sort_descending,
+                                          "validateSearchFilter": validateSearchFilter,
+                                          "translationCultureCode": translationCultureCode,
+                                          "sensitiveObservations": sensitiveObservations}})
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Observations API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         self.last_response = r
         if r.ok:
-            if verbose:
-                print_http_response(r)
             return r.json()
         else:
             return None
@@ -395,7 +391,7 @@ class ObservationsAPI:
     def observations_by_geopolygon(self, from_date: str, to_date: str, polygon: list):
         """Returns the observations within a specified geographical polygon."""
 
-    def observation_by_id(self, id: str, outputFieldSet: str, verbose=False):
+    def observation_by_id(self, id: str, outputFieldSet: str):
         """Returns the observation with the given `id`, where `outputFieldSet` specifies how many
            attributes with values to return for the observation. `
            See: https://api-portal.artdatabanken.se/api-details#
@@ -408,13 +404,16 @@ class ObservationsAPI:
                   "sensitiveObservations": "false",
                   "resolveGeneralizedObservations": "false"}
         headers = self.headers | {"Content-Type": "application/json"}
-        if verbose:
-            print(f"HTTP request: GET {url}")
         r = requests.get(url, params=params, headers=headers)
+        logger.info("Call to artportalen.observation_by_id()",
+                    extra={"attributes": {"id": id,
+                                          "outputFieldSet": outputFieldSet}})
+        httplogs.log_request(logger,
+                             r,
+                             message="HTTP request to Observations API",
+                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         self.last_response = r
         if r.ok:
-            if verbose:
-                print_http_response(r)
             return r.json()
         else:
             return None

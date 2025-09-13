@@ -36,6 +36,7 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # Copy app source
+COPY httplogs.py .
 COPY artportalen.py .
 COPY main.py .
 COPY conf/ ./conf

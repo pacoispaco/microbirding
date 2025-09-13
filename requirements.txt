@@ -1,4 +1,5 @@
 python-dateutil
+python-json-logger
 requests
 fastapi[standard]
 pydantic-settings

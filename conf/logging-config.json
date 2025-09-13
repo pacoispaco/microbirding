@@ -1,0 +1,36 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "simple": {
+            "format": "%(levelname)s: %(message)s"
+        },
+        "syslog": {
+            "format": "%(asctime)s.%(msecs)03d %(levelname)s %(name)s: %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S%z"
+        },
+        "json": {
+            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s",
+            "datefmt": "%Y-%m-%dT%H:%M:%S%z"
+    }
+    },
+    "handlers": {
+        "stdout": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+            "stream": "ext://sys.stdout"
+        }
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["stdout"]
+    },
+    "loggers": {
+        "urllib3": {
+            "level": "WARNING",
+            "handlers": ["stdout"],
+            "propagate": false
+        }
+    }
+}
