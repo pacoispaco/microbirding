@@ -391,8 +391,15 @@ def observations_for_presentation(observations_date):
                                     observations_date.isoformat(),
                                     None,
                                     None)
-    # Transform the observations to representations suitable for Jinja2
-    observations = transformed_observations(observations)
+    if not observations:
+        extra = {"info": "Failed to get data on observations for a given date",
+                 "date": f"{observations_date.isoformat()}"}
+        logger.warning("Call to main.observations_for_presentation()",
+                       extra=extra)
+        observations = ["Failed"]
+    else:
+        # Transform the observations to representations suitable for Jinja2
+        observations = transformed_observations(observations)
     return {"day": observations_date.strftime('%A, %-d %B').capitalize(),
             "is_today": observations_date == dt.today(),
             "year": observations_date.year,

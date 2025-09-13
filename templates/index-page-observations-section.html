@@ -75,45 +75,51 @@
         <!-- Table body -->
         <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
           {% if observations %}
-            {% for o in observations %}
-              <tr>
-                {% if o.taxa_summary %}
+            {% if observations[0] == "Failed" %}
+              <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                Failed to get observations, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+              </td>
+            {% else %}
+              {% for o in observations %}
+                <tr>
+                  {% if o.taxa_summary %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                      {{ o.taxa_summary }}
+                  {% else %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                      Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                  {% endif %}
+                  </td>
+                  {% if o.taxa_summary %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                      {{ o.locality }}
+                  {% else %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                      Failed to get locality, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                  {% endif %}
+                  </td>
                   <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                    {{ o.taxa_summary }}
-                {% else %}
-                  <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                    Failed to get taxa summary
-                {% endif %}
-                </td>
-                {% if o.taxa_summary %}
+                    {{ o.time }}
+                  </td>
                   <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                    {{ o.locality }}
-                {% else %}
-                  <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                    Failed to get locality
-                {% endif %}
-                </td>
-                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                  {{ o.time }}
-                </td>
-                <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                  {{ o.observers }}
-                </td>
-                {% if o.data_source_observation_url %}
-                  <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                    {% if o.data_source_observation_url.startswith("http") %}
-                      <a href="{{ o.data_source_observation_url}}" target="_blank" class="text-xs px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                      {{ o.data_source }}
-                    {% else %}
-                      {{ o.data_source }} ({{ o.data_source_observation_url}})
-                    {% endif %}
-                {% else %}
-                  <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                    Failed to get source info
-                {% endif %}
-                </td>
-              </tr>
-            {% endfor %}
+                    {{ o.observers }}
+                  </td>
+                  {% if o.data_source_observation_url %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                      {% if o.data_source_observation_url.startswith("http") %}
+                        <a href="{{ o.data_source_observation_url}}" target="_blank" class="text-xs px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                        {{ o.data_source }}
+                      {% else %}
+                        {{ o.data_source }} ({{ o.data_source_observation_url}})
+                      {% endif %}
+                  {% else %}
+                    <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                      Failed to get source info, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                  {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            {% endif %}
           {% endif %}
         </tbody>
       </table>

@@ -366,25 +366,36 @@ class ObservationsAPI:
                   "validateSearchFilter": validateSearchFilter,
                   "translationCultureCode": translationCultureCode}
         headers = self.headers | {"Content-Type": "application/json"}
-        r = requests.post(url, params=params, headers=headers, data=searchFilter.json_string())
-        logger.info("Call to artportalen.observations()",
-                    extra={"attributes": {"searchFilter": searchFilter.filter,
-                                          "skip": skip,
-                                          "take": take,
-                                          "sortBy": sortBy,
-                                          "sort_descending": sort_descending,
-                                          "validateSearchFilter": validateSearchFilter,
-                                          "translationCultureCode": translationCultureCode,
-                                          "sensitiveObservations": sensitiveObservations}})
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Observations API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
-        self.last_response = r
-        if r.ok:
-            return r.json()
-        else:
+        try:
+            r = requests.post(url, params=params, headers=headers, data=searchFilter.json_string())
+            logger.info("Call to artportalen.observations()",
+                        extra={"attributes": {"searchFilter": searchFilter.filter,
+                                              "skip": skip,
+                                              "take": take,
+                                              "sortBy": sortBy,
+                                              "sort_descending": sort_descending,
+                                              "validateSearchFilter": validateSearchFilter,
+                                              "translationCultureCode": translationCultureCode,
+                                              "sensitiveObservations": sensitiveObservations}})
+            httplogs.log_request(logger,
+                                 r,
+                                 message="HTTP request to Observations API",
+                                 request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+            self.last_response = r
+            if r.ok:
+                return r.json()
+            else:
+                return None
+        except HTTPError as e:
+            logger.warning("HTTPError in artportalen.observations()",
+                           extra={"exception": e})
+        except Exception as e:
+            logger.error("Exception caught in artportalen.observations()",
+                           exc_info=True,
+                           extra={"exception": e})
             return None
+        else:
+            return r.json()
 
     def observations_by_georegion(self, from_date: str, to_date: str,
                                   region_type: str, region_name: str):
@@ -421,7 +432,7 @@ class ObservationsAPI:
             logger.warning("HTTPError in artportalen.observation_by_id()",
                            extra={"exception": e})
         except Exception as e:
-            logger.warning("Exception caught in artportalen.observation_by_id()",
+            logger.error("Exception caught in artportalen.observation_by_id()",
                            exc_info=True,
                            extra={"exception": e})
             return None
