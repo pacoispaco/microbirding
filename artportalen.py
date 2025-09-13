@@ -22,6 +22,7 @@ API_OUTPUTFIELDSET_VALUES = ["Minimium", "Extended", "AllWithValues", "All", "No
 MALE_SIGN = "♂"
 FEMALE_SIGN = "♀"
 FEMALE_AND_MALE_SIGN = "♀♂"
+FEMALE_COLORED = "♀-färgad(e)"
 HERMAPHRODITE_SIGN = "⚥"  # Sign convention in entomology for hermafrodite
 MERCURY_SIGN = "☿"        # Sign convention in entomology for worker or neuter insects
 
@@ -31,7 +32,7 @@ MERCURY_SIGN = "☿"        # Sign convention in entomology for worker or neuter
 vocabulary_sex = {0: {"sv": None, "en": None, "symbol": None},
                   1: {"sv": "hane", "en": "male", "symbol": MALE_SIGN},
                   2: {"sv": "hona", "en": "female", "symbol": FEMALE_SIGN},
-                  3: {"sv": "honfärgad", "en": "female coloured", "symbol": None},
+                  3: {"sv": "honfärgad", "en": "female coloured", "symbol": FEMALE_COLORED},
                   4: {"sv": "i par", "en": "in pair", "symbol": FEMALE_AND_MALE_SIGN},
                   5: {"sv": "arbetare", "en": "worker", "symbol": MERCURY_SIGN},
                   6: {"sv": "hermafrodit", "en": "hermaphroditic", "symbol": HERMAPHRODITE_SIGN}}
