@@ -391,8 +391,8 @@ class ObservationsAPI:
                            extra={"exception": e})
         except Exception as e:
             logger.error("Exception caught in artportalen.observations()",
-                           exc_info=True,
-                           extra={"exception": e})
+                         exc_info=True,
+                         extra={"exception": e})
             return None
         else:
             return r.json()
@@ -433,8 +433,8 @@ class ObservationsAPI:
                            extra={"exception": e})
         except Exception as e:
             logger.error("Exception caught in artportalen.observation_by_id()",
-                           exc_info=True,
-                           extra={"exception": e})
+                         exc_info=True,
+                         extra={"exception": e})
             return None
         else:
             return r.json()
