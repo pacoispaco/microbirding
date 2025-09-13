@@ -77,7 +77,7 @@
           {% if observations %}
             {% if observations[0] == "Failed" %}
               <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                Failed to get observations, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                Failed to get observations, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
               </td>
             {% else %}
               {% for o in observations %}
@@ -87,7 +87,7 @@
                       {{ o.taxa_summary }}
                   {% else %}
                     <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                      Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                      Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                   {% endif %}
                   </td>
                   {% if o.taxa_summary %}
@@ -95,7 +95,7 @@
                       {{ o.locality }}
                   {% else %}
                     <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                      Failed to get locality, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                      Failed to get locality, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                   {% endif %}
                   </td>
                   <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
@@ -114,7 +114,7 @@
                       {% endif %}
                   {% else %}
                     <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                      Failed to get source info, probably due to Artportalens API returning HTTP status code 428 (Too Many Requests).
+                      Failed to get source info, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                   {% endif %}
                   </td>
                 </tr>
