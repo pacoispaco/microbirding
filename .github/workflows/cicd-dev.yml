@@ -34,9 +34,10 @@ jobs:
         run: flake8 --config flake8.conf 
 
       - name: Install Tailwind CLI-program
-        run: curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.13/tailwindcss-linux-x64
-             chmod +x tailwindcss-linux-x64
-             mv tailwindcss-linux-x64 tailwindcss
+        run: |
+          curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.13/tailwindcss-linux-x64
+          chmod +x tailwindcss-linux-x64
+          mv tailwindcss-linux-x64 tailwindcss
 
       - name: Generate the minimized Tailwind CSS file 
         run: ./tailwindcss -m -i ./tailwind.config.css -o ./resources/tailwind.css
