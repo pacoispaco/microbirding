@@ -59,70 +59,89 @@
       {% endif %}
     </div>
 
-    <!-- Section table with observations -->
-    <div class="overflow-x-auto">
-      <table class="w-full table-fixed">
-        <!-- Table header -->
-        <thead class="bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-          <tr>
-            <th class="w-3/12 text-base text-left px-3 py-2">Art</th>
-            <th class="w-4/12 text-base text-left px-3 py-2">Lokal</th>
-            <th class="w-1/12 text-base text-left px-3 py-2">Tid</th>
-            <th class="w-3/12 text-base text-left px-3 py-2">Observatör</th>
-            <th class="w-1/12 text-base text-left px-3 py-2">Source</th>
-          </tr>
-        </thead>
-        <!-- Table body -->
-        <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
-          {% if observations %}
-            {% if observations[0] == "Failed" %}
-              <td class="p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
-                Failed to get observations, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
-              </td>
-            {% else %}
-              {% for o in observations %}
-                <tr>
+    <!-- Section list with observations (responsive) -->
+    <div>
+      <!-- Desktop header (hidden on mobile) -->
+      <div class="hidden sm:grid sm:grid-cols-[3fr_4fr_1fr_3fr_1fr] bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+        <div class="text-base text-left px-3 py-2">Art</div>
+        <div class="text-base text-left px-3 py-2">Lokal</div>
+        <div class="text-base text-left px-3 py-2">Tid</div>
+        <div class="text-base text-left px-3 py-2">Observatör</div>
+        <div class="text-base text-left px-3 py-2">Källa</div>
+      </div>
+
+      <!-- Items -->
+      <ul class="divide-y divide-neutral-200 dark:divide-neutral-700">
+        {% if observations %}
+          {% if observations[0] == "Failed" %}
+            <li class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
+              Failed to get observations, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+            </li>
+          {% else %}
+            {% for o in observations %}
+              <li class="grid gap-1 px-3 py-2 bg-neutral-50 dark:bg-neutral-800/70 sm:grid-cols-[3fr_4fr_1fr_3fr_1fr]">
+                <!-- Art -->
+                <div class="sm:flex sm:items-center">
+                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Art</div>
                   {% if o.taxa_summary %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                      {{ o.taxa_summary }}
+                    <div class="text-base">{{ o.taxa_summary }}</div>
                   {% else %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                    <div class="text-base italic text-red-600">
                       Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+                    </div>
                   {% endif %}
-                  </td>
+                </div>
+
+                <!-- Lokal -->
+                <div class="sm:flex sm:items-center">
+                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Lokal</div>
                   {% if o.taxa_summary %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                      {{ o.locality }}
+                    <div class="text-base">{{ o.locality }}</div>
                   {% else %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                    <div class="text-base italic text-red-600">
                       Failed to get locality, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+                    </div>
                   {% endif %}
-                  </td>
-                  <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                    {{ o.time }}
-                  </td>
-                  <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-                    {{ o.observers }}
-                  </td>
+                </div>
+
+                <!-- Tid -->
+                <div class="sm:flex sm:items-center">
+                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Tid</div>
+                  <div class="text-base">{{ o.time }}</div>
+                </div>
+
+                <!-- Observatör -->
+                <div class="sm:flex sm:items-center">
+                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Observatör</div>
+                  <div class="text-base">{{ o.observers }}</div>
+                </div>
+
+                <!-- Källa -->
+                <div class="sm:flex sm:items-center">
+                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Källa</div>
                   {% if o.data_source_observation_url %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
+                    <div class="text-base">
                       {% if o.data_source_observation_url.startswith("http") %}
-                        <a href="{{ o.data_source_observation_url}}" target="_blank" class="text-base px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                        {{ o.data_source }}
+                        <a href="{{ o.data_source_observation_url }}" target="_blank"
+                           class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                          {{ o.data_source }}
+                        </a>
                       {% else %}
-                        {{ o.data_source }} ({{ o.data_source_observation_url}})
+                        {{ o.data_source }} ({{ o.data_source_observation_url }})
                       {% endif %}
+                    </div>
                   {% else %}
-                    <td class="text-base p-2 bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700 italic text-red-600">
+                    <div class="text-base italic text-red-600">
                       Failed to get source info, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+                    </div>
                   {% endif %}
-                  </td>
-                </tr>
-              {% endfor %}
-            {% endif %}
+                </div>
+              </li>
+            {% endfor %}
           {% endif %}
-        </tbody>
-      </table>
+        {% endif %}
+      </ul>
     </div>
+
   </div>
 </section>
