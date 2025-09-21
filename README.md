@@ -51,18 +51,30 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
+Install the Tailwind CLI tool (chose the relevant binary for your OS and architecture):
+```
+curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.13/tailwindcss-linux-x64
+chmod +x tailwindcss-linux-x64
+mv tailwindcss-linux-x64 tailwindcss
+```
+Note that the rest of this article; https://tailwindcss.com/blog/standalone-cli is invalid. The `tailwindcss init` command was removed in Tailwind 4.
+
 # Run and debug
 
 To run the app locally in development:
 ```
+./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
 uvicorn main:app --reload
 ```
 
 To build and then run the Docker image locally:
 ```
+./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
 docker build -t microbirding-app 
 docker run --rm --name="sthlmbetong" -p 8000:8000 -e ARTPORTALEN_OBSERVATIONS_API_KEY=<SECRET-KEY> -e ARTPORTALEN_SPECIES_API_KEY=<SECRETKEY microbirding-app
 ```
+
+You can skip regenerating the `./resources/tailwind.css` file if you haven't modified any CSS in the template files.
 
 # The apps
 
