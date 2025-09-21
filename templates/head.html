@@ -1,0 +1,53 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>SthlmBetong</title>
+
+  <!-- Fallback + modern favicons -->
+  <link rel="icon" href="./resources/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./resources/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./resources/favicon-16x16.png" />
+
+  <!-- HTMX & Tailwind -->
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"
+          integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"
+          crossorigin="anonymous">
+  </script>
+  <link rel="stylesheet" href="./resources/tailwind.css" />
+
+  <!-- Apply saved theme -->
+  <script>
+    if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <!-- Initialize theme button label, but do it after the DOM is parsed -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('theme-toggle');
+      const dark = document.documentElement.classList.contains('dark');
+      btn.textContent = dark ? '🌙' : '☀️';
+    });
+  </script>
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    /* Minimal, system font stack for a Google/GitHub-like feel */
+    :root { color-scheme: light dark; }
+    html, body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    /* Reduce tap highlight on mobile */
+    * { -webkit-tap-highlight-color: transparent; }
+  </style>
+
+  <style>
+    /* This is for showing a spinner for HTMX requests that take a little time */
+    /* Hide all indicators by default */
+    .htmx-indicator { display: none; }
+
+    /* When the button (requesting element) is in-flight, show its spinner */
+    button.htmx-request .htmx-indicator { display: inline-flex; }
+  </style>
+</head>

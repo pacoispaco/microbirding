@@ -382,7 +382,7 @@ def transformed_observations(artportalen_observations):
 def observations_for_presentation(observations_date):
     """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
        all attribute values needed for the Jinja2 template file
-       "index-page-observations-section.html" to render HTML."""
+       "hx-observations-list.html" to render HTML."""
     previous_date = (observations_date - timedelta(days=1)).isoformat()
     next_date = (observations_date + timedelta(days=1)).isoformat()
 
@@ -419,8 +419,8 @@ app.mount("/resources", StaticFiles(directory="resources"), name="resources")
 # The application resources
 @app.get("/", response_class=HTMLResponse)
 def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
-    """The main application page (index.html) with observations for the given `date`. The
-       `index_page` query parameter is a development for easily chosing which Jinja2 template
+    """The main application page (page-observations.html) with observations for the given `date`.
+        The `index_page` query parameter is a development for easily chosing which Jinja2 template
        to use as the index_page."""
     tic = time.perf_counter_ns()
 
@@ -433,7 +433,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
         return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
     if not index_page:
-        index_page = "index.html"
+        index_page = "page-observations.html"
 
     # Figure out which date to get observations for
     if date:
@@ -475,7 +475,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)
     obs = observations_for_presentation(observations_date)
-    return templates.TemplateResponse("index-page-observations-section.html",
+    return templates.TemplateResponse("hx-observations-list.html",
                                       {"request": request,
                                        "day": obs["day"],
                                        "year": observations_date.year,

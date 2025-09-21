@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+  <!-- Main -->
+  <main class="flex-1 w-full px-3 sm:px-4 lg:px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+
+    <!-- Main left area: Observations -->
+    {% include 'hx-observations-list.html' %}
+
+    <!-- Right hand area: Rankings -->
+    <div class="md:col-span-1 space-y-6">
+      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+        <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
+          <h2 class="text-sm font-semibold">Årslistan</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody id="yearly-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <tr>
+                <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
+                <td class="px-3 py-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+        <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
+          <h2 class="text-sm font-semibold">Totallistan</h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <tbody id="alltime-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+              <tr>
+                <td class="text-xs px-3 py-2">Funkar inte pga brister i Artportalens API</td>
+                <td class="px-3 py-2"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+</body>
+</html>
+
