@@ -11,11 +11,11 @@ The files in this directory are the Jinja 2 template files that implement the UI
 | head.html | The head element of all pages. | Done. |
 | header.html | The header, with the navigation bar, for all pages. | Done. |
 | footer.html | The footer for all pages. | Done. |
-| page-observations.html | The main observations page equivalent to a index.html page. | 
+| page-observations.html | The main page. | Done. |
 | page-maps.hmtl | The page with maps and birding locations. | TBD. |
 | page-lists.html | The page with various lists. | TBD. |
 | page-about.html | The page with information on the purpose, background etc. of the app. | TBD. |
 | page-changelog.html | The changelog page. | TBD. |
 | hx-observations-list.html | The main observations list, used by page-observations.hmtl. | Done. |
 
-We use Jinja **include** as well as **macro** and **import** statements to structure and organize the Jinja templates. We do not use **inheritance**.
+We use Jinja2 **include** as well as **macro** and **import** directives to structure and organize the Jinja2 templates. We do not use **inheritance**.

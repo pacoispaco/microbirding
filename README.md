@@ -51,40 +51,62 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
-Install the Tailwind CLI tool (chose the relevant binary for your OS and architecture):
+Install the Tailwind CLI tool, version 4 (chose the relevant binary for your OS and architecture):
 ```
 curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/download/v4.1.13/tailwindcss-linux-x64
 chmod +x tailwindcss-linux-x64
 mv tailwindcss-linux-x64 tailwindcss
 ```
-Note that the rest of this article; https://tailwindcss.com/blog/standalone-cli is invalid. The `tailwindcss init` command was removed in Tailwind 4.
 
-# Run and debug
+# API keys
 
-To run the app locally in development:
-```
-./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
-uvicorn main:app --reload
-```
-
-To build and then run the Docker image locally:
-```
-./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
-docker build -t microbirding-app 
-docker run --rm --name="sthlmbetong" -p 8000:8000 -e ARTPORTALEN_OBSERVATIONS_API_KEY=<SECRET-KEY> -e ARTPORTALEN_SPECIES_API_KEY=<SECRETKEY microbirding-app
-```
-
-You can skip regenerating the `./resources/tailwind.css` file if you haven't modified any CSS in the template files.
-
-# The apps
-
-There are two apps here. One is command line program `apget.py` which can get observations and info on species from the Artportalen Observations API and the Artportalen Species API. The other is a prototype web app interacts with the Artportalen API:s.
-
-The app requires two environment variables to be set in order to be able to access Artportalens API:s:
+Both the web app and the CLI app requires two environment variables to be set in order to be able to access Artportalens API:s:
  * ARTPORTALEN_SPECIES_API_KEY. For accessing the Artportalen Species API.
  * ARTPORTALEN_OBSERVATIONS_API_KEY. For accessing the Artportalen Observations API.
 
 You obtain these keys by registering at https://www.slu.se/artdatabanken/rapportering-och-fynd/oppna-data-och-apier/om-slu-artdatabankens-apier/
+
+# Build
+
+## Locally
+
+To build the app locally, you must regenerate to TailwindCSS file if you've edited CSS classes in the template files:
+```
+./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
+```
+
+To build the Docker image locally:
+```
+docker build -t microbirding-app
+```
+
+Before comitting and pushing code, you should lint your Python code:
+```
+flake8 --config flake8.conf
+```
+Flake8 errors, will stop the CI/CD build.
+
+## CI/CD-pipeline using Github Actions
+
+The app is built, version-tagged and published as a Docker image using Github actions, every time code is pushed to Github and the main trunk. See https://github.com/pacoispaco/microbirding/blob/main/.github/workflows/cicd-dev.yml for details.
+
+# Run and debug
+
+To run the app locally and automatically restart the app on changed files:
+```
+uvicorn main:app --reload
+```
+
+To run the app locally as a Docker container:
+```
+docker run --rm --name="sthlmbetong" -p 8000:8000 -e ARTPORTALEN_OBSERVATIONS_API_KEY=<SECRET-KEY> -e ARTPORTALEN_SPECIES_API_KEY=<SECRETKEY microbirding-app
+```
+
+Remember that if you change CSS classes in the template files, you need to regenerate the `tailwind.css` file.
+
+# The apps
+
+There are two apps here. One is command line program `apget.py` which can get observations and info on species from the Artportalen Observations API and the Artportalen Species API. The other is a prototype web app interacts with the Artportalen API:s.
 
 Both programs use the same Python module "artportalen" for interacting with Artportalens API:s.
 
@@ -116,4 +138,4 @@ The app is meant to packaged as a Docker image, and run as a Docker container.
 
 The web app is implemented in the file **main.py**. It imports the module **artportalen.py** which has methods for accessing the Artportalen API:s. The **main.py** file has functions for serving both the web application and the HTMX resources.
 
-For serving the HTML and HTMX resources, the **main.py** file uses Jinja templates that live in the directory **templates**. The main application Jinja file **index.html** includes the Tailwind CSS files needed for styling the app.
+For serving the HTML and HTMX resources, the **main.py** file uses Jinja2 templates that live in the directory **templates**.
