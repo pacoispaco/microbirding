@@ -25,7 +25,7 @@ The first proof-of-concept prototype release.
 ### Miscellaneous
 
 - [x] Set up reasonably good logging.
-- [x] Set up server with Docker, Portainer and Traefik for running a public dev environment with Let's encrypt cetificates.
+- [x] Set up server with Docker, Portainer and Traefik for running a public dev environment with Let's encrypt certificates.
 - [x] Write a Dockerfile for the web app.
 - [x] Set up application code structure and a CI/CD-pipeline.
 - [x] Decide on tech stack for web app; Python, FastAPI, HTMX, TailwindCSS and Docker.
