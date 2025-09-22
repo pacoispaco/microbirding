@@ -1,6 +1,6 @@
 # README file for the Microbirding SthlmBetong app
 
-The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm with an web app for getting bird observations from Artportalens API and:
+The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm with a web app for getting bird observations from Artportalens API and:
 
   * Keeping track of bird observations done within the central parts of Stockholm.
   * Keeping tack of year and total lists for individual birders for that area, as well as keeping a total list of all birds seen in the area.
@@ -16,16 +16,16 @@ Eventually it should support multiple different microbirding and urban locations
 
 # Design and implementation
 
-This web app is meant to be a clean HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It will eventually need to persist some data which could be stored in a SQLite or MongoDB database. Due to rate limiting and performance issues with the Artportalen API:s it will probably need to have a caching implementation, probably using Valkey/Redis.
+This web app is a HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It will eventually need to persist some data which could be stored in a SQLite or MongoDB database. Due to rate limiting and performance issues with the Artportalen API:s it will probably need to have a caching implementation, probably using Valkey/Redis.
 
-It is meant to use the Swedish Artportalen APIs to get information on registered observations and species data. However due to limitations in the Artportalen Observations API it is currently not possible to develop an app like this with all the desired features.
+It uses the Swedish Artportalen APIs to get information on registered observations and species data. However due to limitations in the Artportalen Observations API there are also limitations in what this app will be able to do.
 
 There are two major blockers:
 
-  * The Artportalen API provides only get the presentation name of observers, not unique observer id:s. That means, for common names, like "Anders Svensson", it is not possible to know with certainty who the observer is.
-  * Observations of more rare birds in Artportalen, are grouped in a main observation and then subobservations made of the same bird by other observers. The API only provides information on the main observation, not subobservations. That means that some observations of rare birds made by some observers cannot be retrieved from the API.
+  * The Artportalen API only provides the presentation name of observers, and not a unique observer id. That means, for common names, like "Anders Svensson", it is not possible to know with certainty who the observer is.
+  * Observations of more rare birds in Artportalen, are grouped in a main observation and then sub-observations made of the same bird by other observers. The API only provides information on the main observation, not subobservations. That means that some observations of rare birds made by some observers cannot be retrieved from the API.
 
-Apart from those two blockers there is a limitation in the ability in searching for observations, which even if the two blockers were removed (and implemented), makes it very cumbersome to compile lists. There are also challenges with handling personal data in the current implementation of both Artportalen and the Artportalen API in a GDPR compliant way. These challenges also makes it impossible for clients of the API to handle personal data in a GDPR compliant way.
+Apart from those two blockers there is a limitation in the ability in searching for observations, which even if the two blockers were removed (and implemented), makes it very cumbersome to compile lists. There are also challenges with handling personal data in the current implementation of both Artportalen and the Artportalen API in a GDPR compliant way. These challenges also makes it difficult for clients of the API to handle personal data in a GDPR compliant way.
 
 You can read more about the technical design, implementation ideas and the current blockers and problems with Artportalen in design.md.
 
