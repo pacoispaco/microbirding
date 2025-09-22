@@ -16,7 +16,7 @@ Eventually it should support multiple different microbirding and urban locations
 
 # Design and implementation
 
-This web app is meant to be a clean HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It would eventually need to persist some data which could be stored in a SQLite or MongoDB database. 
+This web app is meant to be a clean HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It will eventually need to persist some data which could be stored in a SQLite or MongoDB database. Due to rate limiting and performance issues with the Artportalen API:s it will probably need to have a caching implementation, probably using Valkey/Redis.
 
 It is meant to use the Swedish Artportalen APIs to get information on registered observations and species data. However due to limitations in the Artportalen Observations API it is currently not possible to develop an app like this with all the desired features.
 
