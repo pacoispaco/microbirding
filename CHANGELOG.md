@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the webapp are documented in this file.
+All notable changes to the Microbirding/SthlmBetong web app are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
@@ -10,17 +10,17 @@ The first proof-of-concept prototype release.
 
 ### Added
 
-- [ ] Short description of the app and personal data policy on the "Om" page.
-- [ ] Simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
-- [ ] Map showing the geographical extent of SthlmBetong on the "Karta" page.
+- [ ] Add short description of the app and personal data policy on the "Om" page.
+- [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
+- [ ] Add simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
 - [ ] Handle Artportalens status code 429 (Too many requests).
-- [ ] Responsive layout for smaller (mobile) screens.
+- [ ] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
-- [x] Dark mode.
-- [x] Navigate to previous and next days observations.
-- [x] Include links to observation in Artportalen.
+- [x] Add dark mode.
+- [x] Add navigation to previous and next days observations.
+- [x] Include links to each observation in Artportalen.
 - [x] Show basic information on each observation.
-- [x] Main app page shows observations from Artportalen, for today and within the SthlmBetong geopolygon area.
+- [x] Add main app page that shows observations from Artportalen, for today and within the SthlmBetong geopolygon area.
 
 ### Miscellaneous
 
