@@ -22,6 +22,7 @@ from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
 import artportalen
+from mistune_tasklist_renderer import mistune_markdown_instance
 
 # Constants
 secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
@@ -459,6 +460,26 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                                          "observations": obs["observations"],
                                          "release": release_tag(),
                                          "build_datetime": build_datetime_tag()})
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+@app.get("/changelog", response_class=HTMLResponse)
+def get_changelog(request: Request):
+    """The changelog page page (page-changelog.html) displaying the version and changelog history
+       of the app."""
+    tic = time.perf_counter_ns()
+
+    markdown = mistune_markdown_instance(disabled=True)
+
+    with open("./CHANGELOG.md") as f:
+        html = markdown(f.read())
+    result = templates.TemplateResponse("page-changelog.html",
+                                        {"request": request,
+                                         "changelog_html": html})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)

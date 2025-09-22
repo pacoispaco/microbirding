@@ -4,3 +4,4 @@ requests
 fastapi[standard]
 pydantic-settings
 uvicorn
+mistune

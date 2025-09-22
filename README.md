@@ -90,6 +90,8 @@ Flake8 errors will stop the CI/CD build.
 
 The app is built, version-tagged and published as a Docker image using Github actions, every time code is pushed to Github and the main trunk. See https://github.com/pacoispaco/microbirding/blob/main/.github/workflows/cicd-dev.yml for details.
 
+The [CHANGELOG.md](./CHANGELOG.md) file contains information on the released versions of the web app and changes to every release. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html). The file is used by the main build script (./.github/workflows/cicd-dev.yml), which will extract the release version number in the first "double hashmark title" with square brackets at the top of this Markdown-file. It will use that to tag the built Docker image with the extracted release version number and the latest git commit sha. It will also create a **version tag file**  containing that tag, and include that in the Docker image so the app can show the build version.
+
 # Run and debug
 
 To run the app locally and automatically restart the app on changed files:

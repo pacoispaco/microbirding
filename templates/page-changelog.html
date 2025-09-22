@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+  <!-- Main -->
+  <main class="flex-1 w-full px-3 sm:px-4 lg:px-6 py-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+
+  <!-- Changelog markdown file is presented below -->
+  <section id="changelog" class="prose prose-slate dark:prose-invert md:col-span-3 mx-auto">
+    {{ changelog_html | safe }}
+  </section>
+
+  </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+</body>
+</html>

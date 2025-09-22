@@ -9,3 +9,14 @@
 @theme {
   /* TBD */
 }
+
+/* optional: narrower measure for long docs */
+.prose { max-width: 70ch; }
+
+/* neat, non-interactive checkboxes */
+.prose input[type="checkbox"]{
+  width: 1rem; height: 1rem;
+  margin-right: 0.5rem;
+  accent-color: currentColor; /* uses text color for the tick */
+}
+.prose input[type="checkbox"][disabled]{ cursor: default; }

@@ -38,10 +38,12 @@ COPY --from=builder /install /usr/local
 # Copy app source
 COPY httplogs.py .
 COPY artportalen.py .
+COPY mistune_tasklist_renderer.py .
 COPY main.py .
 COPY conf/ ./conf
 COPY templates ./templates
 COPY resources ./resources
+COPY CHANGELOG.md .
 
 # Expose port
 EXPOSE 8000
