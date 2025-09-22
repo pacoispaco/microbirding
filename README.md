@@ -84,7 +84,7 @@ Before comitting and pushing code, you should lint your Python code:
 ```
 flake8 --config flake8.conf
 ```
-Flake8 errors, will stop the CI/CD build.
+Flake8 errors will stop the CI/CD build.
 
 ## CI/CD-pipeline using Github Actions
 
@@ -106,9 +106,9 @@ Remember that if you change CSS classes in the template files, you need to regen
 
 # The apps
 
-There are two apps here. One is command line program `apget.py` which can get observations and info on species from the Artportalen Observations API and the Artportalen Species API. The other is a prototype web app interacts with the Artportalen API:s.
+There are two apps in this repo. One is command line program `apget.py` which can get observations and info on species from the Artportalen Observations API and the Artportalen Species API. The other is a prototype web app interacts with the Artportalen API:s.
 
-Both programs use the same Python module "artportalen" for interacting with Artportalens API:s.
+Both programs use the same Python module **artportalen.py** for interacting with Artportalens API:s.
 
 ## The apget app
 
@@ -129,13 +129,8 @@ To get the latest 200 observations in the SthlmBetong area:
 
 # The web app
 
-To run the web app locally:
-```
-uvicorn main:app --reload
-```
+The web app is meant to packaged as a Docker image, and run as a Docker container.
 
-The app is meant to packaged as a Docker image, and run as a Docker container.
-
-The web app is implemented in the file **main.py**. It imports the module **artportalen.py** which has methods for accessing the Artportalen API:s. The **main.py** file has functions for serving both the web application and the HTMX resources.
+It is implemented in the file **main.py**. It imports the module **artportalen.py** which has methods for accessing the Artportalen API:s. The **main.py** file has functions for serving both the web application and the HTMX resources.
 
 For serving the HTML and HTMX resources, the **main.py** file uses Jinja2 templates that live in the directory **templates**.
