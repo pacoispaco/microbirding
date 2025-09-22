@@ -13,6 +13,7 @@ from mistune import HTMLRenderer, Markdown
 
 _TASK = re.compile(r'^\s*\[(?P<mark>[ xX])\]\s+')
 
+
 class TasklistRenderer(HTMLRenderer):
     def __init__(self, *, disabled: bool = True, **kwargs):
         super().__init__(**kwargs)
