@@ -31,6 +31,7 @@ secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
 # build script(s).
 RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
+GIT_HASH_FILE = "./GIT_HASH_FILE"
 
 
 logger = logging.getLogger(__name__)
@@ -83,6 +84,15 @@ def build_datetime_tag():
             return f.read().strip()
     else:
         return "No BUILD_DATETIME_FILE found"
+
+
+def git_hash_tag():
+    """Return the git hash tag of the git commit used to build this Docker image."""
+    if os.path.exists(GIT_HASH_FILE):
+        with open(GIT_HASH_FILE) as f:
+            return f.read().strip()
+    else:
+        return "No GIT_HASH_FILE found"
 
 
 def file_secret_as_env(var_name: str):
@@ -458,8 +468,9 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                                          "date": obs["date"],
                                          "next_date": obs["next_date"],
                                          "observations": obs["observations"],
-                                         "release": release_tag(),
-                                         "build_datetime": build_datetime_tag()})
+                                         "version_info": {"release": release_tag(),
+                                                          "built": build_datetime_tag(),
+                                                          "git_hash": git_hash_tag()}})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -479,7 +490,10 @@ def get_changelog(request: Request):
         html = markdown(f.read())
     result = templates.TemplateResponse("page-changelog.html",
                                         {"request": request,
-                                         "changelog_html": html})
+                                         "changelog_html": html,
+                                         "version_info": {"release": release_tag(),
+                                                          "built": build_datetime_tag(),
+                                                          "git_hash": git_hash_tag()}})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)

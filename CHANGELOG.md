@@ -4,7 +4,9 @@ All notable changes to the Microbirding/SthlmBetong web app are documented in th
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.1-unreleased]
+## [0.0.1-dev]
+
+**Date: 2025-09-23**
 
 The first proof-of-concept prototype release.
 
@@ -13,7 +15,7 @@ The first proof-of-concept prototype release.
 - [ ] Add short description of the app and personal data policy on the "Om" page.
 - [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [ ] Add simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
-- [ ] Handle Artportalens status code 429 (Too many requests).
+- [ ] Handle Artportalens HTTP status code 429 (Too many requests).
 - [ ] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
 - [x] Add dark mode.

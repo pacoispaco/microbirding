@@ -48,14 +48,18 @@ COPY CHANGELOG.md .
 # Expose port
 EXPOSE 8000
 
-# Add the release tag file. This assumes that you or the build script has the environment
-# variable set and that the docker build command uses the argument:
-# --build-arg RELEASE_TAG="$RELEASE_TAG" --build-arg BUILD_DATETIME="$BUILD_DATETIME"
+# Add the release tag file, the build datetime file and the Git hash file.
+# This assumes that the build command passes the following build arguments to Docker build:
+# --build-arg RELEASE_TAG="$RELEASE_TAG"
+# --build-arg BUILD_DATETIME="$BUILD_DATETIME"
+# --build-arg GIT_HASH=$(git rev-parse HEAD)
 ARG RELEASE_TAG
 ARG BUILD_DATETIME
+ARG GIT_HASH
 # Create the file that the app will read
 RUN printf '%s\n' "${RELEASE_TAG}" > /app/RELEASE_TAG_FILE
 RUN printf '%s\n' "${BUILD_DATETIME}" > /app/BUILD_DATETIME_FILE
+RUN printf '%s\n' "${GIT_HASH}" > /app/GIT_HASH_FILE
 
 # Create and run as a non-root user
 RUN useradd --create-home appuser
