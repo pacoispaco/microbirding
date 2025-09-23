@@ -68,7 +68,7 @@ jobs:
       - name: Build, tag and push image
         run: |
           # Get first changelog release header and extract the latest release version
-          VERSION=$(grep -w "## " -m 1 CHANGELOG.md | sed -E 's/## \[([^]]+)\].*/\1/')
+          VERSION=$(grep -m1 '^## ' CHANGELOG.md | sed 's/^## //')
           echo "Building version: $VERSION"
           # Get the build datetime
           BUILD_DATETIME=$(date +"%Y-%m-%d %H:%M")
@@ -83,6 +83,7 @@ jobs:
             TAG_MOVING="${IMAGE_NAME}:rc"
           else:
             TAG_MOVING="${IMAGE_NAME}:latest"
+          fi
           TAG_FIXED="${IMAGE_NAME}:${VERSION}"
           RELEASE_TAG="${VERSION}"
           echo "Tagging as Docker image with: $TAG_FIXED and $TAG_MOVING"

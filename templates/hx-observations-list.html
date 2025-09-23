@@ -3,7 +3,7 @@
 
     <!-- Section header with date links -->
     <div class="p-4 pb-2 pt-1 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
-      <h2 class="text-base font-semibold">Obsar {{ year }}</h2>
+      <h2 class="text-sm font-semibold">Obsar {{ year }}</h2>
       {% if is_today %}
         <button
           hx-get="/hx/observations-section?date={{ previous_date }}"
@@ -11,7 +11,7 @@
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-base px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
 
           &#x27E8; Dagen före
 
@@ -21,7 +21,7 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
           </svg>
         </button>
-        <span class="text-base">{{ day }}</span>
+        <span class="text-sm">{{ day }}</span>
       {% else %}
         <button
           hx-get="/hx/observations-section?date={{ previous_date }}"
@@ -29,7 +29,7 @@
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-base px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
 
           &#x27E8; Dagen före
 
@@ -39,14 +39,14 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
           </svg>
         </button>
-        <span class="text-base">{{ day }}</span>
+        <span class="text-sm">{{ day }}</span>
         <button
           hx-get="/hx/observations-section?date={{ next_date }}"
           hx-push-url="?date={{ next_date }}"
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-base px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
 
           Dagen efter &#x27E9
 
@@ -63,11 +63,11 @@
     <div>
       <!-- Desktop header (hidden on mobile) -->
       <div class="hidden sm:grid sm:grid-cols-[3fr_4fr_1fr_3fr_1fr] bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-        <div class="text-base text-left px-3 py-2">Art</div>
-        <div class="text-base text-left px-3 py-2">Lokal</div>
-        <div class="text-base text-left px-3 py-2">Tid</div>
-        <div class="text-base text-left px-3 py-2">Observatör</div>
-        <div class="text-base text-left px-3 py-2">Källa</div>
+        <div class="text-sm text-left px-3 py-2">Art</div>
+        <div class="text-sm text-left px-3 py-2">Lokal</div>
+        <div class="text-sm text-left px-3 py-2">Tid</div>
+        <div class="text-sm text-left px-3 py-2">Observatör</div>
+        <div class="text-sm text-left px-3 py-2">Källa</div>
       </div>
 
       <!-- Items -->
@@ -84,9 +84,9 @@
                 <div class="sm:flex sm:items-center">
                   <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Art</div>
                   {% if o.taxa_summary %}
-                    <div class="text-base">{{ o.taxa_summary }}</div>
+                    <div class="text-sm">{{ o.taxa_summary }}</div>
                   {% else %}
-                    <div class="text-base italic text-red-600">
+                    <div class="text-sm italic text-red-600">
                       Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                     </div>
                   {% endif %}
@@ -96,9 +96,9 @@
                 <div class="sm:flex sm:items-center">
                   <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Lokal</div>
                   {% if o.taxa_summary %}
-                    <div class="text-base">{{ o.locality }}</div>
+                    <div class="text-sm">{{ o.locality }}</div>
                   {% else %}
-                    <div class="text-base italic text-red-600">
+                    <div class="text-sm italic text-red-600">
                       Failed to get locality, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                     </div>
                   {% endif %}
@@ -107,20 +107,20 @@
                 <!-- Tid -->
                 <div class="sm:flex sm:items-center">
                   <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Tid</div>
-                  <div class="text-base">{{ o.time }}</div>
+                  <div class="text-sm">{{ o.time }}</div>
                 </div>
 
                 <!-- Observatör -->
                 <div class="sm:flex sm:items-center">
                   <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Observatör</div>
-                  <div class="text-base">{{ o.observers }}</div>
+                  <div class="text-sm">{{ o.observers }}</div>
                 </div>
 
                 <!-- Källa -->
                 <div class="sm:flex sm:items-center">
                   <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Källa</div>
                   {% if o.data_source_observation_url %}
-                    <div class="text-base">
+                    <div class="text-sm">
                       {% if o.data_source_observation_url.startswith("http") %}
                         <a href="{{ o.data_source_observation_url }}" target="_blank"
                            class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
@@ -131,7 +131,7 @@
                       {% endif %}
                     </div>
                   {% else %}
-                    <div class="text-base italic text-red-600">
+                    <div class="text-sm italic text-red-600">
                       Failed to get source info, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                     </div>
                   {% endif %}
