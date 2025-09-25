@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.0.1-dev
 
-**Date: 2025-09-23**
+**Date: 2025-09-25**
 
 The first proof-of-concept prototype release.
 
@@ -16,7 +16,7 @@ The first proof-of-concept prototype release.
 - [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [ ] Add simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
 - [ ] Handle Artportalens HTTP status code 429 (Too many requests).
-- [ ] Fix responsive layout for smaller (mobile) screens.
+- [x] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
 - [x] Add dark mode.
 - [x] Add navigation to previous and next days observations.
