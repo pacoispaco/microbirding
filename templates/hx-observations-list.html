@@ -1,9 +1,9 @@
 <section id="observations-section" class="md:col-span-2">
   <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
 
-    <!-- Section header with date links -->
+    <!-- Navigation header with date links -->
     <div class="p-4 pb-2 pt-1 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
-      <h2 class="text-sm font-semibold">Obsar {{ year }}</h2>
+      <h2 class="text-sm font-semibold">{{ year }}</h2>
       {% if is_today %}
         <button
           hx-get="/hx/observations-section?date={{ previous_date }}"
@@ -11,7 +11,7 @@
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 active:bg-neutral-200 dark:active:bg-neutral-600">
 
           &#x27E8; Dagen före
 
@@ -29,7 +29,7 @@
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 active:bg-neutral-200 dark:active:bg-neutral-600">
 
           &#x27E8; Dagen före
 
@@ -46,9 +46,9 @@
           hx-trigger="click"
           hx-target="#observations-section"
           hx-disabled-elt="this"
-          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          class="text-sm px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 active:bg-neutral-200 dark:active:bg-neutral-600">
 
-          Dagen efter &#x27E9
+          Dagen efter &#x27E9;
 
           <!-- inline spinner (shown only while request runs) -->
           <svg class="htmx-indicator animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -59,75 +59,52 @@
       {% endif %}
     </div>
 
-    <!-- Section list with observations (responsive) -->
-    <div>
-      <!-- Desktop header (hidden on mobile) -->
-      <div class="hidden sm:grid sm:grid-cols-[3fr_4fr_1fr_3fr_1fr] bg-neutral-50 dark:bg-neutral-800/70 border-b border-neutral-200 dark:border-neutral-700">
-        <div class="text-sm text-left px-3 py-2">Art</div>
-        <div class="text-sm text-left px-3 py-2">Lokal</div>
-        <div class="text-sm text-left px-3 py-2">Tid</div>
-        <div class="text-sm text-left px-3 py-2">Observatör</div>
-        <div class="text-sm text-left px-3 py-2">Källa</div>
-      </div>
+    <!-- Table with observations for larger than mobile displays -->
+    <table class="hidden md:table w-full table-fixed border-collapse divide-y divide-neutral-200 dark:divide-neutral-700">
+      <colgroup>
+        <col class="w-[16%]">
+        <col class="w-[24%]">
+        <col class="w-[10%]">
+        <col class="w-[20%]">
+        <col class="w-[22%]">
+        <col class="w-[6%]">
+      </colgroup>
 
-      <!-- Items -->
-      <ul class="divide-y divide-neutral-200 dark:divide-neutral-700">
+      <thead class="table-header-group">
+        <tr>
+          <th class="text-sm text-left px-3 py-2">Art</th>
+          <th class="text-sm text-left px-3 py-2">Detaljer</th>
+          <th class="text-sm text-left px-3 py-2">Tid</th>
+          <th class="text-sm text-left px-3 py-2">Lokal</th>
+          <th class="text-sm text-left px-3 py-2">Observatör</th>
+          <th class="text-sm text-left px-3 py-2">Källa</th>
+        </tr>
+      </thead>
+
+      <tbody class="table-row-group text-sm divide-y divide-neutral-200 dark:divide-neutral-700 [&>tr>td]:px-3 [&>tr>td]:py-2">
         {% if observations %}
           {% if observations[0] == "Failed" %}
-            <li class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
+             <li class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
               Failed to get observations, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
             </li>
           {% else %}
             {% for o in observations %}
-              <li class="grid gap-1 px-3 py-2 bg-neutral-50 dark:bg-neutral-800/70 sm:grid-cols-[3fr_4fr_1fr_3fr_1fr]">
-                <!-- Art -->
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Art</div>
-                  {% if o.taxa_summary %}
-                    <div class="text-sm">{{ o.taxa_summary }}</div>
-                  {% else %}
-                    <div class="text-sm italic text-red-600">
-                      Failed to get taxa summary, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
-                    </div>
-                  {% endif %}
-                </div>
-
-                <!-- Lokal -->
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Lokal</div>
-                  {% if o.taxa_summary %}
-                    <div class="text-sm">{{ o.locality }}</div>
-                  {% else %}
-                    <div class="text-sm italic text-red-600">
-                      Failed to get locality, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
-                    </div>
-                  {% endif %}
-                </div>
-
-                <!-- Tid -->
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Tid</div>
-                  <div class="text-sm">{{ o.time }}</div>
-                </div>
-
-                <!-- Observatör -->
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Observatör</div>
-                  <div class="text-sm">{{ o.observers }}</div>
-                </div>
-
-                <!-- Källa -->
-                <div class="sm:flex sm:items-center">
-                  <div class="sm:hidden text-[11px] uppercase tracking-wide text-neutral-500 dark:text-neutral-400 mb-0.5">Källa</div>
+              <tr>
+                <td class="truncate">{{ o.name }}</td>
+                <td class="truncate">{{ o.taxa_summary }}</td>
+                <td class="truncate">{{ o.time }}</td>
+                <td class="truncate">{{ o.locality }}</td>
+                <td class="truncate">{{ o.observers }}</td>
+                <td class="truncate">
                   {% if o.data_source_observation_url %}
                     <div class="text-sm">
                       {% if o.data_source_observation_url.startswith("http") %}
                         <a href="{{ o.data_source_observation_url }}" target="_blank"
                            class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                          {{ o.data_source }}
+                          {{ o.data_source_abbreviation }}
                         </a>
                       {% else %}
-                        {{ o.data_source }} ({{ o.data_source_observation_url }})
+                        {{ o.data_source_abbreviation }} ({{ o.data_source_observation_url }})
                       {% endif %}
                     </div>
                   {% else %}
@@ -135,12 +112,48 @@
                       Failed to get source info, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
                     </div>
                   {% endif %}
-                </div>
-              </li>
+                </td>
+              </tr>
             {% endfor %}
           {% endif %}
         {% endif %}
-      </ul>
+      </tbody>
+    </table>
+
+    <!-- Grid with observations for smaller mobile displays -->
+    <div class="grid grid-cols-1 md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
+        
+      {% if observations %}
+        {% if observations[0] == "Failed" %}
+          <div class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
+            Failed to get observations, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+          </div>
+        {% else %}
+          {% for o in observations %}
+            <div class="p-3 text-sm">
+              <div class="grid [grid-template-columns:38%_37%_25%]">
+                <div>{{ o.name }}</div>
+                <div class="truncate">{{ o.taxa_summary }}</div>
+                <div class="text-right">{{ o.time }}</div>
+              </div>
+              <div class="grid [grid-template-columns:45%_45%_10%] pt-1 text-xs">
+                <div class="truncate pl-2">{{ o.locality }}</div>
+                <div class="truncate">{{ o.observers }}</div>
+                <div class="text-right">
+                  {% if o.data_source_observation_url.startswith("http") %}
+                    <a href="{{ o.data_source_observation_url }}" target="_blank"
+                       class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                      {{ o.data_source_abbreviation }}
+                    </a>
+                  {% else %}
+                    {{ o.data_source_abbreviation }} ({{ o.data_source_observation_url }})
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endif %}
     </div>
 
   </div>

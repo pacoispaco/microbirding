@@ -203,8 +203,7 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
     return observations
 
 
-def summarized_taxa_info(name,
-                         is_redlisted=False,
+def summarized_taxa_info(is_redlisted=False,
                          redlist_category=None,
                          sex=None,
                          number=None,
@@ -212,7 +211,7 @@ def summarized_taxa_info(name,
                          activity=None):
     """Formatted string with taxa info on observation, for Jinja2 to use in UI presentation.
        Eg. 'Östersjötrut, 1 födosökande'."""
-    result = f"{name}"
+    result = ""
     if number or sex or age or activity:
         result += ","
     if number:
@@ -265,6 +264,12 @@ def transformed_observations(artportalen_observations):
 
         # Establish dataset name, eg. "Artportalen", "iNaturalist" etc.
         info["data_source"] = o["datasetName"]
+        if info["data_source"] == "Artportalen":
+            info["data_source_abbreviation"] = "AP"
+        elif info["data_source"] == "iNaturalist":
+            info["data_source_abbreviation"] = "IN"
+        else:
+            info["data_source_abbreviation"] = info["data_source"]
 
         # Establish id in data set
         info["id"] = o["occurrence"]["occurrenceId"]
@@ -279,7 +284,7 @@ def transformed_observations(artportalen_observations):
                                extra=extra)
             else:
                 info["occurrence"] = obs["occurrence"]
-                locality = obs["location"]["locality"]
+                locality = obs["location"]["locality"].split(",")[0]
                 is_redlisted = obs["taxon"]["attributes"]["isRedlisted"]
                 if is_redlisted:
                     redlist_category = obs["taxon"]["attributes"]["redlistCategory"]
@@ -290,7 +295,7 @@ def transformed_observations(artportalen_observations):
                 info["isRedlisted"] = is_redlisted
                 info["redlistCategory"] = redlist_category
 
-                # Set number of indviduals, sex, age and activity
+                # Set number of individuals, sex, age and activity
                 info["number"] = obs["occurrence"]["organismQuantity"]
                 if "sex" in obs["occurrence"]:
                     sex = obs["occurrence"]["sex"]["id"]
@@ -308,8 +313,7 @@ def transformed_observations(artportalen_observations):
                     info["activity"] = obs["occurrence"]["activity"]["value"]
                 else:
                     info["activity"] = None
-                info["taxa_summary"] = summarized_taxa_info(info["name"],
-                                                            is_redlisted=is_redlisted,
+                info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
                                                             redlist_category=redlist_category,
                                                             number=info["number"],
                                                             age=info["age"],
@@ -331,8 +335,7 @@ def transformed_observations(artportalen_observations):
             info["age"] = None
             info["activity"] = None
             # There's no info in these records about redlisting, sof or now we just ignore it
-            info["taxa_summary"] = summarized_taxa_info(info["name"],
-                                                        is_redlisted=False,
+            info["taxa_summary"] = summarized_taxa_info(is_redlisted=False,
                                                         redlist_category=None,
                                                         number=info["number"],
                                                         age=info["age"],
@@ -362,8 +365,7 @@ def transformed_observations(artportalen_observations):
             info["sex"] = None
             info["age"] = None
             info["activity"] = None
-            info["taxa_summary"] = summarized_taxa_info(info["name"],
-                                                        is_redlisted=is_redlisted,
+            info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
                                                         redlist_category=redlist_category,
                                                         number=info["number"],
                                                         age=info["age"],
@@ -411,7 +413,7 @@ def observations_for_presentation(observations_date):
     else:
         # Transform the observations to representations suitable for Jinja2
         observations = transformed_observations(observations)
-    return {"day": observations_date.strftime('%A, %-d %B').capitalize(),
+    return {"day": observations_date.strftime('%A, %-d/%-m').capitalize(),
             "is_today": observations_date == dt.today(),
             "year": observations_date.year,
             "previous_date": previous_date,
