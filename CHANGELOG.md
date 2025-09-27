@@ -27,11 +27,11 @@ The first proof-of-concept prototype release.
 ### Miscellaneous
 
 - [x] Set up reasonably good logging.
-- [x] Set up server with Docker, Portainer and Traefik for running a public dev environment with Let's encrypt certificates.
+- [x] Set up server with [Docker](https://www.docker.com/), [Portainer](https://www.portainer.io/) and [Traefik](https://traefik.io/traefik) for running a public dev environment with [Let's encrypt](https://letsencrypt.org/) certificates, on [DigitalOcean](https://www.digitalocean.com/).
 - [x] Write a Dockerfile for the web app.
 - [x] Set up application code structure and a CI/CD-pipeline.
-- [x] Decide on tech stack for web app; Python, FastAPI, HTMX, TailwindCSS and Docker.
+- [x] Decide on tech stack for web app; [Python](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/), [HTMX](https://htmx.org/), [TailwindCSS](https://tailwindcss.com/) and [Docker](https://tailwindcss.com/).
 - [x] Implement a simple CLI-program for trying out the Artportalen API:s.
 - [x] Fix a geopolygon for the SthlmBetong area.
-- [x] Set up Github repo.
-- [x] Register a developer account and obtain API keys from Artportalen.
+- [x] Set up [Github](https://github.com/) repo.
+- [x] Register a developer account and obtain [API keys from Artportalen](https://api-portal.artdatabanken.se/).
