@@ -98,14 +98,10 @@
                 <td class="truncate">
                   {% if o.data_source_observation_url %}
                     <div class="text-sm">
-                      {% if o.data_source_observation_url.startswith("http") %}
-                        <a href="{{ o.data_source_observation_url }}" target="_blank"
-                           class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-                          {{ o.data_source_abbreviation }}
-                        </a>
-                      {% else %}
-                        {{ o.data_source_abbreviation }} ({{ o.data_source_observation_url }})
-                      {% endif %}
+                      <a href="{{ o.data_source_observation_url }}" target="_blank"
+                         class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                        {{ o.data_source_abbreviation }}
+                      </a>
                     </div>
                   {% else %}
                     <div class="text-sm italic text-red-600">

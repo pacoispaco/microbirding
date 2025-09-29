@@ -189,7 +189,7 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
     sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
                                                     "coordinates": [polygon]}])
     sfilter.set_verification_status()
-    sfilter.set_output()
+    sfilter.set_output(fieldSet="Extended")
     sfilter.set_date(startDate=from_date,
                      endDate=to_date,
                      dateFilterType="OverlappingStartDateAndEndDate",
@@ -268,6 +268,8 @@ def transformed_observations(artportalen_observations):
             info["data_source_abbreviation"] = "AP"
         elif info["data_source"] == "iNaturalist":
             info["data_source_abbreviation"] = "IN"
+        elif info["data_source"] == "Bird ringing centre in Sweden, via GBIF":
+            info["data_source_abbreviation"] = "BR"
         else:
             info["data_source_abbreviation"] = info["data_source"]
 
@@ -276,57 +278,50 @@ def transformed_observations(artportalen_observations):
 
         # Get additional data on the observation from Artportalen
         if o["datasetName"] == "Artportalen":
-            obs = oapi.observation_by_id(info["id"], "Extended")
-            if not obs:
-                extra = {"info": "Failed to get data on individual observation",
-                         "id": f"{info['id']}"}
-                logger.warning("Call to main.transformed_observations()",
-                               extra=extra)
+            info["occurrence"] = o["occurrence"]
+            locality = o["location"]["locality"].split(",")[0]
+            is_redlisted = o["taxon"]["attributes"]["isRedlisted"]
+            if is_redlisted:
+                redlist_category = o["taxon"]["attributes"]["redlistCategory"]
             else:
-                info["occurrence"] = obs["occurrence"]
-                locality = obs["location"]["locality"].split(",")[0]
-                is_redlisted = obs["taxon"]["attributes"]["isRedlisted"]
-                if is_redlisted:
-                    redlist_category = obs["taxon"]["attributes"]["redlistCategory"]
-                else:
-                    redlist_category = None
+                redlist_category = None
 
-                # Set redlist info
-                info["isRedlisted"] = is_redlisted
-                info["redlistCategory"] = redlist_category
+            # Set redlist info
+            info["isRedlisted"] = is_redlisted
+            info["redlistCategory"] = redlist_category
 
-                # Set number of individuals, sex, age and activity
-                info["number"] = obs["occurrence"]["organismQuantity"]
-                if "sex" in obs["occurrence"]:
-                    sex = obs["occurrence"]["sex"]["id"]
-                    if not artportalen.vocabulary_sex[sex]["symbol"]:
-                        info["sex"] = sex
-                    else:
-                        info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
+            # Set number of individuals, sex, age and activity
+            info["number"] = o["occurrence"]["organismQuantity"]
+            if "sex" in o["occurrence"]:
+                sex = o["occurrence"]["sex"]["id"]
+                if not artportalen.vocabulary_sex[sex]["symbol"]:
+                    info["sex"] = sex
                 else:
-                    info["sex"] = None
-                if "lifeStage" in obs["occurrence"]:
-                    info["age"] = obs["occurrence"]["lifeStage"]["value"]
-                else:
-                    info["age"] = None
-                if "activity" in obs["occurrence"]:
-                    info["activity"] = obs["occurrence"]["activity"]["value"]
-                else:
-                    info["activity"] = None
-                info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
-                                                            redlist_category=redlist_category,
-                                                            number=info["number"],
-                                                            age=info["age"],
-                                                            sex=info["sex"],
-                                                            activity=info["activity"])
+                    info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
+            else:
+                info["sex"] = None
+            if "lifeStage" in o["occurrence"]:
+                info["age"] = o["occurrence"]["lifeStage"]["value"]
+            else:
+                info["age"] = None
+            if "activity" in o["occurrence"]:
+                info["activity"] = o["occurrence"]["activity"]["value"]
+            else:
+                info["activity"] = None
+            info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
+                                                        redlist_category=redlist_category,
+                                                        number=info["number"],
+                                                        age=info["age"],
+                                                        sex=info["sex"],
+                                                        activity=info["activity"])
 
-                # Set locality info
-                info["locality"] = locality
-                info["longitude"] = None
-                info["latitude"] = None
+            # Set locality info
+            info["locality"] = locality
+            info["longitude"] = None
+            info["latitude"] = None
 
-                # Set URL to observation info at source
-                info["data_source_observation_url"] = obs["occurrence"]["url"]
+            # Set URL to observation info at source
+            info["data_source_observation_url"] = o["occurrence"]["url"]
 
         elif o["datasetName"] == "iNaturalist":
             # Set number of indviduals, sex, age and activity
@@ -351,8 +346,6 @@ def transformed_observations(artportalen_observations):
             info["data_source_observation_url"] = o["occurrence"]["occurrenceId"]
 
         elif o["datasetName"] == "Bird ringing centre in Sweden, via GBIF":
-            obs = oapi.observation_by_id(info["id"], "Extended")
-
             # No info on observers
             info["observers"] = ""
 
@@ -361,7 +354,7 @@ def transformed_observations(artportalen_observations):
             info["redlistCategory"] = redlist_category
 
             # Set number of indviduals, sex, age and activity
-            info["number"] = obs["occurrence"]["individualCount"]
+            info["number"] = o["occurrence"]["individualCount"]
             info["sex"] = None
             info["age"] = None
             info["activity"] = None

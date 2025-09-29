@@ -74,8 +74,8 @@ EXAMPLE_SEARCH_FILTER_STR = """{
     },
     "verificationStatus": "BothVerifiedAndNotVerified",
     "output": {
-        "fieldSet": "Minimum",
-        "fields": []
+        "fieldSet": "AllWithValues",
+        "fields": [modified]
     }
 }"""
 
