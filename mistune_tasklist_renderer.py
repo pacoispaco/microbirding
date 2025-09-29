@@ -1,4 +1,5 @@
-"""Minimal task-list support for Mistune 3.x
+"""Minimal task-list support for Mistune 3.x. This is used to render the CHANGELOG.md
+   file as HTML with nicer layout for checkboxes.
 
 Turns:
   - [x] Done
