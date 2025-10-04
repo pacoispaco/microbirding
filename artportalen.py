@@ -5,9 +5,12 @@ Module for interacting with Artportalens API.
 from __future__ import annotations
 import logging
 import requests
-from urllib3.exceptions import HTTPError
+from requests.exceptions import HTTPError
 import json
 from datetime import datetime
+from tenacity import (
+    retry, stop_after_attempt, wait_exponential,
+    retry_if_exception, before_sleep_log)
 import httplogs
 
 # Constants
@@ -80,6 +83,15 @@ EXAMPLE_SEARCH_FILTER_STR = """{
 }"""
 
 logger = logging.getLogger(__name__)
+
+
+def _is_429_http_error(e: Exception):
+    """True if the exception `e` is an HTTPError with status 429."""
+    return (
+        isinstance(e, HTTPError)
+        and getattr(e, "response", None) is not None
+        and getattr(e.response, "status_code", None) == 429
+    )
 
 
 class Taxon:
@@ -341,6 +353,13 @@ class ObservationsAPI:
         else:
             return None
 
+    @retry(
+        retry=retry_if_exception(_is_429_http_error),
+        stop=stop_after_attempt(5),
+        wait=wait_exponential(multiplier=1, min=1, max=31),
+        before_sleep=before_sleep_log(logger, logging.WARNING),
+        reraise=True
+    )
     def observations(self, searchFilter: SearchFilter,
                      skip: int = 0,
                      take: int = 100,  # Maximum is 1000
@@ -382,20 +401,29 @@ class ObservationsAPI:
                                  message="HTTP request to Observations API",
                                  request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
             self.last_response = r
+
+            # If the request triggered the rate limit, raise HTTPError tied to this response
+            # so tenacity can retry
+            if r.status_code == 429:
+                r.raise_for_status()
+
+            # If the response is ok, return the JSON in the response body
             if r.ok:
                 return r.json()
-            else:
-                return None
+
+            # If not ok, raise an exception that will not be retried by tenacity
+            r.raise_for_status()
+
         except HTTPError as e:
             logger.warning("HTTPError in artportalen.observations()",
                            extra={"exception": e})
+            raise
         except Exception as e:
+            # Log unexpected errors and propagate (so caller can handle).
             logger.error("Exception caught in artportalen.observations()",
                          exc_info=True,
                          extra={"exception": e})
-            return None
-        else:
-            return r.json()
+            raise
 
     def observations_by_georegion(self, from_date: str, to_date: str,
                                   region_type: str, region_name: str):

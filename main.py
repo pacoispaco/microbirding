@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings
+from requests.exceptions import HTTPError
 # Basic Python modules
 from typing import Optional
 import sys
@@ -196,10 +197,16 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
                      timeRanges=[])
     sfilter.set_modified_date()
     sfilter.set_dataProvider()
-    observations = oapi.observations(sfilter,
-                                     skip=0,
-                                     take=1000,
-                                     sort_descending=True)
+    try:
+        observations = oapi.observations(sfilter,
+                                         skip=0,
+                                         take=1000,
+                                         sort_descending=True)
+    except HTTPError as e:
+        logger.warning("HTTPError in artportalen.observations()",
+                       extra={"exception": e})
+        return None
+
     return observations
 
 
