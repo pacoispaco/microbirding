@@ -15,7 +15,6 @@ The first proof-of-concept prototype release.
 - [ ] Add short description of the app and personal data policy on the "Om" page.
 - [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [ ] Add simple content for the "Obsar", "Listor", "Karta" and "Om" pages.
-- [ ] Handle Artportalens HTTP status code 429 (Too many requests).
 - [x] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
 - [x] Add dark mode.
@@ -23,6 +22,10 @@ The first proof-of-concept prototype release.
 - [x] Include links to each observation in Artportalen.
 - [x] Show basic information on each observation.
 - [x] Add main app page that shows observations from Artportalen, for today and within the SthlmBetong geopolygon area.
+
+### Fixed
+
+- [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
 ### Miscellaneous
 
