@@ -521,3 +521,23 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "date": obs["date"],
                                        "next_date": obs["next_date"],
                                        "observations": obs["observations"]})
+
+
+## The application 404 exception handler
+
+@app.exception_handler(404)
+async def not_found(request: Request, exc):
+    """Render a 404 page for missing resources."""
+    return templates.TemplateResponse(
+        "page-404.html",
+        {
+            "request": request,
+            "path": request.url.path,
+            "version_info": {
+                "release": release_tag(),
+                "built": build_datetime_tag(),
+                "git_hash": git_hash_tag(),
+            },
+        },
+        status_code=404,
+    )
