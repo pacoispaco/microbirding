@@ -523,7 +523,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "observations": obs["observations"]})
 
 
-## The application 404 exception handler
+# The application 404 exception handler
 
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
