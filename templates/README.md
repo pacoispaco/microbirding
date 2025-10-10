@@ -16,6 +16,7 @@ The files in this directory are the Jinja 2 template files that implement the UI
 | page-lists.html | The page with various lists. | TBD. |
 | page-about.html | The page with information on the purpose, background etc. of the app. | TBD. |
 | page-changelog.html | The changelog page. | TBD. |
+| page-404.html | The 404 page. | Done. |
 | hx-observations-list.html | The main observations list, used by page-observations.hmtl. | Done. |
 
 We use Jinja2 **include** as well as **macro** and **import** directives to structure and organize the Jinja2 templates. We do not use **inheritance**.
