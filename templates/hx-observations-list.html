@@ -62,8 +62,8 @@
     <!-- Table with observations for larger than mobile displays -->
     <table class="hidden lg:table w-full table-fixed border-collapse divide-y divide-neutral-200 dark:divide-neutral-700">
       <colgroup>
-        <col class="w-[16%]">
-        <col class="w-[24%]">
+        <col class="w-[17%]">
+        <col class="w-[23%]">
         <col class="w-[10%]">
         <col class="w-[20%]">
         <col class="w-[22%]">
@@ -90,12 +90,12 @@
           {% else %}
             {% for o in observations %}
               <tr>
-                <td class="truncate">{{ o.name }}</td>
-                <td class="truncate">{{ o.taxa_summary }}</td>
-                <td class="truncate">{{ o.time }}</td>
-                <td class="truncate">{{ o.locality }}</td>
-                <td class="truncate">{{ o.observers }}</td>
-                <td class="truncate">
+                <td class="align-baseline truncate text-base">{{ o.name }}</td>
+                <td class="align-baseline truncate">{{ o.taxa_summary }}</td>
+                <td class="align-baseline truncate">{{ o.time }}</td>
+                <td class="align-baseline truncate">{{ o.locality }}</td>
+                <td class="align-baseline truncate">{{ o.observers }}</td>
+                <td class="align-baseline truncate">
                   {% if o.data_source_observation_url %}
                     <div class="text-sm">
                       <a href="{{ o.data_source_observation_url }}" target="_blank"
@@ -127,13 +127,12 @@
         {% else %}
           {% for o in observations %}
             <div class="p-3 text-sm">
-              <div class="grid [grid-template-columns:38%_37%_25%]">
-                <div>{{ o.name }}</div>
+              <div class="grid [grid-template-columns:40%_35%_25%] items-baseline">
+                <div class="text-base">{{ o.name }}</div>
                 <div class="truncate">{{ o.locality }}</div>
                 <div class="text-right">{{ o.time }}</div>
               </div>
-<!--              <div class="grid [grid-template-columns:45%_45%_10%] pt-1 text-xs">-->
-              <div class="grid [grid-template-columns:38%_37%_25%] pt-1 text-xs">
+              <div class="grid [grid-template-columns:40%_35%_25%] pt-1 text-xs">
                 <div class="truncate pl-2">{{ o.taxa_summary }}</div>
                 <div class="truncate">{{ o.observers }}</div>
                 <div class="text-right">
