@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="h-full min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+    <!-- Main -->
+    <main class="mx-auto max-w-[1800px] flex-1 w-full grid grid-cols-1 py-6 md:grid-cols-3 gap-6 text-sm md:px-4">
+
+      <!-- Section header with map image -->
+      <section id="observations-section" class="md:col-span-2">
+        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+
+          <!-- Map header -->
+          <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700 flex items-center gap-3">
+            <h2 class="text-sm font-semibold">Karta över SthlmBetong</h2>
+          </div>
+
+<!--          <div class="p-4 border-b border-neutral-200 dark:border-neutral-700 flex flex-col gap-3">
+            <img src="/resources/sthlmbetong-map-3d.2.png"/> 
+          </div>
+
+          <div class="p-4 border-b border-neutral-200 dark:border-neutral-700 flex flex-col gap-3">
+            Below I want to put an Openstreetmap map that can be zoomed, panned and have a geopolygon, pins and rectangles for microsites.
+          </div>-->
+
+          <div class="p-4 border-b border-neutral-200 dark:border-neutral-700">
+            <div id="map" class="h-[360px] lg:h-[800px] rounded-md"></div>
+            <p class="pt-2">Du kan flytta kartan genom att peka på den och dra med musens vänsterknapp. Du kan vrida och ändra vinkel på kartan genom att a) samtidigt trycka på Ctrl-knappen och peka på kartan och dra med musens vänsterknapp, eller b) peka på kartan och dra med musens högerknapp. Du kan zooma kartan med musens scrollknapp. Vill du återställa kartan, så ladda om sidan i webbläsaren.</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Right hand area: Birding sites -->
+      <div class="md:col-span-1 space-y-6">
+        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+          <div class="p-4 py-2 border-b border-neutral-200 dark:border-neutral-700">
+            <h2 class="text-sm font-semibold">Lokaler</h2>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <tbody id="yearly-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
+                <tr>
+                  <td class="text-sm px-3 py-2">Här är det tänkt att det ska finnas info om lokaler i betongen.</td>
+                  <td class="px-3 py-2"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+ 
+  </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+  <!-- JavaScript snippet for the MapLibre GL JS map -->
+  <script>
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    const map = new maplibregl.Map({
+      container: 'map',
+      style: '/mapping/style',
+      center: [18.051457, 59.326896], // This is on Norr Mälarstrand, close to Stockholms Stadshus.
+      zoom: isMobile ? 11 : 12,
+    })
+
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+  </script>
+
+</body>
+</html>

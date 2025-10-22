@@ -9,6 +9,10 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/resources/favicon-16x16.png" />
 
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+
   <!-- HTMX & Tailwind -->
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"
           integrity="sha384-ZBXiYtYQ6hJ2Y0ZNoYuI+Nq5MqWBr+chMrS/RkXpNzQCApHEhOt2aY8EJgqwHLkJ"
@@ -40,7 +44,13 @@
     html, body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
     /* Reduce tap highlight on mobile */
     * { -webkit-tap-highlight-color: transparent; }
-  </style>
+
+    /* In dark mode, fix the attribution text for Maplibre */
+    html.dark .maplibregl-ctrl-attrib,
+    html.dark .mapboxgl-ctrl-attrib {
+    color: #eee !important;
+    background-color: rgba(0,0,0,0.6) !important;
+ </style>
 
   <style>
     /* This is for showing a spinner for HTMX requests that take a little time */

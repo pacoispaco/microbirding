@@ -13,8 +13,9 @@ The first proof-of-concept prototype release.
 ### Added
 
 - [ ] Add short description of the app and personal data policy on the "Om" page.
+- [ ] Add simple content for the "Obsar", "Listor" and "Om" pages.
 - [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
-- [ ] Add simple content for the "Obsar", "Listor", "Karta" and "Om" pages. And add 404 page.
+- [x] Add 404 page.
 - [x] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
 - [x] Add dark mode.

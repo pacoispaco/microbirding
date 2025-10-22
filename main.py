@@ -5,7 +5,7 @@
 # FastAPI and Pydantic
 from fastapi import FastAPI, status, Request, Query
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic_settings import BaseSettings
 from requests.exceptions import HTTPError
@@ -23,6 +23,7 @@ from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
 import artportalen
+import mapping
 from mistune_tasklist_renderer import mistune_markdown_instance
 
 # Constants
@@ -503,6 +504,28 @@ def get_changelog(request: Request):
     return result
 
 
+@app.get("/maps", response_class=HTMLResponse)
+def get_maps(request: Request):
+    """The maps page page (page-maps.html) displaying the map of SthlmBetong."""
+    tic = time.perf_counter_ns()
+
+    markdown = mistune_markdown_instance(disabled=True)
+
+    with open("./CHANGELOG.md") as f:
+        html = markdown(f.read())
+    result = templates.TemplateResponse("page-maps.html",
+                                        {"request": request,
+                                         "changelog_html": html,
+                                         "version_info": {"release": release_tag(),
+                                                          "built": build_datetime_tag(),
+                                                          "git_hash": git_hash_tag()}})
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
 # The application hypermedia control resources.
 # All of these resources have the prefix "/hx/" in their URL path.
 
@@ -521,6 +544,28 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "date": obs["date"],
                                        "next_date": obs["next_date"],
                                        "observations": obs["observations"]})
+
+
+# MapLibre GL JS resources
+
+@app.get("/mapping/pins")
+def get_mapping_pins():
+    """Get some geo pins."""
+    return JSONResponse(mapping.some_pins())
+
+
+@app.get("/mapping/areas")
+def get_mapping_areas():
+    """Get som egeo areas."""
+    return JSONResponse(mapping.some_areas(polygon))
+
+
+@app.get("/mapping/style")
+def get_map_style():
+    """Get som map style."""
+    style = mapping.some_style()
+    # Set low TTL if data changes often
+    return JSONResponse(style, headers={"Cache-Control": "no-cache"})
 
 
 # The application 404 exception handler
