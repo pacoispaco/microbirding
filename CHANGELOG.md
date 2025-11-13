@@ -12,8 +12,7 @@ The first proof-of-concept prototype release.
 
 ### Added
 
-- [ ] Add short description of the app and personal data policy on the "Om" page.
-- [ ] Add simple content for the "Obsar", "Listor" and "Om" pages.
+- [ ] Add short description of the app and a personal data policy on the "Om" page.
 - [x] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [x] Add 404 page.
 - [x] Fix responsive layout for smaller (mobile) screens.
@@ -34,7 +33,7 @@ The first proof-of-concept prototype release.
 - [x] Set up server with [Docker](https://www.docker.com/), [Portainer](https://www.portainer.io/) and [Traefik](https://traefik.io/traefik) for running a public dev environment with [Let's encrypt](https://letsencrypt.org/) certificates, on [DigitalOcean](https://www.digitalocean.com/).
 - [x] Write a Dockerfile for the web app.
 - [x] Set up application code structure and a CI/CD-pipeline.
-- [x] Decide on tech stack for web app; [Python](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/), [HTMX](https://htmx.org/), [TailwindCSS](https://tailwindcss.com/) and [Docker](https://tailwindcss.com/).
+- [x] Decide on tech stack for web app; [Python](https://www.python.org/), [FastAPI](https://fastapi.tiangolo.com/), [HTMX](https://htmx.org/), [TailwindCSS](https://tailwindcss.com/) and [Docker](https://tailwindcss.com/). Also [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/) for maps in the app.
 - [x] Implement a simple CLI-program for trying out the Artportalen API:s.
 - [x] Fix a geopolygon for the SthlmBetong area.
 - [x] Set up [Github](https://github.com/) repo.
