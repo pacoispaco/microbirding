@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.0.1-dev
 
-**Date: 2025-10-22**
+**Date: 2025-11-13**
 
 The first proof-of-concept prototype release.
 
@@ -14,7 +14,7 @@ The first proof-of-concept prototype release.
 
 - [ ] Add short description of the app and personal data policy on the "Om" page.
 - [ ] Add simple content for the "Obsar", "Listor" and "Om" pages.
-- [ ] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
+- [x] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [x] Add 404 page.
 - [x] Fix responsive layout for smaller (mobile) screens.
 - [x] Show version info and changelog.
