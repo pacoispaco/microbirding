@@ -65,6 +65,15 @@
     })
 
     map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    map.on('load', () => {
+      console.log('STYLE:', map.getStyle());
+      console.log('SOURCES:', map.getStyle().sources);
+      console.log('LAYERS:', map.getStyle().layers.map(l => l.id));
+
+      // Log any errors MapLibre sees
+      map.on('error', e => console.error('Map error:', e.error));
+    });
   </script>
 
 </body>

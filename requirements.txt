@@ -3,6 +3,7 @@ python-json-logger
 requests
 fastapi[standard]
 pydantic-settings
+python-slugify
 uvicorn
 mistune
 tenacity

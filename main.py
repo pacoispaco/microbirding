@@ -59,7 +59,6 @@ def setup_logging(config_filepath):
         with open(config_filepath) as f:
             config = json.load(f)
         logging.config.dictConfig(config)
-#        queue_handler = logging.getHandlerByName("queue_handler")
         queue_handler = get_handler_by_name("queue_handler")
         if queue_handler is not None:
             queue_handler.listener.start()
@@ -126,28 +125,13 @@ class Settings(BaseSettings):
     DATE_FORMAT: str = "Date: %a, %d %b %Y %H:%M:%S"
     ARTPORTALEN_OBSERVATIONS_API_KEY: Optional[str] = None
     ARTPORTALEN_SPECIES_API_KEY: Optional[str] = None
-    POLYGON_FILE: str = "./conf/polygon.sthlmbetong.json"
+    MICROBIRDING_AREA_DIRECTORY: str = "./data/areas"
     DEFAULT_TAXON_SEARCH_ID: int = 4000104  # Id of the taxon "Aves" in the Artportalen Species API.
     DEFAULT_NUMBER_OF_OBSERVATIONS: int = 50
     LOGGING_CONFIG_FILE: str = "./conf/logging-config.json"
 
     class ConfigDict:
         env_file = ".env"
-
-
-def polygon_coordinates(filename):
-    """The list of polygon coordinates in WGS84 from the file `filename` to use when searching
-       for observations in the Artportalen Observations API. Return None if it fails."""
-    result = None
-    if not os.path.exists(filename):
-        settings.logger.error(f"Polygon file {filename} not found.")
-    else:
-        with open(filename) as f:
-            try:
-                result = json.load(f)
-            except json.decoder.JSONDecodeError:
-                settings.logger.error(f"Polygon file {filename} is not a valid JSON file.")
-    return result
 
 
 # Set up some application globals
@@ -159,20 +143,18 @@ if not settings.ARTPORTALEN_OBSERVATIONS_API_KEY:
 if not settings.ARTPORTALEN_SPECIES_API_KEY:
     settings.logger.error("Environment variable 'ARTPORTALEN_SPECIES_API_KEY' not set")
     sys.exit(2)
-if not settings.POLYGON_FILE:
-    settings.logger.error("Environment variable 'POLYGON_FILE' not set")
+if not settings.MICROBIRDING_AREA_DIRECTORY:
+    settings.logger.error("Environment variable 'MICROBIRDING_AREA_DIRECTORY' not set")
     sys.exit(3)
 templates = Jinja2Templates(directory=settings.TEMPLATES_DIR)
 sapi = artportalen.SpeciesAPI(settings.ARTPORTALEN_SPECIES_API_KEY)
 oapi = artportalen.ObservationsAPI(settings.ARTPORTALEN_OBSERVATIONS_API_KEY)
-polygon = polygon_coordinates(settings.POLYGON_FILE)
-if not polygon:
-    settings.logger.error(f"Failed to read polygon coordinates from {settings.POLYGON_FILE}.")
+mapping.configure(settings.MICROBIRDING_AREA_DIRECTORY)
 locale.setlocale(locale.LC_TIME, 'sv_SE.UTF-8')
 logger.info("Application initialized.")
 
 
-def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
+def get_observations(area_name, from_date, to_date, taxon_name=None, observer_name=None):
     """Get observations from the Artportalen API, make them tidy and consumable by the Jinja2
        templates and put them into a list."""
     # Get the taxa ids that match the given `taxon_name`.
@@ -188,6 +170,9 @@ def get_observations(from_date, to_date, taxon_name=None, observer_name=None):
     # Set up the search filter for the Artportalen Observations API
     sfilter = artportalen.SearchFilter()
     sfilter.set_taxon(ids=taxon_ids)
+
+    area = mapping.area_by_name(area_name)
+    polygon = area.geopolygons[0].serialize_as_list()
     sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
                                                     "coordinates": [polygon]}])
     sfilter.set_verification_status()
@@ -236,7 +221,8 @@ def summarized_taxa_info(is_redlisted=False,
 
 
 def transformed_observations(artportalen_observations):
-    """List of transformed observations suitable for rendering in HTML with a Jinja2 template."""
+    """List of transformed observations suitable for rendering in HTML with a Jinja2 template.
+       Here we can add rarity data and other stuff which affects how observations is presented."""
     result = []
     for o in artportalen_observations["records"]:
         # Establish what name of the taxon to use
@@ -393,7 +379,7 @@ def transformed_observations(artportalen_observations):
     return result
 
 
-def observations_for_presentation(observations_date):
+def observations_for_presentation(area_name: str, observations_date):
     """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
        all attribute values needed for the Jinja2 template file
        "hx-observations-list.html" to render HTML."""
@@ -401,7 +387,8 @@ def observations_for_presentation(observations_date):
     next_date = (observations_date + timedelta(days=1)).isoformat()
 
     # Get obeservations from the Artportalen API
-    observations = get_observations(observations_date.isoformat(),
+    observations = get_observations(area_name,
+                                    observations_date.isoformat(),
                                     observations_date.isoformat(),
                                     None,
                                     None)
@@ -425,7 +412,7 @@ def observations_for_presentation(observations_date):
 
 # Set up FastAPI
 app = FastAPI(
-    title="Microbirding SthlmBetong",
+    title="Microbirding webapp",
     version=settings.VERSION)
 app.mount("/resources", StaticFiles(directory="resources"), name="resources")
 
@@ -461,7 +448,8 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
     else:
         observations_date = dt.today()
 
-    obs = observations_for_presentation(observations_date)
+    area_name = "SthlmBetong"
+    obs = observations_for_presentation(area_name, observations_date)
     result = templates.TemplateResponse(index_page,
                                         {"request": request,
                                          "day": obs["day"],
@@ -534,7 +522,8 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     """The observations HTML <section> element with the observations for the given `date`."""
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)
-    obs = observations_for_presentation(observations_date)
+    area_name = "SthlmBetong"
+    obs = observations_for_presentation(area_name, observations_date)
     return templates.TemplateResponse("hx-observations-list.html",
                                       {"request": request,
                                        "day": obs["day"],
@@ -546,24 +535,25 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "observations": obs["observations"]})
 
 
-# MapLibre GL JS resources
+# MapLibre GL JS resources (experimental)
 
 @app.get("/mapping/pins")
 def get_mapping_pins():
     """Get some geo pins."""
-    return JSONResponse(mapping.some_pins())
+    return JSONResponse(mapping.models.some_pins())
 
 
 @app.get("/mapping/areas")
 def get_mapping_areas():
-    """Get som egeo areas."""
-    return JSONResponse(mapping.some_areas(polygon))
+    """Get a geo areas."""
+    geojson = mapping.geojson_area_by_name("SthlmBetong")
+    return JSONResponse(geojson.dict())
 
 
 @app.get("/mapping/style")
 def get_map_style():
-    """Get som map style."""
-    style = mapping.some_style()
+    """Get a map style."""
+    style = mapping.default_maplibre_style().dict()
     # Set low TTL if data changes often
     return JSONResponse(style, headers={"Cache-Control": "no-cache"})
 

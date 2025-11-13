@@ -38,10 +38,13 @@ COPY --from=builder /install /usr/local
 # Copy app source
 COPY httplogs.py .
 COPY artportalen.py .
-COPY mapping.py .
+COPY mapping/__init__.py ./mapping/__init__.py
+COPY mapping/models.py ./mapping/models.py
+COPY mapping/repository.py ./mapping/repository.py
 COPY mistune_tasklist_renderer.py .
 COPY main.py .
 COPY conf/ ./conf
+COPY data/ ./data
 COPY templates ./templates
 COPY resources ./resources
 COPY CHANGELOG.md .
