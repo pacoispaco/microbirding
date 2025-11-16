@@ -497,13 +497,8 @@ def get_maps(request: Request):
     """The maps page page (page-maps.html) displaying the map of SthlmBetong."""
     tic = time.perf_counter_ns()
 
-    markdown = mistune_markdown_instance(disabled=True)
-
-    with open("./CHANGELOG.md") as f:
-        html = markdown(f.read())
     result = templates.TemplateResponse("page-maps.html",
                                         {"request": request,
-                                         "changelog_html": html,
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()}})
