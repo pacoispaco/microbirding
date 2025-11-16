@@ -24,7 +24,7 @@ Tjänsten är avsedd att användas av personer och via webbläsare i rimlig omfa
 
 ## 6. Ändringar och upphörande
 
-Tjänsten är tänkt att löpande uppdateras och ändras. I länken till [changelog](/changelog) längst ner kan man se information om uppdateringar som har gjorts. Den är skriven på engelska pga anledningar. Tjänsten kan läggas ner utan förvarning.
+Tjänsten är tänkt att löpande uppdateras och ändras. I länken till [changelog](/changelog) längst ner kan du se information om uppdateringar som har gjorts. Den är skriven på engelska pga anledningar. Tjänsten kan läggas ner utan förvarning.
 
 ## 7. Godkännande
 
