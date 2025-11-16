@@ -3,7 +3,7 @@
 """This is the SthlmBetong web app."""
 
 # FastAPI and Pydantic
-from fastapi import FastAPI, status, Request, Query
+from fastapi import FastAPI, status, Request, Query, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -34,7 +34,6 @@ secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
 RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
 GIT_HASH_FILE = "./GIT_HASH_FILE"
-
 
 logger = logging.getLogger(__name__)
 
@@ -129,6 +128,14 @@ class Settings(BaseSettings):
     DEFAULT_TAXON_SEARCH_ID: int = 4000104  # Id of the taxon "Aves" in the Artportalen Species API.
     DEFAULT_NUMBER_OF_OBSERVATIONS: int = 50
     LOGGING_CONFIG_FILE: str = "./conf/logging-config.json"
+    ABOUT_CONTENT_DIRECTORY: str = "./content"
+    ABOUT_SECTIONS: dict[str, str] = {
+        "about-app": "about-app.md",
+        "personal-data-policy": "personal-data-policy.md",
+        "terms-of-use": "terms-of-use.md",
+        "team": "team.md",
+    }
+    ABOUT_DEFAULT_SLUG: str = "about-app"
 
     class ConfigDict:
         env_file = ".env"
@@ -494,7 +501,7 @@ def get_changelog(request: Request):
 
 @app.get("/maps", response_class=HTMLResponse)
 def get_maps(request: Request):
-    """The maps page page (page-maps.html) displaying the map of SthlmBetong."""
+    """The maps page (page-maps.html) displaying the map of SthlmBetong."""
     tic = time.perf_counter_ns()
 
     result = templates.TemplateResponse("page-maps.html",
@@ -502,6 +509,48 @@ def get_maps(request: Request):
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()}})
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+@app.get("/about", response_class=HTMLResponse)
+async def about_root():
+    """The root resource for the about pages. Redirects to the default about page."""
+    return RedirectResponse(
+        url=f"/about/{settings.ABOUT_DEFAULT_SLUG}",
+        status_code=307
+    )
+
+
+@app.get("/about/{slug}", response_class=HTMLResponse)
+def get_about(request: Request, slug: str):
+    """The about page (page-about.html) with information on the app."""
+    tic = time.perf_counter_ns()
+
+    if slug not in settings.ABOUT_SECTIONS:
+        raise HTTPException(status_code=404, detail="Unknown section")
+
+    markdown = mistune_markdown_instance(disabled=True)
+    md_path = os.path.join(settings.ABOUT_CONTENT_DIRECTORY, settings.ABOUT_SECTIONS[slug])
+    if not os.path.exists(md_path):
+        raise HTTPException(status_code=500, detail="Missing content file")
+    with open(md_path) as f:
+        html = markdown(f.read())
+
+    result = templates.TemplateResponse(
+        "page-about.html",
+        {
+            "request": request,
+            "active_slug": slug,
+            "section_html": html,
+            "version_info": {"release": release_tag(),
+                             "built": build_datetime_tag(),
+                             "git_hash": git_hash_tag()}
+        },
+    )
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)

@@ -20,7 +20,21 @@
 @layer components {
   /* For menu links in the main menu on desktop displays */
   .sb-nav-link {
-    @apply px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700;
+    @apply px-3 py-2 rounded-md
+           text-blue-800 dark:text-blue-200
+           hover:bg-neutral-100 dark:hover:bg-neutral-700;
+  }
+
+  .sb-about-link {
+    @apply block px-3 py-2 rounded-md
+           text-neutral-700 dark:text-neutral-200
+           hover:bg-neutral-100 dark:hover:bg-neutral-700;
+  }
+
+  .sb-about-link--active {
+    @apply bg-neutral-100 dark:bg-neutral-700
+           text-blue-800 dark:text-blue-200
+           font-medium;
   }
 
   /* All .prose styles are for the CHANGELOG page. */

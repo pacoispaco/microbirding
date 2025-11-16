@@ -45,8 +45,9 @@ COPY mistune_tasklist_renderer.py .
 COPY main.py .
 COPY conf/ ./conf
 COPY data/ ./data
-COPY templates ./templates
-COPY resources ./resources
+COPY content/ ./content
+COPY templates/ ./templates
+COPY resources/ ./resources
 COPY CHANGELOG.md .
 
 # Expose port
