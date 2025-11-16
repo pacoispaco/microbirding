@@ -40,7 +40,7 @@ jobs:
           mv tailwindcss-linux-x64 tailwindcss
 
       - name: Generate the minimized Tailwind CSS file 
-        run: ./tailwindcss -m -i ./tailwind.config.css -o ./resources/tailwind.css
+        run: ./tailwindcss -m -i ./tailwind.css -o ./resources/tailwind.css
 
       # --- Placeholder tests step ---
       # Replace this with real tests later (and remove the `|| echo ...` so failures fail CI)
