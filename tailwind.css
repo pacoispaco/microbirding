@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* Plugins (Tailwind v4 style) */
+@plugin "@tailwindcss/typography";
+
+/* Tell Tailwind where to scan for class names */
+@source "./templates";
+
+/* Enable class-based dark mode using .dark on <html> or <body> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* SthlmBetong theme with a simple example */
+@theme {
+  /*
+  --color-brand: #1d4ed8;
+  */
+}
+
+/* Reusable component classes. We use the prefix 'sb' for SthlmBetong specific components */
+@layer components {
+  /* For menu links in the main menu on desktop displays */
+  .sb-nav-link {
+    @apply px-3 py-2 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700;
+  }
+
+  /* All .prose styles are for the CHANGELOG page. */
+
+  /* Narrower measure for long docs */
+  .prose {
+    max-width: 70ch;
+  }
+
+  /* Neat, non-interactive checkboxes inside prose */
+  .prose input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    accent-color: currentColor; /* uses text color for the tick */
+  }
+  .prose input[type="checkbox"][disabled] {
+    cursor: default;
+  }
+}
