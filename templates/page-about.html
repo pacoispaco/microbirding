@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="min-h-screen flex flex-col bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+    <!-- Main page container -->
+    <main class="flex-1 mx-auto max-w-5xl w-full py-6 px-3 sm:px-4 lg:px-6">
+
+      <!-- Layout grid: sidebar + main content -->
+      <div class="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+
+        <!-- Sidebar navigation -->
+        <aside>
+          <h2 class="text-sm prose prose-slate dark:prose-invert text-neutral-500 dark:text-neutral-400 uppercase mb-2">
+            Om appen
+          </h2>
+
+          <nav class="space-y-1 text-sm">
+
+            <a href="/about/about-app"
+               class="sb-about-link {% if active_slug == 'about-app' %}sb-about-link--active{% endif %}">
+               Allmänt
+            </a>
+
+            <a href="/about/terms-of-use"
+               class="sb-about-link {% if active_slug == 'terms-of-use' %}sb-about-link--active{% endif %}">
+               Användarvillkor
+            </a>
+
+            <a href="/about/personal-data-policy"
+               class="sb-about-link {% if active_slug == 'personal-data-policy' %}sb-about-link--active{% endif %}">
+               Personuppgiftspolicy
+            </a>
+ 
+            <a href="/about/team"
+               class="sb-about-link {% if active_slug == 'team' %}sb-about-link--active{% endif %}">
+               Teamet bakom appen
+            </a>
+
+          </nav>
+        </aside>
+
+        <!-- Right column: Markdown-rendered content -->
+        <article class="prose prose-slate dark:prose-invert max-w-none text-sm">
+          {{ section_html | safe }}
+        </article>
+
+      </div>
+
+    </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+</body>
+</html>
+
