@@ -8,7 +8,7 @@ Just nu visar den obsar för idag och per dag i betongen. För att se vad som ä
 
 Men [SthlmBetong BAND](https://www.band.us/@sthlmbetong) då? Det är utmärkt verktyg för att ha koll på betonglarm och även larma när du ser att en Alpseglare sveper in över Södersjukhuset eller en Ringnäbbad mås käkar pommes i Kungsan. Ja, det ska du så klart larma på [Club300:s Bird Alarm](https://club300.se/bird-alarm/om-bird-alarm/) också!
 
-Denna app är ett komplement till SthlmBetong BAND. Den är ett första steg avsett att bara göra det enkelt att ha koll på vad som rapporterats idag och andra dagar i betongen. Vilken glädje att kunna se vad som rapporterades i betongen vilken dag som helst, tex. [den 15 maj, 2005](/?date=2005-05-15)!
+Denna app är ett komplement till SthlmBetong BAND. Den är i ett första steg avsedd att bara göra det enkelt att ha koll på vad som rapporterats idag och andra dagar i betongen. Vilken glädje att kunna se vad som rapporterades i betongen vilken dag som helst, tex. [den 15 maj, 2005](/?date=2005-05-15)!
 
 ## Var kommer uppgifterna ifrån?
 

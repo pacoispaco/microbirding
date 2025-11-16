@@ -17,3 +17,7 @@ Via Artportalens API kan man inte hämta användarunika id:n utan enbart observa
 ## 4. Borttagning och korrigering av personuppgifter
 
 Eftersom alla personuppgifter hämtas från Artportalen, är det Artportalen du ska kontakta om du vill att dina uppgifter ska tas bort eller korrigeras. Kontaktuppgifter finns i [beskrivningen av behandling av personuppgifter på Artportalen](https://www.slu.se/artdatabanken/om-oss/behandling-av-personuppgifter).
+
+## Kakor och annat
+
+Denna tjänst använder sig inte av kakor (eng: cookies). Den använder sig av lokal lagring (eng: local storage) för att spara om du valt att köra light eller dark mode. Den sparar åtkomstloggar som innehåller uppgifter om anropares IP-adress. Åtkomstloggar raderas enligt ett rullande schema och loggfiler behålls i tidsordning, men raderas i tidsordning när loggfilerna nått en viss sammanlagd storlek.
