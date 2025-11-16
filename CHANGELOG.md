@@ -12,7 +12,7 @@ The first proof-of-concept prototype release.
 
 ### Added
 
-- [ ] Add short description of the app and a personal data policy on the "Om" page.
+- [x] Add short description of the app and a personal data policy on the "Om" page.
 - [x] Add Map showing the geographical extent of SthlmBetong on the "Karta" page.
 - [x] Add 404 page.
 - [x] Fix responsive layout for smaller (mobile) screens.
@@ -25,6 +25,7 @@ The first proof-of-concept prototype release.
 
 ### Fixed
 
+- [ ] Tighten upp layout on mobile and better use of background colors.
 - [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
 ### Miscellaneous
