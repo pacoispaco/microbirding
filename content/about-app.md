@@ -29,7 +29,7 @@ Dessutom så grupperas obsar för rariteter i Artportalen ihop i en huvudobserva
 ## Framtiden
 
 Ja, tänk om man kunde spå in i framtiden! Några tänkta funktioner i denna app är:
-* Färg och stilmarkera obsarna, baserat på raritetsklassificering.
+* Färg- och stilmarkera obsarna, baserat på raritetsklassificering.
 * Kunna filtrera och sortera obsar baserat på raritet, observationstid, stadsdel, lokal observatör etc.
 * Placera ut obsarrna i kartan.
 * Hämta obsar från eBirds API.

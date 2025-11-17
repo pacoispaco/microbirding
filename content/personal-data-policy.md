@@ -12,7 +12,7 @@ Hämtningen av uppgifter görs via Artportalens API och med en officiell och god
 
 ## 3. Identifiering av personer
 
-Via Artportalens API kan man inte hämta användarunika id:n utan enbart observatörernas namn. Eftersom observatörsnamn inte är garanterat unika, kan två olika observatörer i denna tjänst inte entydigt identifieras. Men eftersom namn står i anslutning till obsar som har geografisk position, så kan kombinationen av namn och position på obs användas för att identifiera en person.
+Via Artportalens API kan man inte hämta användarunika id:n utan enbart observatörernas namn. Eftersom observatörsnamn inte är garanterat unika, kan två olika observatörer i denna tjänst inte entydigt identifieras och särskiljas. Men eftersom namn står i anslutning till obsar som har geografisk position, så kan kombinationen av namn och position på obs användas för att identifiera en person.
 
 ## 4. Borttagning och korrigering av personuppgifter
 
