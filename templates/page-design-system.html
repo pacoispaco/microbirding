@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="h-full min-h-screen flex flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+    <!-- Main -->
+    <main class="mb-main">
+
+      <section id="left-section" class="mb-left-section">
+        <!-- Test card -->
+        <div class="mb-card">
+          <div class="mb-card-header">
+            <h2 class="font-semibold">Card with subheader and tabular data</h2>
+          </div>
+          <div class="mb-card-subheader">  
+              Subheader
+          </div>
+          <div class="mb-card-contents">
+              <span class="text-base">Item 1</span><span class="pl-20">Item 1 info</span>
+          </div>
+          <div class="mb-card-contents">
+              <span class="text-base">Item 2</span><span class="pl-20">Item 2 info</span>
+          </div>
+          <div class="mb-card-last-contents">
+              <span class="text-base">Item 3</span><span class="pl-20">Item 3 info</span>
+          </div>
+        </div>
+
+        <!-- Test card with no items -->
+        <div class="mb-card">
+          <div class="mb-card-header">
+            <h2 class="font-semibold">Card with subheader and tabular data but no items</h2>
+          </div>
+          <div class="mb-card-subheader">  
+            Subheader
+          </div>
+          <div class="mb-card-no-contents">
+            (No items)
+          </div>
+        </div>
+
+        <!-- Test card 2 -->
+        <div class="mb-card">
+          <div class="mb-card-header">
+            <h2 class="font-semibold">Card with header and arbitry contents</h2>
+          </div>
+          <div class="mb-card-last-contents">
+            Arbitrary contents.
+          </div>
+        </div>
+      </section>
+
+      <section id="right-section">
+        <!-- Test card 2 -->
+        <div class="mb-card">
+          <div class="mb-card-header">
+            <h2 class="font-semibold">About this "design system" page</h2>
+          </div>
+          <div class="mb-card-last-contents">
+            This is possibly the most trivial and simple design system possible. <br><br> This page simply show-cases the default layout for pages in the app and the UI cards used to display information. <br><br> For the UI cards a few different cases are shown, when they have sub headers for tabular information and when they lack items or information. <br><br> Having this design system page enables me as a developer to try out and verify changes to the layout and styling of the app, directly in the app.
+          </div>
+        </div>
+    </section>
+
+  </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+</body>
+</html>

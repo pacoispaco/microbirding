@@ -13,8 +13,7 @@
     <main class="flex-1 mx-auto max-w-5xl w-full py-6 px-3 sm:px-4 lg:px-6">
 
       <!-- Layout grid: sidebar + main content -->
-      <div class="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
-
+      <div class="grid gap-6 lg:grid-cols-[220px_minmax(0,1fr)] p-3 md:col-span-3">
         <!-- Sidebar navigation -->
         <aside>
           <h2 class="text-sm prose prose-slate dark:prose-invert text-neutral-500 dark:text-neutral-400 uppercase mb-2">
@@ -24,22 +23,22 @@
           <nav class="space-y-1 text-sm">
 
             <a href="/about/about-app"
-               class="sb-about-link {% if active_slug == 'about-app' %}sb-about-link--active{% endif %}">
+               class="mb-about-link {% if active_slug == 'about-app' %}mb-about-link--active{% endif %}">
                Allmänt
             </a>
 
             <a href="/about/terms-of-use"
-               class="sb-about-link {% if active_slug == 'terms-of-use' %}sb-about-link--active{% endif %}">
+               class="mb-about-link {% if active_slug == 'terms-of-use' %}mb-about-link--active{% endif %}">
                Användarvillkor
             </a>
 
             <a href="/about/personal-data-policy"
-               class="sb-about-link {% if active_slug == 'personal-data-policy' %}sb-about-link--active{% endif %}">
+               class="mb-about-link {% if active_slug == 'personal-data-policy' %}mb-about-link--active{% endif %}">
                Personuppgiftspolicy
             </a>
  
             <a href="/about/team"
-               class="sb-about-link {% if active_slug == 'team' %}sb-about-link--active{% endif %}">
+               class="mb-about-link {% if active_slug == 'team' %}mb-about-link--active{% endif %}">
                Teamet bakom appen
             </a>
 

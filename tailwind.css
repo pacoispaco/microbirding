@@ -4,7 +4,7 @@
 @plugin "@tailwindcss/typography";
 
 /* Tell Tailwind where to scan for class names */
-@source "./templates";
+@source "./templates/*.html";
 
 /* Enable class-based dark mode using .dark on <html> or <body> */
 @custom-variant dark (&:where(.dark, .dark *));
@@ -16,29 +16,59 @@
   */
 }
 
-/* Reusable component classes. We use the prefix 'sb' for SthlmBetong specific components */
+/* Reusable component classes. We use the prefix 'mb' for MicroBirding specific components */
 @layer components {
   /* For menu links in the main menu on desktop displays */
-  .sb-nav-link {
+  .mb-nav-link {
     @apply px-3 py-2 rounded-md
            text-blue-800 dark:text-blue-200
            hover:bg-slate-100 dark:hover:bg-neutral-800;
   }
 
-  .sb-about-link {
+  .mb-about-link {
     @apply block px-3 py-2 rounded-md
            text-neutral-700 dark:text-neutral-200
            hover:bg-slate-100 dark:hover:bg-neutral-800;
   }
 
-  .sb-about-link--active {
+  .mb-about-link--active {
     @apply bg-slate-100 dark:bg-neutral-800
            text-blue-800 dark:text-blue-200
            font-medium;
   }
 
-  /* All .prose styles are for the CHANGELOG page. */
+  /* For the page layout */
+  .mb-main {
+    @apply mx-auto max-w-[1800px] content-start flex-1 w-full grid grid-cols-1 gap-0 md:py-6 md:grid-cols-3 md:gap-6 text-sm;
+  }
+  .mb-left-section {
+    @apply md:col-span-2 flex flex-col gap-0 md:gap-6;
+  }
+  .mb-right-section {
+    @apply flex flex-col gap-0 md:gap-6;
+  }
 
+  /* For the UI cards */
+  .mb-card {
+    @apply text-sm bg-white border border-neutral-200 dark:bg-neutral-900 dark:border-neutral-700 md:rounded-lg;
+  }
+  .mb-card-header {
+    @apply flex items-center p-3 py-2 bg-slate-100 border-b border-neutral-200 dark:bg-black dark:border-neutral-700 md:rounded-t-lg;
+  }
+  .mb-card-subheader {
+    @apply p-3 font-semibold border-b border-neutral-200 dark:border-neutral-700;
+  }
+  .mb-card-contents {
+    @apply p-3 border-b border-neutral-200 dark:border-neutral-700;
+  }
+  .mb-card-last-contents {
+    @apply p-3;
+  }
+  .mb-card-no-contents {
+    @apply p-3 text-gray-400;
+  }
+
+  /* All .prose styles are for the CHANGELOG page. */
   /* Narrower measure for long docs */
   .prose {
     max-width: 70ch;

@@ -10,43 +10,37 @@
   {% include 'header.html' %}
 
     <!-- Main -->
-    <main class="mx-auto max-w-[1800px] flex-1 w-full grid grid-cols-1 py-6 md:grid-cols-3 gap-6 text-sm md:px-4">
+    <main class="mb-main">
 
-      <!-- Section header with map image -->
-      <section id="observations-section" class="md:col-span-2">
-        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg">
+      <!-- Section with map -->
+      <section id="maps-section" class="mb-left-section">
+        <div class="mb-card">
 
           <!-- Map header -->
-          <div class="p-4 py-2 bg-slate-100 border-b border-neutral-200 dark:bg-black dark:border-neutral-700 flex items-center gap-3">
+          <div class="mb-card-header">
             <h2 class="text-sm font-semibold">Karta</h2>
           </div>
 
-          <div class="p-4 border-b border-neutral-200 dark:border-neutral-700">
-            <div id="map" class="h-[360px] lg:h-[800px] rounded-md"></div>
+          <div class="mb-card-last-contents">
+            <div id="map" class="h-[360px] lg:h-[800px] md:rounded-md"></div>
             <p class="pt-2">För att en obs ska räknas som en betongobs, måste den göras av en person innanför betonggränsen och fågeln måste dessutom också vara innanför gränsen. Det gäller även överflygande fåglar. OBS! Detta skiljer sig från etablerade tomtskådningsregler, där det räcker med att man själv är innanför gränsen.</p>
           </div>
 
         </div>
       </section>
 
-      <!-- Right hand area: Birding sites -->
-      <div class="md:col-span-1 space-y-6 invisible md:visible">
-        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg">
-          <div class="p-4 py-2 bg-slate-100 border-b border-neutral-200 dark:bg-black dark:border-neutral-700">
+      <!-- Right hand area with birding sites -->
+      <section class="mb-right-section invisible md:visible">
+        <div class="mb-card">
+          <div class="mb-card-header">
             <h2 class="text-sm font-semibold">Lokaler</h2>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <tbody id="yearly-rankings" class="divide-y divide-neutral-200 dark:divide-neutral-700">
-                <tr>
-                  <td class="text-sm px-3 py-2">Här är det tänkt att det ska finnas info om lokaler i betongen.</td>
-                  <td class="px-3 py-2"></td>
-                </tr>
-              </tbody>
-            </table>
+          <!--<div class="overflow-x-auto">-->
+          <div class="mb-card-last-contents">
+             Här är det tänkt att det ska finnas info om lokaler i betongen.
           </div>
         </div>
-      </div>
+      </section>
  
   </main>
 

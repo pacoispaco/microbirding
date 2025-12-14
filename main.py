@@ -558,6 +558,23 @@ def get_about(request: Request, slug: str):
     return result
 
 
+@app.get("/design-system", response_class=HTMLResponse)
+def get_design_system(request: Request):
+    """The design system page (page-design-system.html) displaying UI stuff used in the app."""
+    tic = time.perf_counter_ns()
+
+    result = templates.TemplateResponse("page-design-system.html",
+                                        {"request": request,
+                                         "version_info": {"release": release_tag(),
+                                                          "built": build_datetime_tag(),
+                                                          "git_hash": git_hash_tag()}})
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
 # The application hypermedia control resources.
 # All of these resources have the prefix "/hx/" in their URL path.
 

@@ -6,9 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.0.1-dev
 
-**Date: 2025-12-13**
+**Date: 2025-12-14**
 
 The first proof-of-concept prototype release.
+
+### Fixed
+
+- [ ] Rewrote Tailwind CSS layout and tightened up layout on mobile.
+- [x] Better background and header colors.
+- [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
 ### Added
 
@@ -22,12 +28,6 @@ The first proof-of-concept prototype release.
 - [x] Include links to each observation in Artportalen.
 - [x] Show basic information on each observation.
 - [x] Add main app page that shows observations from Artportalen, for today and within the SthlmBetong geopolygon area.
-
-### Fixed
-
-- [ ] Tighten upp layout on mobile.
-- [x] Better background and header colors.
-- [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
 ### Miscellaneous
 
