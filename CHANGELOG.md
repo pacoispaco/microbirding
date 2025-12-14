@@ -12,7 +12,7 @@ The first proof-of-concept prototype release.
 
 ### Fixed
 
-- [ ] Rewrote Tailwind CSS layout and tightened up layout on mobile.
+- [x] Rewrote Tailwind CSS layout and tightened up layout on mobile.
 - [x] Better background and header colors.
 - [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
