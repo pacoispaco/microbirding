@@ -1,4 +1,4 @@
-# Om appen
+# Allmänt
 
 ## Inledning
 
