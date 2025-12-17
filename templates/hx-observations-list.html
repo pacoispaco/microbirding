@@ -90,7 +90,30 @@
             {% for o in observations %}
               <tr>
                 <td class="align-baseline truncate text-base">{{ o.name }}</td>
-                <td class="align-baseline truncate">{{ o.taxa_summary }}</td>
+                <td class="align-baseline truncate">
+                  {% if o.number %}
+                    {{ o.number }}
+                  {% endif %}
+                  {% if o.age %}
+                    {{ o.age }}
+                  {% endif %}
+                  {% if o.sex.symbol %}
+                    {% if o.sex.en == 'female coloured' %}
+                      {{ o.sex.sv }}
+                    {% else %}
+                      <i class="fa-solid {{ o.sex.symbol }} sex-icon" 
+                         aria-label="{{ o.sex.sv }}"
+                         title="{{ o.sex.sv }}">
+                      </i>
+                    {% endif %}
+                  {% endif %}
+                  {% if o.activity %}
+                    {{ o.activity }}
+                  {% endif %}
+                  {% if o.redlistCategory %}
+                    ({{ o.redlistCategory }})
+                  {% endif %}
+                </td>
                 <td class="align-baseline truncate">{{ o.time }}</td>
                 <td class="align-baseline truncate">{{ o.locality }}</td>
                 <td class="align-baseline truncate">{{ o.observers }}</td>
@@ -132,7 +155,30 @@
                 <div class="text-right">{{ o.time }}</div>
               </div>
               <div class="grid [grid-template-columns:42%_35%_23%] pt-1 text-xs">
-                <div class="truncate pl-2">{{ o.taxa_summary }}</div>
+                <div class="truncate pl-2">
+                  {% if o.number %}
+                    {{ o.number }}
+                  {% endif %}
+                  {% if o.age %}
+                    {{ o.age }}
+                  {% endif %}
+                  {% if o.sex.symbol %}
+                    {% if o.sex.en == 'female coloured' %}
+                      {{ o.sex.sv }}
+                    {% else %}
+                      <i class="fa-solid {{ o.sex.symbol }} sex-icon" 
+                         aria-label="{{ o.sex.sv }}"
+                         title="{{ o.sex.sv }}">
+                      </i>
+                    {% endif %}
+                  {% endif %}
+                  {% if o.activity %}
+                    {{ o.activity }}
+                  {% endif %}
+                  {% if o.redlistCategory %}
+                    ({{ o.redlistCategory }})
+                  {% endif %}
+                </div>
                 <div class="truncate">{{ o.observers }}</div>
                 <div class="text-right">
                   {% if o.data_source_observation_url.startswith("http") %}

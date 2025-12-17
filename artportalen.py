@@ -22,24 +22,27 @@ API_AVES_TAXON_ID = 4000104
 
 API_OUTPUTFIELDSET_VALUES = ["Minimium", "Extended", "AllWithValues", "All", "None"]
 
-# Character signs from here: https://en.wikipedia.org/wiki/Miscellaneous_Symbols
-MALE_SIGN = "♂"
-FEMALE_SIGN = "♀"
-FEMALE_AND_MALE_SIGN = "♀♂"
-FEMALE_COLORED = "♀-färgad(e)"
-HERMAPHRODITE_SIGN = "⚥"  # Sign convention in entomology for hermafrodite
-MERCURY_SIGN = "☿"        # Sign convention in entomology for worker or neuter insects
 
 # Artportalen vocabularies (could/should be put in separate module)
 # See: https://github.com/biodiversitydata-se/SOS/blob/master/Docs/Vocabularies.md
 # We complement some vocabularies with symbols that can be used in an UI
-vocabulary_sex = {0: {"sv": None, "en": None, "symbol": None},
-                  1: {"sv": "hane", "en": "male", "symbol": MALE_SIGN},
-                  2: {"sv": "hona", "en": "female", "symbol": FEMALE_SIGN},
-                  3: {"sv": "honfärgad", "en": "female coloured", "symbol": FEMALE_COLORED},
-                  4: {"sv": "i par", "en": "in pair", "symbol": FEMALE_AND_MALE_SIGN},
-                  5: {"sv": "arbetare", "en": "worker", "symbol": MERCURY_SIGN},
-                  6: {"sv": "hermafrodit", "en": "hermaphroditic", "symbol": HERMAPHRODITE_SIGN}}
+
+# Character signs from here: https://fontawesome.com/icons/categories/gender
+vocabulary_sex = {0: {"code": 0, "sv": None, "en": None,
+                      "symbol": None},
+                  1: {"code": 1, "sv": "hane", "en": "male",
+                      "symbol": "fa-mars"},
+                  2: {"code": 2, "sv": "hona", "en": "female",
+                      "symbol": "fa-venus"},
+                  3: {"code": 3, "sv": "honfärgad", "en": "female coloured",
+                      "symbol": None},
+                  4: {"code": 4, "sv": "i par", "en": "in pair",
+                      "symbol": "fa-venus-mars"},
+                  5: {"code": 5, "sv": "arbetare", "en": "worker",
+                      "symbol": "fa-mercury"},
+                  6: {"code": 6, "sv": "hermafrodit", "en": "hermaphroditic",
+                      "symbol": "fa-mars-and-venus"}}
+
 
 # Example stuff to make prototyping easier
 EXAMPLE_SPECIES = "Tajgasångare"

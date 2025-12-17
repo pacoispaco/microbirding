@@ -48,10 +48,80 @@
         <!-- Test card 2 -->
         <div class="mb-card">
           <div class="mb-card-header">
-            <h2 class="font-semibold">Card with header and arbitry contents</h2>
+            <h2 class="font-semibold">Card with header and observations</h2>
           </div>
           <div class="mb-card-last-contents">
-            Arbitrary contents.
+            <table>
+              <colgroup>
+                <col class="w-[17%]">
+                <col class="w-[23%]">
+                <col class="w-[10%]">
+                <col class="w-[20%]">
+                <col class="w-[22%]">
+                <col class="w-[6%]">
+              </colgroup>
+
+              <thead class="table-header-group">
+                <tr>
+                  <th class="text-sm text-left px-3 py-2">Art</th>
+                  <th class="text-sm text-left px-3 py-2">Detaljer</th>
+                  <th class="text-sm text-left px-3 py-2">Tid</th>
+                  <th class="text-sm text-left px-3 py-2">Lokal</th>
+                  <th class="text-sm text-left px-3 py-2">Observatör</th>
+                  <th class="text-sm text-left px-3 py-2">Källa</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              <tr>
+                <!-- Print the observation data -->
+                {{ o }}
+              </tr>
+             <tr>
+                <td class="align-baseline truncate text-base">{{ o.name }}</td>
+                <!-- This is where the taxa summary goes -->
+                <!-- [count] [age] [sex] [activity] [redlist-category] -->
+                <!--<td class="align-baseline truncate">{{ o.taxa_summary }}</td>-->
+                <td class="align-baseline truncate">
+                  {% if o.number %}
+                    {{ o.number }}
+                  {% endif %}
+                  {% if o.age %}
+                    {{ o.age }}
+                  {% endif %}
+                  {% if o.sex.symbol %}
+                    <i class="fa-solid {{ o.sex.symbol }} sex-icon" 
+                       aria-label="{{ o.sex.sv }}"
+                       title="{{ o.sex.sv }}">
+                    </i>
+                  {% endif %}
+                  {% if o.activity %}
+                    {{ o.activity }}
+                  {% endif %}
+                  {% if o.redlistCategory %}
+                    ({{ o.redlistCategory }})
+                  {% endif %}
+                <td class="align-baseline truncate">{{ o.time }}</td>
+                <td class="align-baseline truncate">{{ o.locality }}</td>
+                <td class="align-baseline truncate">{{ o.observers }}</td>
+                <td class="align-baseline truncate">
+                  {% if o.data_source_observation_url %}
+                    <div class="text-sm">
+                      <a href="{{ o.data_source_observation_url }}" target="_blank"
+                         class="text-blue-800 dark:text-blue-200 rounded-md px-1 py-0.5 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+                        {{ o.data_source_abbreviation }}
+                      </a>
+                    </div>
+                  {% else %}
+                    <div class="text-sm italic text-red-600">
+                      Failed to get source info, probably due to Artportalens API returning HTTP status code 429 (Too Many Requests).
+                    </div>
+                  {% endif %}
+                </td>
+               </td>
+              </tr>
+             </tbody>
+            </table> 
           </div>
         </div>
       </section>

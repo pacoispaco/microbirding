@@ -203,30 +203,6 @@ def get_observations(area_name, from_date, to_date, taxon_name=None, observer_na
     return observations
 
 
-def summarized_taxa_info(is_redlisted=False,
-                         redlist_category=None,
-                         sex=None,
-                         number=None,
-                         age=None,
-                         activity=None):
-    """Formatted string with taxa info on observation, for Jinja2 to use in UI presentation.
-       Eg. 'Östersjötrut, 1 födosökande'."""
-    result = ""
-    if number or sex or age or activity:
-        result += ","
-    if number:
-        result += f" {number}"
-    if age:
-        result += f" {age}"
-    if sex:
-        result += f" {sex}"
-    if activity:
-        result += f" {activity}"
-    if is_redlisted:
-        result += f" ({redlist_category})"
-    return result.strip(",")
-
-
 def transformed_observations(artportalen_observations):
     """List of transformed observations suitable for rendering in HTML with a Jinja2 template.
        Here we can add rarity data and other stuff which affects how observations is presented."""
@@ -295,10 +271,7 @@ def transformed_observations(artportalen_observations):
             info["number"] = o["occurrence"]["organismQuantity"]
             if "sex" in o["occurrence"]:
                 sex = o["occurrence"]["sex"]["id"]
-                if not artportalen.vocabulary_sex[sex]["symbol"]:
-                    info["sex"] = sex
-                else:
-                    info["sex"] = artportalen.vocabulary_sex[sex]["symbol"]
+                info["sex"] = artportalen.vocabulary_sex[sex]
             else:
                 info["sex"] = None
             if "lifeStage" in o["occurrence"]:
@@ -309,12 +282,6 @@ def transformed_observations(artportalen_observations):
                 info["activity"] = o["occurrence"]["activity"]["value"]
             else:
                 info["activity"] = None
-            info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
-                                                        redlist_category=redlist_category,
-                                                        number=info["number"],
-                                                        age=info["age"],
-                                                        sex=info["sex"],
-                                                        activity=info["activity"])
 
             # Set locality info
             info["locality"] = locality
@@ -331,12 +298,6 @@ def transformed_observations(artportalen_observations):
             info["age"] = None
             info["activity"] = None
             # There's no info in these records about redlisting, sof or now we just ignore it
-            info["taxa_summary"] = summarized_taxa_info(is_redlisted=False,
-                                                        redlist_category=None,
-                                                        number=info["number"],
-                                                        age=info["age"],
-                                                        sex=info["sex"],
-                                                        activity=info["activity"])
 
             # Set locality info
             municipality = o['location']['municipality']['name']
@@ -359,12 +320,6 @@ def transformed_observations(artportalen_observations):
             info["sex"] = None
             info["age"] = None
             info["activity"] = None
-            info["taxa_summary"] = summarized_taxa_info(is_redlisted=is_redlisted,
-                                                        redlist_category=redlist_category,
-                                                        number=info["number"],
-                                                        age=info["age"],
-                                                        sex=info["sex"],
-                                                        activity=info["activity"])
 
             # Set locality info
             municipality = o['location']['municipality']['name']
@@ -563,8 +518,15 @@ def get_design_system(request: Request):
     """The design system page (page-design-system.html) displaying UI stuff used in the app."""
     tic = time.perf_counter_ns()
 
+    # We want to display an observation for development and debugging purposes
+    date = "2025-12-15"
+    area_name = "SthlmBetong"
+    observations_date = dt.fromisoformat(date)
+    obs = observations_for_presentation(area_name, observations_date)
+    obs_no = 5
     result = templates.TemplateResponse("page-design-system.html",
                                         {"request": request,
+                                         "o": obs["observations"][obs_no],
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()}})
