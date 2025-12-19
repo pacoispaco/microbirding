@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.0.1-dev
 
-**Date: 2025-12-17**
+**Date: 2025-12-19**
 
 The first proof-of-concept prototype release.
 
