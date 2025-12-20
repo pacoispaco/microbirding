@@ -136,6 +136,7 @@ class Settings(BaseSettings):
         "team": "team.md",
     }
     ABOUT_DEFAULT_SLUG: str = "about-app"
+    UMAMI_WEBSITE_ID: Optional[str] = None
 
     class ConfigDict:
         env_file = ".env"
@@ -412,6 +413,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
 
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
+    print(settings.UMAMI_WEBSITE_ID)
     result = templates.TemplateResponse(index_page,
                                         {"request": request,
                                          "day": obs["day"],
@@ -423,7 +425,8 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                                          "observations": obs["observations"],
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
-                                                          "git_hash": git_hash_tag()}})
+                                                          "git_hash": git_hash_tag()},
+                                         "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -446,7 +449,8 @@ def get_changelog(request: Request):
                                          "changelog_html": html,
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
-                                                          "git_hash": git_hash_tag()}})
+                                                          "git_hash": git_hash_tag()},
+                                         "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -463,7 +467,8 @@ def get_maps(request: Request):
                                         {"request": request,
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
-                                                          "git_hash": git_hash_tag()}})
+                                                          "git_hash": git_hash_tag()},
+                                         "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -503,7 +508,8 @@ def get_about(request: Request, slug: str):
             "section_html": html,
             "version_info": {"release": release_tag(),
                              "built": build_datetime_tag(),
-                             "git_hash": git_hash_tag()}
+                             "git_hash": git_hash_tag()},
+            "umami_website_id": settings.UMAMI_WEBSITE_ID
         },
     )
 
@@ -529,7 +535,8 @@ def get_design_system(request: Request):
                                          "o": obs["observations"][obs_no],
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
-                                                          "git_hash": git_hash_tag()}})
+                                                          "git_hash": git_hash_tag()},
+                                         "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -555,7 +562,8 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "previous_date": obs["previous_date"],
                                        "date": obs["date"],
                                        "next_date": obs["next_date"],
-                                       "observations": obs["observations"]})
+                                       "observations": obs["observations"],
+                                       "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
 
 # MapLibre GL JS resources (experimental)
@@ -596,6 +604,7 @@ async def not_found(request: Request, exc):
                 "built": build_datetime_tag(),
                 "git_hash": git_hash_tag(),
             },
+            "umami_website_id": settings.UMAMI_WEBSITE_ID
         },
         status_code=404,
     )
