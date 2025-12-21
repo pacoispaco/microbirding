@@ -22,9 +22,9 @@ Eftersom Artportalen även innehåller obsar gjorda i svenska iNaturalist, och d
 
 Njä. Det finns lite utmaningar för denna app, beroende på vilka uppgifter man kan få ut via Artportalens API.
 
-Dels får man inte ut unika id:n för observatörer. Det innebär att man inte kan skilja på två olika observatörer med samma presentationsnamn. Det är ett problem för personer med vanligare namn, som t.ex. "Anna Svensson".
+Dels får man inte ut unika id:n för observatörer. Det innebär att man inte kan skilja på två olika observatörer med samma presentationsnamn. Det är ett problem för personer med vanligare namn, som t.ex. "Anna Svensson". Finns det två "Anna Svensson" så ser det ändå ut som samma observatör. Synd om man vill sammanställa listor.
 
-Dessutom så grupperas obsar för rariteter i Artportalen ihop i en huvudobservation, med den eller de observatörer som först rapporterade den ovanliga fågeln. Den huvudobservationen innehåller sedan underobservationer för de övriga observatörer som sedan observerade fågeln. Idag kan man inte hämta ut underobservationerna via API:et. Trist.
+Dessutom så grupperas obsar för rariteter i Artportalen ihop i en huvudobservation, med den eller de observatörer som först rapporterade den ovanliga fågeln. Den huvudobservationen innehåller sedan underobservationer för de övriga observatörer som sedan observerade fågeln. Idag ser det inte ut som om man inte hämta ut underobservationerna via API:et. Synd om man vill sammanställa listor.
  
 ## Framtiden
 
