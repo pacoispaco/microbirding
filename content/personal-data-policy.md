@@ -2,7 +2,7 @@
 
 ## 1. Inledning
 
-Denna instans av [microbirding](https://github.com/pacoispaco/microbirding)-appen (fortsattningsvis kallat "denna tjänst") driftas på en virtuell Digitalocean server i Nederländerna. Inga personuppgifter lagras i denna app eller på någon server.
+Denna instans av [microbirding](https://github.com/pacoispaco/microbirding)-appen (fortsattningsvis kallat "denna tjänst") driftas på en virtuell [Digitalocean](https://www.digitalocean.com/) server i Nederländerna. Inga personuppgifter lagras i denna app eller på någon server.
 
 ## 2. Hämtning och behandling av personuppgifter
 
@@ -18,6 +18,10 @@ Via Artportalens API kan man inte hämta användarunika id:n utan enbart observa
 
 Eftersom alla personuppgifter hämtas från Artportalen, är det Artportalen du ska kontakta om du vill att dina uppgifter ska tas bort eller korrigeras. Kontaktuppgifter finns i [beskrivningen av behandling av personuppgifter på Artportalen](https://www.slu.se/artdatabanken/om-oss/behandling-av-personuppgifter).
 
-## 5. Kakor och annat
+## 5. Kakor och loggar
 
 Denna tjänst använder sig inte av kakor (eng: cookies). Den använder sig av lokal lagring (eng: local storage) för att spara om du valt att köra light eller dark mode. Den sparar åtkomstloggar som innehåller uppgifter om anropares IP-adress. Åtkomstloggar raderas enligt ett rullande schema och loggfiler behålls i tidsordning, men raderas i tidsordning när loggfilerna nått en viss sammanlagd storlek.
+
+## 6. Webbanalys
+
+Denna tjänst använder [Umami](https://umami.is/) för anonym och integritetsvänlig webbanalys. Umami använder inga kakor och lagrar inga personuppgifter. IP-adresser anonymiseras och uppgifterna används enbart för övergripande statistik om användning av tjänsten. All analysdata lagras på samma server som denna tjänst driftas (se ovan).
