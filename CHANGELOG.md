@@ -33,8 +33,8 @@ The first proof-of-concept prototype release.
 ### Miscellaneous
 
 - [x] Add hint coloring for DEV-environment.
-- [x] Add analytics tracking with Umami.
-- [x] Set up reasonably good logging.
+- [x] Add analytics tracking with [Umami](https://umami.is/).
+- [x] Set up reasonably good logging with log rotation and deletion.
 - [x] Set up server with [Docker](https://www.docker.com/), [Portainer](https://www.portainer.io/) and [Traefik](https://traefik.io/traefik) for running a public dev environment with [Let's encrypt](https://letsencrypt.org/) certificates, on [DigitalOcean](https://www.digitalocean.com/).
 - [x] Write a Dockerfile for the web app.
 - [x] Set up application code structure and a CI/CD-pipeline.
