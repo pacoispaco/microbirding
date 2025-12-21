@@ -136,6 +136,7 @@ class Settings(BaseSettings):
         "team": "team.md",
     }
     ABOUT_DEFAULT_SLUG: str = "about-app"
+    ENVIRONMENT: Optional[str] = None
     UMAMI_WEBSITE_ID: Optional[str] = None
 
     class ConfigDict:
@@ -426,6 +427,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()},
+                                         "environment": settings.ENVIRONMENT,
                                          "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
@@ -450,6 +452,7 @@ def get_changelog(request: Request):
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()},
+                                         "environment": settings.ENVIRONMENT,
                                          "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
@@ -468,6 +471,7 @@ def get_maps(request: Request):
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()},
+                                         "environment": settings.ENVIRONMENT,
                                          "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
@@ -509,6 +513,7 @@ def get_about(request: Request, slug: str):
             "version_info": {"release": release_tag(),
                              "built": build_datetime_tag(),
                              "git_hash": git_hash_tag()},
+            "environment": settings.ENVIRONMENT,
             "umami_website_id": settings.UMAMI_WEBSITE_ID
         },
     )
@@ -536,6 +541,7 @@ def get_design_system(request: Request):
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()},
+                                         "environment": settings.ENVIRONMENT,
                                          "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
     toc = time.perf_counter_ns()
@@ -563,6 +569,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                                        "date": obs["date"],
                                        "next_date": obs["next_date"],
                                        "observations": obs["observations"],
+                                       "environment": settings.ENVIRONMENT,
                                        "umami_website_id": settings.UMAMI_WEBSITE_ID})
 
 
@@ -604,6 +611,7 @@ async def not_found(request: Request, exc):
                 "built": build_datetime_tag(),
                 "git_hash": git_hash_tag(),
             },
+            "environment": settings.ENVIRONMENT,
             "umami_website_id": settings.UMAMI_WEBSITE_ID
         },
         status_code=404,

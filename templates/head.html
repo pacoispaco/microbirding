@@ -6,8 +6,14 @@
 
   <!-- Fallback + modern favicons -->
   <link rel="icon" href="/resources/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/resources/favicon-16x16.png" />
+  
+  {% if environment == 'DEV' %}
+    <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-DEV-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/resources/favicon-DEV-16x16.png" />
+  {% else %}
+    <link rel="icon" type="image/png" sizes="32x32" href="/resources/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/resources/favicon-16x16.png" />
+  {% endif %}
 
   <!-- MapLibre GL JS -->
   <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />

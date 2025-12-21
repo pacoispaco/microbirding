@@ -6,16 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## 0.0.1-dev
 
-**Date: 2025-12-19**
+**Date: 2025-12-21**
 
 The first proof-of-concept prototype release.
 
 ### Fixed
 
-- [x] Fixed bug in display of sex icons.
-- [x] Rewrote Tailwind CSS layout and tightened up layout on mobile.
-- [x] Better background and header colors.
-- [x] Handle Artportalens HTTP status code 429 (Too many requests). Implemented a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
+- [x] Fix bug in display of sex icons.
+- [x] Rewrite Tailwind CSS layout and tighten up layout on mobile.
+- [x] Fix better background and header colors.
+- [x] Handle Artportalens HTTP status code 429 (Too many requests). Implement a retry scheme with a maximum of 5 retries and exponential backoff. But response times for the app starts to degrade after just 20+ simultaneous users, due to the rate limiting of Artportalens API. Eventually we will need to implement a local cache for better response times.
 
 ### Added
 
@@ -32,6 +32,8 @@ The first proof-of-concept prototype release.
 
 ### Miscellaneous
 
+- [x] Add hint coloring for DEV-environment.
+- [x] Add analytics tracking with Umami.
 - [x] Set up reasonably good logging.
 - [x] Set up server with [Docker](https://www.docker.com/), [Portainer](https://www.portainer.io/) and [Traefik](https://traefik.io/traefik) for running a public dev environment with [Let's encrypt](https://letsencrypt.org/) certificates, on [DigitalOcean](https://www.digitalocean.com/).
 - [x] Write a Dockerfile for the web app.
