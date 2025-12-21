@@ -1,55 +1,55 @@
   <footer class="bg-slate-100 border-t border-neutral-200 dark:bg-black dark:border-neutral-700">
 
-<div class="w-full px-3 sm:px-4 lg:px-6 py-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
-  <!-- Row 1 -->
-  <p>
-    Release:
-    <a href="/changelog"
-       class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-      {{ version_info.release }}
-    </a>
-    <br class="sm:hidden">
-    <span class="hidden sm:inline"> </span>
-    <span>(Built: {{ version_info.built }}, Git hash: {{ version_info.git_hash }})</span>
-  </p>
+    <div class="w-full px-3 sm:px-4 lg:px-6 py-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
+      <!-- Row 1 -->
+      <p>
+        Release:
+        <a href="/changelog"
+           class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          {{ version_info.release }}
+        </a>
+        <br class="sm:hidden">
+        <span class="hidden sm:inline"> </span>
+        <span>(Built: {{ version_info.built }}, Git hash: {{ version_info.git_hash }})</span>
+      </p>
 
-  <!-- Row 2 -->
-  <p class="mt-2">
-    Questions, problems and suggestions to
-    <br class="sm:hidden">
-    <span class="hidden sm:inline"> </span>
-    <div
-      class="inline-block px-1 py-1 rounded-md">
-      <!-- Light mode image -->
-      <img
-        src="resources/infomejl-sthlmbetong.se-lightmode.png"
-        alt="info@sthlmbetong.se"
-        class="block dark:hidden mx-auto h-3"
-      />
+      <!-- Row 2 -->
+      <p class="mt-2">
+        Questions, problems and suggestions to
+        <br class="sm:hidden">
+        <span class="hidden sm:inline"> </span>
 
-      <!-- Dark mode image -->
-      <img
-        src="resources/infomejl-sthlmbetong.se-darkmode.png"
-        alt="info@sthlmbetong.se"
-        class="hidden dark:block mx-auto h-3"
-      />
+        <span class="inline-flex items-center align-middle px-1 py-1 rounded-md leading-none">
+          <img
+            src="/resources/infomejl-sthlmbetong.se-lightmode.png"
+            alt="info@sthlmbetong.se"
+            class="block dark:hidden h-3 w-auto align-middle object-contain"
+            draggable="false"
+          />
+          <img
+            src="/resources/infomejl-sthlmbetong.se-darkmode.png"
+            alt="info@sthlmbetong.se"
+            class="hidden dark:block h-3 w-auto align-middle object-contain"
+            draggable="false"
+          />
+        </span>
+      </p>
+
+      <!-- Row 3 -->
+      <p class="mt-2">
+        Put together by
+        <a href="https://paulcohen.se/"
+           target="_blank"
+           class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          Paul Cohen
+        </a>
+        <a href="https://github.com/pacoispaco/microbirding"
+           target="_blank"
+           class="py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+          <i class="fab fa-github" aria-hidden="true"></i>
+          <span class="sr-only">GitHub</span>
+        </a>
+      </p>
     </div>
-
-  <!-- Row 3 -->
-  <p class="mt-2">
-    Put together by
-    <a href="https://paulcohen.se/"
-       target="_blank"
-       class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-      Paul Cohen
-    </a>
-    <a href="https://github.com/pacoispaco/microbirding"
-       target="_blank"
-       class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-      <i class="fab fa-github" aria-hidden="true"></i>
-      <span class="sr-only">GitHub</span>
-    </a>
-  </p>
-</div>
 
   </footer>
