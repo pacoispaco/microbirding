@@ -4,7 +4,7 @@
 
 Denna app finns till för att stimulera fågelskådning och artrace i Stockholms betong. 
 
-Just nu visar den obsar per dag, för idag och alla tidigare dagar, i betongen. För att se vad som är gränserna för betongen så finns det en [karta](/maps). Det är den mytomspunna betongkommittén som bestämt de gränserna. Betongkommitténs ord är lag.
+Just nu visar den obsar per dag, för idag och tidigare dagar, i betongen. För att se vad som är gränserna för betongen så finns det en [karta](/maps). Det är den mytomspunna betongkommittén som bestämt de gränserna. Betongkommitténs ord är lag.
 
 Men [SthlmBetong BAND](https://www.band.us/@sthlmbetong) då? Det är utmärkt verktyg för att ha koll på betonglarm och även larma när du ser att en Alpseglare sveper in över Södersjukhuset eller en Ringnäbbad mås käkar pommes i Kungsan. Ja, det ska du så klart larma på [Club300:s Bird Alarm](https://club300.se/bird-alarm/om-bird-alarm/) också!
 
