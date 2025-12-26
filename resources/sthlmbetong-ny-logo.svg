@@ -25,7 +25,7 @@
      showgrid="true"
      inkscape:zoom="1.4142136"
      inkscape:cx="475.88285"
-     inkscape:cy="458.20518"
+     inkscape:cy="514.77372"
      inkscape:window-width="2500"
      inkscape:window-height="1371"
      inkscape:window-x="60"
@@ -55,6 +55,13 @@
      id="layer2"
      inkscape:label="Background layer"
      style="display:inline">
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.396875;stop-color:#000000"
+       id="rect30042"
+       width="68.139427"
+       height="17.083876"
+       x="114.56948"
+       y="195.92119" />
     <circle
        style="fill:#ebf4ff;fill-opacity:0.99963;stroke:none;stroke-width:4;stop-color:#000000"
        id="path12848"
@@ -77,14 +84,14 @@
        cx="143.60062"
        cy="93.407547"
        r="16.545229"
-       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/seagull.png"
+       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/seagull-DEV.png"
        inkscape:export-xdpi="499.70303"
        inkscape:export-ydpi="499.70303" />
     <path
        style="display:inline;fill:#002044;fill-opacity:1;stroke-width:0.529165;stop-color:#000000"
        d="m 143.91829,103.30521 c -1.09605,-0.24232 -2.73495,-0.69144 -3.64204,-0.99804 -1.52783,-0.51642 -4.98851,-1.47337 -6.59689,-1.82418 -1.16468,-0.25404 -1.02101,-0.38709 0.41917,-0.38818 1.46588,-10e-4 2.71896,-0.158896 3.87388,-0.487806 0.9688,-0.2759 1.01843,-0.5178 0.47358,-2.30863 -0.23331,-0.76688 -0.46049,-1.61078 -0.50483,-1.87534 -0.12125,-0.72257 -0.37524,-1.70009 -0.48234,-1.85538 -0.0522,-0.0756 -0.17204,-0.44666 -0.26657,-0.82461 -0.19764,-0.79075 -0.68592,-1.85538 -0.8509,-1.85538 -0.11633,0 -2.73071,-3.08562 -2.73071,-3.2229 0,-0.0427 -0.34319,-0.57584 -0.76265,-1.184822 -0.95617,-1.388268 -1.27567,-2.102378 -1.01315,-2.264628 0.0682,-0.0421 0.91298,0.5363 1.87751,1.28531 2.19719,1.70627 4.86007,3.60981 6.27237,4.48372 1.19104,0.737 2.56391,1.80802 3.92781,3.0642 l 0.88759,0.81748 -0.22798,0.81286 c -0.28762,1.0255 -0.38876,1.6506 -0.28402,1.75535 0.0448,0.0449 0.54907,-0.37835 1.1204,-0.94051 0.71001,-0.6986 1.37179,-1.19282 2.09081,-1.56149 0.57862,-0.29667 1.1692,-0.63719 1.31241,-0.75673 0.14316,-0.11953 0.51394,-0.38943 0.82383,-0.59977 0.3099,-0.21034 0.92586,-0.81535 1.36879,-1.34448 0.44293,-0.52913 1.21904,-1.37287 1.72464,-1.87498 0.50563,-0.5021 0.9638,-1.05872 1.01816,-1.23691 0.0543,-0.1782 0.30454,-0.54047 0.55595,-0.80503 0.25137,-0.26456 0.6204,-0.659132 0.82001,-0.876822 0.30563,-0.333278 0.3911,-0.365838 0.54119,-0.20615 0.1958,0.20836 0.6977,1.693582 0.83298,2.465122 0.11326,0.64679 -0.41311,2.88049 -0.80417,3.41171 -1.70088,2.31053 -1.7374,2.34749 -2.89151,2.92463 -1.58578,0.79302 -2.86173,1.66848 -3.55409,2.43855 -0.61428,0.68323 -1.58881,2.42508 -1.44003,2.573866 0.0461,0.0461 0.38036,0.13804 0.74291,0.20442 0.36254,0.0664 1.03021,0.30244 1.48376,0.52454 0.45354,0.2221 1.04109,0.44578 1.30565,0.49706 0.55541,0.10765 0.8246,0.29025 0.8246,0.55935 0,0.13921 -0.21257,0.18933 -0.8031,0.18933 -0.85821,0 -2.1313,0.37181 -2.74115,0.80056 -1.38588,0.97432 -2.13708,1.05176 -4.70187,0.48471 z"
        id="path118608-3-1"
-       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/seagull.png"
+       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/seagull-DEV.png"
        inkscape:export-xdpi="499.70303"
        inkscape:export-ydpi="499.70303" />
     <g
@@ -389,5 +396,47 @@
          id="tspan6715-9-3"
          x="10.166907"
          y="158.14803">Dark mode icon</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:0;font-family:sans-serif;text-align:center;letter-spacing:0px;text-anchor:middle;display:inline;stroke-width:0.264583"
+       x="45.308514"
+       y="206.0309"
+       id="text2729-3-3-6"
+       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/infomejl-sthlmbetong.se.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.15;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         sodipodi:role="line"
+         id="tspan6715-9-3-3"
+         x="45.308514"
+         y="206.0309">info@sthlmbetong.se</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:3.52778px;line-height:0;font-family:sans-serif;text-align:center;letter-spacing:0px;text-anchor:middle;display:inline;stroke-width:0.264583"
+       x="45.421959"
+       y="224.41438"
+       id="text2729-3-3-6-9"
+       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/infomejl-sthlmbetong.se.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:3.52778px;line-height:1.15;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;stroke-width:0.264583"
+         sodipodi:role="line"
+         id="tspan6715-9-3-3-6"
+         x="45.421959"
+         y="224.41438">admin@sthlmbetong.se</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:5.64444px;line-height:0;font-family:sans-serif;text-align:center;letter-spacing:0px;text-anchor:middle;display:inline;stroke-width:0.264583"
+       x="118.56335"
+       y="205.76004"
+       id="text2729-3-3-6-7"
+       inkscape:export-filename="/home/paco/proj/github/microbirding/resources/infomejl-sthlmbetong.se-darkmode.png"
+       inkscape:export-xdpi="300"
+       inkscape:export-ydpi="300"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1.15;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:start;text-anchor:start;fill:#ffffff;stroke-width:0.264583"
+         sodipodi:role="line"
+         id="tspan6715-9-3-3-5"
+         x="118.56335"
+         y="205.76004">info@sthlmbetong.se</tspan></text>
   </g>
 </svg>
