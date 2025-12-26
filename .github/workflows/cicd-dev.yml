@@ -2,18 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ main ]   # Only build on pushes to main
+    branches: [ main ]
+    tags:
+      - "*"   # build on any tag push; we validate SemVer in the job
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build-dev:
+  build:
     runs-on: ubuntu-latest
 
     env:
-        TZ: Europe/Stockholm
+      TZ: Europe/Stockholm
 
     steps:
       - name: Check out code
@@ -31,7 +33,7 @@ jobs:
           pip install flake8 pytest
 
       - name: Run flake8
-        run: flake8 --config flake8.conf 
+        run: flake8 --config flake8.conf
 
       - name: Install Tailwind CLI-program
         run: |
@@ -39,11 +41,9 @@ jobs:
           chmod +x tailwindcss-linux-x64
           mv tailwindcss-linux-x64 tailwindcss
 
-      - name: Generate the minimized Tailwind CSS file 
+      - name: Generate the minimized Tailwind CSS file
         run: ./tailwindcss -m -i ./tailwind.css -o ./resources/tailwind.css
 
-      # --- Placeholder tests step ---
-      # Replace this with real tests later (and remove the `|| echo ...` so failures fail CI)
       - name: Run pytest (placeholder)
         run: |
           echo "TODO: add real tests"
@@ -60,33 +60,81 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Compute image name
-        id: meta
         run: |
           OWNER_LC=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=ghcr.io/${OWNER_LC}/microbirding" >> $GITHUB_ENV
+          echo "IMAGE_NAME=ghcr.io/${OWNER_LC}/microbirding" >> "$GITHUB_ENV"
+
+      - name: Validate SemVer tag (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+
+          # SemVer 2.0.0 (prerelease/build optional)
+          # Examples accepted:
+          # 0.1.0
+          # 0.1.0-rc.1
+          # 1.2.3-alpha.1+build.45
+          SEMVER_REGEX='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-([0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*))?(\+([0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*))?$'
+
+          if ! [[ "$TAG" =~ $SEMVER_REGEX ]]; then
+            echo "ERROR: Tag '$TAG' is not a valid SemVer 2.0.0 version."
+            exit 1
+          fi
+
+          echo "Tag '$TAG' is valid SemVer."
 
       - name: Build, tag and push image
+        shell: bash
         run: |
-          # Get first changelog release header and extract the latest release version
-          VERSION=$(grep -m1 '^## ' CHANGELOG.md | sed 's/^## //')
-          echo "Building version: $VERSION"
-          # Get the build datetime
-          BUILD_DATETIME=$(date +"%Y-%m-%d %H:%M")
-          echo "Build datetime: $BUILD_DATETIME"
-          ## Get the git hash of the last commit
-          GIT_HASH=$(git rev-parse --short HEAD)
+          set -euo pipefail
+
+          # Short git hash for tagging
+          GIT_HASH="$(git rev-parse --short=12 HEAD)"
           echo "Git hash: $GIT_HASH"
 
-          if [[ "$VERSION" == *dev* ]]; then
-            TAG_MOVING="${IMAGE_NAME}:dev"
-          elif [[ "$VERSION" == *rc* ]]; then
-            TAG_MOVING="${IMAGE_NAME}:rc"
-          else:
-            TAG_MOVING="${IMAGE_NAME}:latest"
+          # Build datetime
+          BUILD_DATETIME="$(date +"%Y-%m-%d %H:%M")"
+          echo "Build datetime: $BUILD_DATETIME"
+
+          TAG_SHA="${IMAGE_NAME}:${GIT_HASH}"
+
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            # Push to main => sha + dev
+            TAG_ENV="${IMAGE_NAME}:dev"
+            RELEASE_TAG="dev"
+            DOCKER_TAGS=(-t "$TAG_SHA" -t "$TAG_ENV")
+            PUSH_TAGS=("$TAG_SHA" "$TAG_ENV")
+            echo "Trigger: main branch push"
+          else
+            # Tag push => validate already ran => sha + git tag (+ latest if pure X.Y.Z)
+            TAG_NAME="${GITHUB_REF_NAME}"
+            TAG_VER="${IMAGE_NAME}:${TAG_NAME}"
+            RELEASE_TAG="${TAG_NAME}"
+
+            DOCKER_TAGS=(-t "$TAG_SHA" -t "$TAG_VER")
+            PUSH_TAGS=("$TAG_SHA" "$TAG_VER")
+
+            # latest only if exactly Major.Minor.Patch (no prerelease/build)
+            if [[ "$TAG_NAME" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+              TAG_LATEST="${IMAGE_NAME}:latest"
+              DOCKER_TAGS+=(-t "$TAG_LATEST")
+              PUSH_TAGS+=("$TAG_LATEST")
+              echo "Pure semver detected; also tagging :latest"
+            fi
+
+            echo "Trigger: tag push ($TAG_NAME)"
           fi
-          TAG_FIXED="${IMAGE_NAME}:${VERSION}"
-          RELEASE_TAG="${VERSION}"
-          echo "Tagging as Docker image with: $TAG_FIXED and $TAG_MOVING"
-          docker build --pull -t "$TAG_FIXED" -t "$TAG_MOVING" --build-arg RELEASE_TAG="$RELEASE_TAG" --build-arg BUILD_DATETIME="$BUILD_DATETIME" --build-arg GIT_HASH="$GIT_HASH" .
-          docker push "$TAG_FIXED"
-          docker push "$TAG_MOVING"
+
+          echo "Tagging Docker image as: ${PUSH_TAGS[*]}"
+
+          docker build --pull \
+            "${DOCKER_TAGS[@]}" \
+            --build-arg RELEASE_TAG="$RELEASE_TAG" \
+            --build-arg BUILD_DATETIME="$BUILD_DATETIME" \
+            --build-arg GIT_HASH="$GIT_HASH" \
+            .
+
+          for t in "${PUSH_TAGS[@]}"; do
+            docker push "$t"
+          done
+
