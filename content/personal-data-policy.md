@@ -2,7 +2,7 @@
 
 ## 1. Inledning
 
-Denna instans av [microbirding](https://github.com/pacoispaco/microbirding)-appen (fortsattningsvis kallat "denna tjänst") driftas på en virtuell [Digitalocean](https://www.digitalocean.com/) server i Nederländerna. Inga personuppgifter lagras i denna app eller på någon server.
+Denna instans av [microbirding](https://github.com/pacoispaco/microbirding)-appen (fortsattningsvis kallat "denna tjänst") driftas på en virtuell [Digitalocean](https://www.digitalocean.com/) server i Nederländerna. Inga personuppgifter lagras i denna tjänst eller på någon server.
 
 ## 2. Hämtning och behandling av personuppgifter
 

@@ -10,6 +10,8 @@ Men [SthlmBetong BAND](https://www.band.us/@sthlmbetong) då? Det är utmärkt v
 
 Denna app är ett komplement till SthlmBetong BAND. Den är i ett första steg avsedd att bara göra det enkelt att ha koll på vad som rapporterats idag och andra dagar i betongen. Vilken glädje att kunna se vad som rapporterades i betongen vilken dag som helst, t.ex. [den 15 maj, 2005](/?date=2005-05-15)!
 
+Det finns en [SthlmBetong bloggsajt](https://blog.sthlmbetong.se/tag/betong-appen/) som har kompletterande kompletterande info om appen.
+
 ## Var kommer uppgifterna ifrån?
 
 Uppgifter om obsar kommer från Artportalen och hämtas via Artportalens API. Sökningen i API:et görs med en så kallad geopolygon, som just beskriver gränserna för SthlmBetong. Det är samma geopolygon som använts i denna [karta](/maps).
