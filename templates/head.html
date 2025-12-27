@@ -46,6 +46,27 @@
 
   <!-- Tracking code for Umami -->
   <script defer src="https://analytics.paulcohen.se/script.js" data-website-id="{{ umami_website_id }}"></script>
+  <!-- Tracking Umami events -->
+  <script>
+    (function () {
+      function track() {
+        if (location.pathname !== '/') return;
+
+        const date = new URLSearchParams(location.search).get('date');
+        if (!date || !window.umami?.track) return;
+
+        window.umami.track('observations_date', { date });
+      }
+
+      // Track normal full page loads (including direct URL changes)
+      window.addEventListener('load', track);
+
+      // Track HTMX-driven navigation that updates URL/history (if you use it)
+      document.addEventListener('htmx:afterSwap', track);
+      window.addEventListener('popstate', track);
+    })();
+  </script>
+
 
   <style>
     /* Minimal, system font stack for a Google/GitHub-like feel */
