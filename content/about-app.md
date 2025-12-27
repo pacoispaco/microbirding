@@ -2,15 +2,15 @@
 
 ## Inledning
 
-Denna app finns till för att stimulera fågelskådning och artrace i Stockholms betong. 
+Denna app finns till för att stimulera fågelskådning och artrace i Stockholms betong. Staden har mycket mer att erbjuda i natur- och fågelväg än många tror. Med lite uppmärksamhet kan parker, innergårdar och bakgator bjuda på fina överaskningar, vilket inte minst sommarens ringnäbbade mås i Kungsträdgården vittnade om. Men det pågår ett ständigt flöde av arter som av olika skäl använder staden som sin tillflykt. Det gäller bara att hitta dem.
 
-Just nu visar den obsar per dag, för idag och tidigare dagar, i betongen. För att se vad som är gränserna för betongen så finns det en [karta](/maps). Det är den mytomspunna betongkommittén som bestämt de gränserna. Betongkommitténs ord är lag.
+Just nu visar appen obsar per dag, för idag och tidigare dagar, i betongen. För att se vilket område som avses med “Betongen” så finns det en karta som definierar gränserna. Dessa gränser ritades upp på en telefonkatalogskarta och beslutades under högtidliga former vid en betongskådarpub (alltså en aw för BÖP:ar (betongskådningsöverintresserade personer) på dåvarande Allemans bar på Mäster Samuelsgatan i hjärtat av Betongen ca år 2002.
 
 Men [SthlmBetong BAND](https://www.band.us/@sthlmbetong) då? Det är utmärkt verktyg för att ha koll på betonglarm och även larma när du ser att en Alpseglare sveper in över Södersjukhuset eller en Ringnäbbad mås käkar pommes i Kungsan. Ja, det ska du så klart larma på [Club300:s Bird Alarm](https://club300.se/bird-alarm/om-bird-alarm/) också!
 
 Denna app är ett komplement till SthlmBetong BAND. Den är i ett första steg avsedd att bara göra det enkelt att ha koll på vad som rapporterats idag och andra dagar i betongen. Vilken glädje att kunna se vad som rapporterades i betongen vilken dag som helst, t.ex. [den 15 maj, 2005](/?date=2005-05-15)!
 
-Det finns en [SthlmBetong bloggsajt](https://blog.sthlmbetong.se/tag/betong-appen/) som har kompletterande kompletterande info om appen.
+Det finns en [SthlmBetong blogg](https://blog.sthlmbetong.se/tag/betong-appen/) som har kompletterande kompletterande info om appen.
 
 ## Var kommer uppgifterna ifrån?
 
@@ -42,5 +42,5 @@ Ja, tänk om man kunde spå in i framtiden! Några tänkta funktioner i denna ap
 
 ## Historia
 
-För länge sedan fanns det en annan webbsajt för SthlmBetong, men den försvann pga anledningar. Det kommer att komma mer information om både den webbsajten och hela SthlmBetong som idé, koncept och livsstil!
+För länge sedan fanns det en annan webbsajt för SthlmBetong, men den försvann pga anledningar. Det kommer att komma mer information om både den webbsajten och hela SthlmBetong som idé, koncept och livsstil på [SthlmBetong bloggen](https://blog.sthlmbetong.se/)!
 
