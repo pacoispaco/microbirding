@@ -4,6 +4,14 @@ All notable changes to the Microbirding/SthlmBetong web app are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.1
+
+**Date: 2026-01-03**
+
+### Miscellaneous
+
+- [x] Track selected date via Umami.
+
 ## 0.1.0
 
 **Date: 2025-12-26**
