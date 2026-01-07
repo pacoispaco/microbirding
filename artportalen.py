@@ -7,11 +7,13 @@ import logging
 import requests
 from requests.exceptions import HTTPError
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from tenacity import (
     retry, stop_after_attempt, wait_exponential,
     retry_if_exception, before_sleep_log)
 import httplogs
+from dataclasses import dataclass
+from pprint import pformat
 
 # Constants
 DEFAULT_FROM_DATE_RFC3339 = '1900-01-01T00:00'
@@ -293,7 +295,7 @@ class SearchFilter:
 
 
 class ObservationsAPI:
-    """Handles requests to Artportalens Species Observations Service API."""
+    """Handles requests to Artportalens Observations Service API."""
 
     # See the Observation object in the API for alternative attributes to sort by.
     DEFAULT_SORT_BY_ATTRIBUTE_FOR_OBSERVATIONS = 'event.startDate'
@@ -375,7 +377,8 @@ class ObservationsAPI:
         """Returns `take` observations starting at `skip` + 1 according to the criteria in
            the `search_filter` and the other request parameters.
            See: https://api-portal.artdatabanken.se/api-details#
-           api=sos-api-v1&operation=Observations_ObservationsBySearch"""
+           api=sos-api-v1&operation=Observations_ObservationsBySearch
+           This is the core function for retrieving observations from the API."""
         if sort_descending:
             sortOrder = 'Desc'
         else:
@@ -428,13 +431,6 @@ class ObservationsAPI:
                          extra={"exception": e})
             raise
 
-    def observations_by_georegion(self, from_date: str, to_date: str,
-                                  region_type: str, region_name: str):
-        """Returns the observations in a named geographical region."""
-
-    def observations_by_geopolygon(self, from_date: str, to_date: str, polygon: list):
-        """Returns the observations within a specified geographical polygon."""
-
     def observation_by_id(self, id: str, outputFieldSet: str):
         """Returns the observation with the given `id`, where `outputFieldSet` specifies how many
            attributes with values to return for the observation. `
@@ -469,3 +465,197 @@ class ObservationsAPI:
             return None
         else:
             return r.json()
+
+
+@dataclass(frozen=True)
+class DateTimeInterval:
+    """Represents a date and time interval."""
+    from_date: datetime
+    to_date: datetime
+
+
+class ObservationsByTimeIntervalRequester:
+    """A utility class for downloading all, or a larger number, of observations from Artportalens
+       Observations Service API. The API has a limit of offset == 50.000 when getting paged results
+       from a search, so we need to split searches into multiple searches where each has less than
+       `max_no`(50.000) records."""
+
+    def __init__(self,
+                 oapi: ObservationsAPI,
+                 geopolygon: list[tuple[float]],
+                 from_date: datetime,
+                 to_date: datetime,
+                 taxon_ids: list[int],
+                 take: int = 1000,
+                 max_no: int = 50000):
+        """Initialization."""
+        self.oapi = oapi
+        self.geopolygon = geopolygon
+        self.from_date = from_date
+        self.to_date = to_date
+        self.taxon_ids = taxon_ids
+        self.take = take
+        self.max_no = max_no
+        self.subrequesters = None
+        self.no_of_observations = None
+
+        # Get the number of observations in the time interval defined bytes
+        # [from_date, to_date]
+        sfilter = SearchFilter()
+        sfilter.set_taxon(ids=self.taxon_ids)
+        sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
+                                                        "coordinates": [self.geopolygon]}])
+        sfilter.set_verification_status()
+        sfilter.set_output(fieldSet="Extended")
+        sfilter.set_date(startDate=self.from_date.isoformat(),
+                         endDate=self.to_date.isoformat(),
+                         dateFilterType="OverlappingStartDateAndEndDate",
+                         timeRanges=[])
+        sfilter.set_modified_date()
+        sfilter.set_dataProvider()
+        try:
+            observations = self.oapi.observations(sfilter,
+                                                  skip=0,
+                                                  take=1,
+                                                  sort_descending=True)
+        except Exception as e:
+            # Log unexpected errors and propagate (so caller can handle).
+            logger.error(("Exception caught in "
+                          "artportalen.ObservationsByTimeIntervalRequester__init__()"),
+                         exc_info=True,
+                         extra={"exception": e})
+            raise
+
+        self.no_of_observations = observations["totalCount"]
+        if self.no_of_observations > self.max_no:
+            # Split the time interval in two and create two ObservationsByTimeIntervalRequester
+            pass
+            interval = DateTimeInterval(from_date=self.from_date, to_date=self.to_date)
+            intervals = self.__interval_split__(interval)
+            subrequester_1 = ObservationsByTimeIntervalRequester(self.oapi,
+                                                                 self.geopolygon,
+                                                                 intervals[0].from_date,
+                                                                 intervals[0].to_date,
+                                                                 self.taxon_ids,
+                                                                 self.take,
+                                                                 self.max_no)
+            subrequester_2 = ObservationsByTimeIntervalRequester(self.oapi,
+                                                                 self.geopolygon,
+                                                                 intervals[1].from_date,
+                                                                 intervals[1].to_date,
+                                                                 self.taxon_ids,
+                                                                 self.take,
+                                                                 self.max_no)
+            self.subrequesters = [subrequester_1, subrequester_2]
+
+    def _short_polygon_repr_(self, polygon):
+        if not polygon:
+            return "[]"
+        if len(polygon) <= 2:
+            return repr(polygon)
+        return f"[{polygon[0]!r}, ..., {polygon[-1]!r}]"
+
+    def __repr__(self) -> str:
+        return self._repr_tree_()
+
+    def _repr_tree_(self, indent: int = 0) -> str:
+        pad = " " * indent
+
+        header = {
+            "geopolygon": self._short_polygon_repr_(self.geopolygon),
+            "from_date": self.from_date,
+            "to_date": self.to_date,
+            "taxon_ids": self.taxon_ids,
+            "take": self.take,
+            "max_no": self.max_no,
+            "no_of_observations": self.no_of_observations,
+        }
+
+        lines = [pad + "ObservationsByTimeIntervalRequester("]
+        for k, v in header.items():
+            lines.append(pad + f"  {k}=" + pformat(v))
+
+        if not self.subrequesters:
+            lines.append(pad + "  subrequesters=None")
+        else:
+            lines.append(pad + "  subrequesters=[")
+            for sr in self.subrequesters:
+                lines.append(sr._repr_tree_(indent + 4) + ",")
+            lines.append(pad + "  ]")
+
+        lines.append(pad + ")")
+        return "\n".join(lines)
+
+    def print_tree(self, prefix: str = "", is_last: bool = True) -> None:
+        connector = "└─ " if is_last else "├─ "
+
+        print(
+            f"{prefix}{connector}"
+            f'from_date="{self.from_date.isoformat()}"\n'
+            f"{prefix}   "
+            f'to_date="{self.to_date.isoformat()}"\n'
+            f"{prefix}   "
+            f"no_of_observations={self.no_of_observations}"
+        )
+
+        if not self.subrequesters:
+            return
+
+        next_prefix = prefix + ("   " if is_last else "│  ")
+
+        for i, sr in enumerate(self.subrequesters):
+            print()  # blank line between siblings
+            sr.print_tree(
+                prefix=next_prefix,
+                is_last=(i == len(self.subrequesters) - 1),
+            )
+
+    def __interval_split__(self, interval: DateTimeInterval) -> tuple[DateTimeInterval]:
+        """Returns a split of the `interval` in the form of two new non-overlapping equally large
+           DateTimeInterval objects."""
+        mid = interval.from_date + (interval.to_date - interval.from_date)/2
+        mid_zero = mid.replace(hour=0, minute=0, second=0, microsecond=0)
+        mid_zero_plus_1ms = mid_zero + timedelta(microseconds=1)
+        interval_1 = DateTimeInterval(from_date=interval.from_date, to_date=mid_zero)
+        interval_2 = DateTimeInterval(from_date=mid_zero_plus_1ms, to_date=interval.to_date)
+        return (interval_1, interval_2)
+
+    def observations(self):
+        """Generator for getting observations from API."""
+        if self.subrequesters:
+            for o in self.subrequesters[0].observations():
+                yield o
+            for o in self.subrequesters[1].observations():
+                yield o
+        else:
+            skip = 0
+            done = False
+            while not done:
+                sfilter = SearchFilter()
+                sfilter.set_taxon(ids=self.taxon_ids)
+                sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
+                                                                "coordinates": [self.geopolygon]}])
+                sfilter.set_verification_status()
+                sfilter.set_output(fieldSet="Extended")
+                sfilter.set_date(startDate=self.from_date.isoformat(),
+                                 endDate=self.to_date.isoformat(),
+                                 dateFilterType="OverlappingStartDateAndEndDate",
+                                 timeRanges=[])
+                sfilter.set_modified_date()
+                sfilter.set_dataProvider()
+                try:
+                    _observations = self.oapi.observations(sfilter,
+                                                           skip,
+                                                           take=self.take,
+                                                           sort_descending=False)
+                except Exception as e:
+                    # Log unexpected errors and propagate (so caller can handle).
+                    logger.error(("Exception caught in "
+                                  "artportalen.ObservationsByTimeIntervalRequester.observations()"),
+                                 exc_info=True,
+                                 extra={"exception": e})
+                    raise
+                for o in _observations['records']:
+                    yield o
+                done = skip + self.take >= self.no_of_observations
+                skip += self.take

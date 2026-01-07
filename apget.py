@@ -16,6 +16,7 @@ import artportalen
 # Constants
 DEFAULT_CONF_FILE_PATH = 'adb-get.conf'
 DEFAULT_FROM_DATE_RFC3339 = '1900-01-01T00:00'
+DEFAULT_CSV_FILE_PATH = 'artdatabanken-data.csv'
 ADB_SPECIES_API_KEY_ENV_NAME = 'ARTPORTALEN_SPECIES_API_KEY'
 ADB_OBSERVATIONS_API_KEY_ENV_NAME = 'ARTPORTALEN_OBSERVATIONS_API_KEY'
 ADB_API_ROOT_URL = 'https://api.artdatabanken.se'
@@ -91,6 +92,282 @@ def pretty_print_observation(o):
 # mlat=-38.3653&mlon=144.9069#map=9/-38.3653/144.9069"))
 
 
+def csv_print_header():
+    """Print header for CSV file output."""
+    csv_header = ("collectionCode#"
+                  "dataProviderId#"
+                  "datasetName#"
+                  "ownerInstitutionCode#"
+                  "basisOfRecord.id#"
+                  "basisOfRecord.value#"
+                  "ownerInstitutionCode#"
+                  "rightsHolder#"
+                  "modified#"
+                  "identification.uncertainIdentification#"
+                  "identification.verificationStatus.id#"
+                  "identification.verificationStatus.value#"
+                  "identification.verified#"
+                  "event.discoveryMethod.id#"
+                  "event.discoveryMethod.value#"
+                  "event.startDate#"
+                  "event.endDate#"
+                  "event.plainStartDate#"
+                  "event.plainEndTime#"
+                  "event.plainEndDate#"
+                  "event.plainEndTime#"
+                  "occurrence.activity.id#"
+                  "occurrence.activity.value#"
+                  "occurrence.individualCount#"
+                  "occurrence.isNaturalOccurrence#"
+                  "occurrence.isNeverFoundObservation#"
+                  "occurrence.isNotRediscoveredObservation#"
+                  "occurrence.isPositiveObservation#"
+                  "occurrence.lifeStage.id#"
+                  "occurrence.lifeStage.value#"
+                  "occurrence.occurrenceId#"
+                  "occurrence.occurrenceStatus.id#"
+                  "occurrence.occurrenceStatus.value#"
+                  "occurrence.organismQuantity#"
+                  "occurrence.recordedBy#"
+                  "occurrence.reportedBy#"
+                  "occurrence.sensitivityCategory#"
+                  "occurrence.sex.id#"
+                  "occurrence.sex.value#"
+                  "occurrence.url#"
+                  "location.coordinateUncertaintyInMeters#"
+                  "location.county.featureId#"
+                  "location.county.name#"
+                  "location.decimalLatitude#"
+                  "location.decimalLongitude#"
+                  "location.geodeticDatum#"
+                  "location.locality#"
+                  "location.locationId#"
+                  "location.municipality.featureId#"
+                  "location.municipality.name#"
+                  "location.parish.featureId#"
+                  "location.parish.name#"
+                  "location.province.featureId#"
+                  "location.province.name#"
+                  "location.sweref99TmX#"
+                  "location.sweref99TmY#"
+                  "taxon.attributes.isInvasiveAccordingToEuRegulation#"
+                  "taxon.attributes.isInvasiveInSweden#"
+                  "taxon.attributes.isRedlisted#"
+                  "taxon.attributes.organismGroup#"
+                  "taxon.attributes.protectedByLaw#"
+                  "taxon.attributes.redlistCategory#"
+                  "taxon.attributes.sensitivityCategory.id#"
+                  "taxon.attributes.sensitivityCategory.value#"
+                  "taxon.attributes.taxonCategory.id#"
+                  "taxon.attributes.taxonCategory.value#"
+                  "taxon.class#"
+                  "taxon.family#"
+                  "taxon.genus#"
+                  "taxon.id#"
+                  "taxon.kingdom#"
+                  "taxon.order#"
+                  "taxon.phylum#"
+                  "taxon.scientificName#"
+                  "taxon.taxonId#"
+                  "taxon.vernacularName#")
+    print(csv_header)
+
+
+def csv_print_observation(o):
+    """Print observation 'o' to stdout as a CSV row."""
+    if 'ownerInstitutionCode' not in o:
+        o['ownerInstitutionCode'] = ""
+    if 'discoveryMethod' not in o['event'].keys():
+        o['event']['discoveryMethod'] = {'id': "", 'value': ""}
+    if 'plainEndTime' not in o['event'].keys():
+        o['event']['plainEndTime'] = ""
+    if 'activity' not in o['occurrence'].keys():
+        o['occurrence']['activity'] = {'id': "", 'value': ""}
+    if 'lifeStage' not in o['occurrence'].keys():
+        o['occurrence']['lifeStage'] = {'id': "", 'value': ""}
+    if 'sex' not in o['occurrence'].keys():
+        o['occurrence']['sex'] = {'id': "", 'value': ""}
+    if 'recordedBy' not in o['occurrence'].keys():
+        o['occurrence']['recordedBy'] = ""
+    if 'reportedBy' not in o['occurrence'].keys():
+        o['occurrence']['reportedBy'] = ""
+    if 'url' not in o['occurrence'].keys():
+        o['occurrence']['url'] = ""
+    if 'individualCount' not in o['occurrence']:
+        o['occurrence']['individualCount'] = ""
+    if 'organismQuantity' not in o['occurrence']:
+        o['occurrence']['organismQuantity'] = ""
+    if 'sensitivityCategory' not in o['taxon']['attributes'].keys():
+        o['taxon']['attributes']['sensitivityCategory'] = {'id': "", 'value': ""}
+    if 'vernacularName' not in o['taxon']:
+        o['taxon']['vernacularName'] = ""
+    if 'verificationStatus' not in o['identification']:
+        o['identification']['verificationStatus'] = {'id': "", 'value': ""}
+    if 'collectionCode' not in o:
+        o['collectionCode'] = ""
+    if 'rightsHolder' not in o:
+        o['rightsHolder'] = ""
+    if 'locationId' not in o['location']:
+        o['location']['locationId'] = ""
+    if 'locality' not in o['location']:
+        o['location']['locality'] = ""
+#        pprint.pprint(o)
+    print((f"{o['collectionCode']}#"
+           f"{o['dataProviderId']}#"
+           f"{o['datasetName']}#"
+           f"{o['ownerInstitutionCode']}#"
+           f"{o['basisOfRecord']['id']}#"
+           f"{o['basisOfRecord']['value']}#"
+           f"{o['ownerInstitutionCode']}#"
+           f"{o['rightsHolder']}#"
+           f"{o['modified']}#"
+           f"{o['identification']['uncertainIdentification']}#"
+           f"{o['identification']['verificationStatus']['id']}#"
+           f"{o['identification']['verificationStatus']['value']}#"
+           f"{o['identification']['verified']}#"
+           f"{o['event']['discoveryMethod']['id']}#"
+           f"{o['event']['discoveryMethod']['value']}#"
+           f"{o['event']['startDate']}#"
+           f"{o['event']['endDate']}#"
+           f"{o['event']['plainStartDate']}#"
+           f"{o['event']['plainEndTime']}#"
+           f"{o['event']['plainEndDate']}#"
+           f"{o['event']['plainEndTime']}#"
+           f"{o['occurrence']['activity']['id']}#"
+           f"{o['occurrence']['activity']['value']}#"
+           f"{o['occurrence']['individualCount']}#"
+           f"{o['occurrence']['isNaturalOccurrence']}#"
+           f"{o['occurrence']['isNeverFoundObservation']}#"
+           f"{o['occurrence']['isNotRediscoveredObservation']}#"
+           f"{o['occurrence']['isPositiveObservation']}#"
+           f"{o['occurrence']['lifeStage']['id']}#"
+           f"{o['occurrence']['lifeStage']['value']}#"
+           f"{o['occurrence']['occurrenceId']}#"
+           f"{o['occurrence']['occurrenceStatus']['id']}#"
+           f"{o['occurrence']['occurrenceStatus']['value']}#"
+           f"{o['occurrence']['organismQuantity']}#"
+           f"{o['occurrence']['recordedBy']}#"
+           f"{o['occurrence']['reportedBy']}#"
+           f"{o['occurrence']['sensitivityCategory']}#"
+           f"{o['occurrence']['sex']['id']}#"
+           f"{o['occurrence']['sex']['value']}#"
+           f"{o['occurrence']['url']}#"
+           f"{o['location']['coordinateUncertaintyInMeters']}#"
+           f"{o['location']['county']['featureId']}#"
+           f"{o['location']['county']['name']}#"
+           f"{o['location']['decimalLatitude']}#"
+           f"{o['location']['decimalLongitude']}#"
+           f"{o['location']['geodeticDatum']}#"
+           f"{o['location']['locality']}#"
+           f"{o['location']['locationId']}#"
+           f"{o['location']['municipality']['featureId']}#"
+           f"{o['location']['municipality']['name']}#"
+           f"{o['location']['parish']['featureId']}#"
+           f"{o['location']['parish']['name']}#"
+           f"{o['location']['province']['featureId']}#"
+           f"{o['location']['province']['name']}#"
+           f"{o['location']['sweref99TmX']}#"
+           f"{o['location']['sweref99TmY']}#"
+           f"{o['taxon']['attributes']['isInvasiveAccordingToEuRegulation']}#"
+           f"{o['taxon']['attributes']['isInvasiveInSweden']}#"
+           f"{o['taxon']['attributes']['isRedlisted']}#"
+           f"{o['taxon']['attributes']['organismGroup']}#"
+           f"{o['taxon']['attributes']['protectedByLaw']}#"
+           f"{o['taxon']['attributes']['redlistCategory']}#"
+           f"{o['taxon']['attributes']['sensitivityCategory']['id']}#"
+           f"{o['taxon']['attributes']['sensitivityCategory']['value']}#"
+           f"{o['taxon']['attributes']['taxonCategory']['id']}#"
+           f"{o['taxon']['attributes']['taxonCategory']['value']}#"
+           f"{o['taxon']['class']}#"
+           f"{o['taxon']['family']}#"
+           f"{o['taxon']['genus']}#"
+           f"{o['taxon']['id']}#"
+           f"{o['taxon']['kingdom']}#"
+           f"{o['taxon']['order']}#"
+           f"{o['taxon']['phylum']}#"
+           f"{o['taxon']['scientificName']}#"
+           f"{o['taxon']['taxonId']}#"
+           f"{o['taxon']['vernacularName']}#"))
+
+
+def get_observations(oapi, sapi, args):
+    """Return the observations."""
+    taxon_ids = None
+    if args.taxon_name:
+        taxa = sapi.taxa_by_name(args.taxon_name,
+                                 exact_match=args.exact_match)
+        if not taxa:
+            errmsg = (f"Error: No taxon with name '{args.taxon_name}' found "
+                      "in Artdatabankens Species API.")
+            print(errmsg)
+            sys.exit(3)
+        else:
+            taxon_ids = [taxon["taxonId"] for taxon in taxa]
+    elif args.taxon_id:
+        taxon = sapi.taxon_by_id(args.taxon_id,
+                                 verbose=args.verbose)
+        if not taxon:
+            errmsg = (f"Error: No taxon with id '{args.taxon_id}' found "
+                      "in Artdatabankens Species API.")
+            print(errmsg)
+            sys.exit(4)
+        else:
+            taxon_ids = [args.taxon_id]
+
+    sfilter = artportalen.SearchFilter()
+    if args.polygon_file:
+        p = polygon(args.polygon_file)
+        print(p)
+        if p:
+            sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
+                                                            "coordinates": [p]}])
+        else:
+            sys.exit(5)
+    else:
+        sfilter.set_geographics_areas(areas=[{"area_type": "Municipality",
+                                              "featureId": "180"}])
+    sfilter.set_verification_status()
+    sfilter.set_output("Extended")
+    sfilter.set_date(startDate=args.from_date,
+                     endDate=args.to_date,
+                     dateFilterType="OverlappingStartDateAndEndDate",
+                     timeRanges=[])
+    sfilter.set_modified_date()
+    sfilter.set_dataProvider()
+    if taxon_ids:
+        sfilter.set_taxon(ids=taxon_ids)
+    result = oapi.observations(sfilter,
+                               skip=args.offset,
+                               take=args.limit,
+                               sort_descending=not args.sort_reverse)
+    if args.show_search_filter:
+        print("==============")
+        print("Search filter:")
+        pprint.pprint(sfilter.filter)
+    return result
+
+
+def get_all_observations(oapi, sapi, args):
+    """Return all observations between args.from_date and args.to_date. If they are not given
+       then between 1900-01-01 and the current date."""
+    p = polygon(args.polygon_file)
+    if not p:
+        sys.exit(5)
+    taxon_ids = [AVES_TAXON_ID]
+    fd = datetime.fromisoformat(args.from_date)
+    td = datetime.fromisoformat(args.to_date)
+    obtir = artportalen.ObservationsByTimeIntervalRequester(oapi, p, fd, td, taxon_ids)
+    if args.print_csv_data_file:
+        csv_print_header()
+    i = 1
+    for o in obtir.observations():
+        if args.print_csv_data_file:
+            csv_print_observation(o)
+        else:
+            print(o)
+        i += 1
+
+
 def today_RFC3339():
     """Today as an RFC 3339 / ISO 8601 date and time string, in minute resolution."""
     today = datetime.now()
@@ -133,10 +410,16 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
                         help="Print full info on every taxon when searching on taxon name [False]")
     parser.add_argument('--pretty-print', action='store_true', default=False,
                         help="Pretty print all info.")
+    parser.add_argument('--output-csv-file', default=DEFAULT_CSV_FILE_PATH,
+                        help="Output CSV file [%s]." % (DEFAULT_CSV_FILE_PATH))
+    parser.add_argument('-d', '--print-csv-data-file', action='store_true', default=False,
+                        help="Print output as a CSV data file with '#' as separator.")
     parser.add_argument('-V', '--get-api-versions', action='store_true', default=False,
                         help="Get API versions.")
     parser.add_argument('-g', '--get-observations', action='store_true', default=False,
                         help="Get observations [False]")
+    parser.add_argument('--get-all-observations', action='store_true', default=False,
+                        help="Get all observations [False]")
     parser.add_argument('-s', '--show-search-filter', action='store_true', default=False,
                         help="Show the search filter used [False]. Use with '-g'")
     parser.add_argument('-r', '--sort-reverse', action='store_true', default=False,
@@ -207,64 +490,22 @@ export ADB_OBSERVATIONS_API_KEY=<API-KEY>"""
                 [pretty_print_taxon(t) for t in taxon_data]
             else:
                 pprint.pprint(taxon_data)
-    if args.polygon_file and not args.get_observations:
-        print("Error: --polygon-file flag can only be used with -g flag.")
+    if args.polygon_file and not (args.get_observations or args.get_all_observations):
+        print(("Error: --polygon-file flag can only be used with "
+               "-g or --get-all-observations flag."))
         sys.exit(6)
     if args.get_observations:
-        result = None
-        if args.taxon_name:
-            taxa = sapi.taxa_by_name(args.taxon_name,
-                                     exact_match=args.exact_match)
-            if not taxa:
-                errmsg = (f"Error: No taxon with name '{args.taxon_name}' found "
-                          "in Artdatabankens Species API.")
-                print(errmsg)
-                sys.exit(3)
-            else:
-                taxon_ids = [taxon["taxonId"] for taxon in taxa]
-        elif args.taxon_id:
-            taxon = sapi.taxon_by_id(args.taxon_id,
-                                     verbose=args.verbose)
-            if not taxon:
-                errmsg = (f"Error: No taxon with id '{args.taxon_id}' found "
-                          "in Artdatabankens Species API.")
-                print(errmsg)
-                sys.exit(4)
-            else:
-                taxon_ids = [args.taxon_id]
-        sfilter = artportalen.SearchFilter()
-        if args.polygon_file:
-            p = polygon(args.polygon_file)
-            if p:
-                sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
-                                                                "coordinates": [p]}])
-            else:
-                sys.exit(5)
-        else:
-            sfilter.set_geographics_areas(areas=[{"area_type": "Municipality",
-                                                  "featureId": "180"}])
-        sfilter.set_verification_status()
-        sfilter.set_output()
-        sfilter.set_date(startDate=args.from_date,
-                         endDate=args.to_date,
-                         dateFilterType="OverlappingStartDateAndEndDate",
-                         timeRanges=[])
-        sfilter.set_modified_date()
-        sfilter.set_dataProvider()
-        if args.taxon_name or args.taxon_id:
-            sfilter.set_taxon(ids=taxon_ids)
-        result = oapi.observations(sfilter,
-                                   skip=args.offset,
-                                   take=args.limit,
-                                   sort_descending=not args.sort_reverse)
+        result = get_observations(oapi, sapi, args)
         if args.pretty_print:
             [pretty_print_observation(r) for r in result["records"]]
+        elif args.print_csv_data_file:
+            csv_print_header()
+            [csv_print_observation(r) for r in result["records"]]
         else:
             pprint.pprint(result)
-        if args.show_search_filter:
-            print("==============")
-            print("Search filter:")
-            pprint.pprint(sfilter.filter)
+        sys.exit(0)
+    if args.get_all_observations:
+        get_all_observations(oapi, sapi, args)
         sys.exit(0)
 
 
