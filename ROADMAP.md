@@ -37,7 +37,7 @@ Tech and design principles:
 Now (January - March 2026):
 * Color and style high-lighting of unusual observations.
 * Show basic info and statistics on all observations ever made in an area.
-* Fix some of the [issues](https://github.com/pacoispaco/microbirding/issues)
+* Fix some of the [issues](https://github.com/pacoispaco/microbirding/issues).
 
 Next (April - June 2026):
 * Users can register accounts.
@@ -50,7 +50,7 @@ Later (6+ months)
 # Backlog and ideas
 
 Known issues:
-* [GitHub issues for this repository](https://github.com/pacoispaco/microbirding/issues)
+* [Issues](https://github.com/pacoispaco/microbirding/issues).
 
 Ideas:
 * Add support for more detailed statistics and graphs. For example based on the phenology and/or activity of the observed birds.
