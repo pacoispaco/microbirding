@@ -6,17 +6,15 @@ The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm
   * Keeping tack of year and total lists for individual birders for that area, as well as keeping a total list of all birds seen in the area.
   * Providing a map of the area with the best birding spots.
 
-This app could be both fun and could contribute to create awareness of the natural diversity in urban areas like central Stockholm.
-
-Eventually it should support more microbirding and urban locations in Sweden. You can read more about the aim and background in background.md.
+This app could be both fun and could contribute to create awareness of the natural diversity in urban areas like central Stockholm. You can see it up and running at [app.sthlmbetong.se](https://app.sthlmbetong.se).
 
 ![Image of web app](./resources/app.sthlmbetong.se.png)
 
-**NOTE: Currently this app and code is in prototype status.**
+Eventually it will support more microbirding and urban locations in Sweden. You can read more about the aim and background in the [ROADMAP](./ROADMAP.md).
 
 # Design and implementation
 
-This web app is a HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It will eventually need to persist some data to a database like SQLite or MongoDB. Due to rate limiting and performance issues with the Artportalen API:s it will probably need to have a caching implementation, probably using Valkey/Redis.
+This web app is a HDA (Hypermedia Driven Application) and mobile-first web application written in Python using FastAPI and HTMX & Tailwind CSS. It will eventually need to persist some data to a database like SQLite, DuckDB or MongoDB. Due to rate limiting and performance issues with the Artportalen API:s it will probably need to have a caching implementation, probably using Valkey/Redis.
 
 It uses the Swedish Artportalen APIs to get information on registered observations and species data. Due to limitations in the Artportalen Observations API there are also limitations in what this app will be able to do.
 
@@ -26,8 +24,6 @@ There exist two major blockers:
   * Observations of more rare birds in Artportalen, are grouped in a main observation and then sub-observations made of the same bird by other observers. The API only provides information on the main observation, not sub-observations. That means that some observations of rare birds made by some observers can't be retrieved from the API.
 
 Apart from those two blockers, there are other limitations in the Artportalen that make it cumbersome to compile lists. Challenges exist with handling personal data in the current implementation of both Artportalen and the Artportalen API in a GDPR compliant way. These challenges also makes it difficult for clients of the API to handle personal data in a GDPR compliant way.
-
-You can read more about the technical design, implementation ideas and the current blockers and problems with Artportalen in design.md.
 
 # To get started
 
