@@ -19,6 +19,7 @@ import atexit
 import logging
 import logging.config
 import time
+import csv
 from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
@@ -468,6 +469,87 @@ def get_maps(request: Request):
 
     result = templates.TemplateResponse("page-maps.html",
                                         {"request": request,
+                                         "version_info": {"release": release_tag(),
+                                                          "built": build_datetime_tag(),
+                                                          "git_hash": git_hash_tag()},
+                                         "environment": settings.ENVIRONMENT,
+                                         "umami_website_id": settings.UMAMI_WEBSITE_ID})
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+SWEDISH_MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun",
+                  "jul", "aug", "sep", "okt", "nov", "dec"]
+SWEDISH_RARITY_CATEGORIES = {"Very common": "M. vanlig",
+                             "Common": "Vanlig",
+                             "Uncommon": "Ovanlig",
+                             "Rare": "Sällsynt",
+                             "Very rare": "M. sällsynt"}
+
+
+def format_mm_dd_swedish(mm_dd: str) -> str:
+    """Change dates from MM-DD to numerical day of the month followed by the initial three letters
+       of the name of the month in Swedish."""
+    dt = dtime.strptime(f"2000-{mm_dd}", "%Y-%m-%d")
+    return f"{dt.day} {SWEDISH_MONTHS[dt.month - 1]}"
+
+
+def dummy_species_data():
+    """Dummy species data."""
+#    {"name": "Skrattmås",
+#     "observations": 10164,
+#     "earliest_date": "1950-07-21",
+#     "latest_date": "2026-01-06",
+#     "earliest_date_any_year": "01-01",
+#     "median_earliest_date_per_year": "01-01",
+#     "avg_earliest_date_per_year": "01-21",
+#     "latest_date_any_year": "12-31",
+#     "median_latest_date_per_year": "12-18",
+#     "avg_latest_date_per_year": "09-29",
+#     "rarity_classification": "TBD"}
+    species = []
+    with open("./data/test/sthlmbetong-1800-01-01--2026-01-06-summering.2.csv",
+              newline="",
+              encoding="utf-8") as f:
+        reader = csv.DictReader(f, delimiter=";")
+        for row in reader:
+            # Convert numeric fields if needed
+            row["name"] = row["taxon.vernacularName"]
+            obs = int(row["observations"])
+            # Change rarity category to Swedish
+            row["rarity_classification"] = SWEDISH_RARITY_CATEGORIES[row["rarity_classification"]]
+            # Put spaces between every group of three digits
+            row["observations"] = f"{obs:,}".replace(",", " ")
+            d = format_mm_dd_swedish(row["earliest_date_any_year"])
+            row["earliest_date_any_year"] = d
+            d = format_mm_dd_swedish(row["median_earliest_date_per_year"])
+            row["median_earliest_date_per_year"] = d
+            d = format_mm_dd_swedish(row["avg_earliest_date_per_year"])
+            row["avg_earliest_date_per_year"] = d
+            d = format_mm_dd_swedish(row["latest_date_any_year"])
+            row["latest_date_any_year"] = d
+            d = format_mm_dd_swedish(row["median_latest_date_per_year"])
+            row["median_latest_date_per_year"] = d
+            d = format_mm_dd_swedish(row["avg_latest_date_per_year"])
+            row["avg_latest_date_per_year"] = d
+            species.append(row)
+    return species
+
+
+@app.get("/species", response_class=HTMLResponse)
+def get_species(request: Request):
+    """The species page (page-species.html) displaying info on all species that have been observed
+       in the area."""
+    tic = time.perf_counter_ns()
+
+    species = dummy_species_data()
+
+    result = templates.TemplateResponse("page-species.html",
+                                        {"request": request,
+                                         "species": species,
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
                                                           "git_hash": git_hash_tag()},

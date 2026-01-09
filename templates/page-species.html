@@ -1,0 +1,164 @@
+{% set rarity_badge = {
+  "M. vanlig": "bg-emerald-200 text-emerald-950 ring-emerald-300 dark:bg-emerald-900/50 dark:text-emerald-100 dark:ring-emerald-700",
+  "Vanlig":      "bg-lime-200    text-lime-950    ring-lime-300    dark:bg-lime-900/50    dark:text-lime-100    dark:ring-lime-700",
+  "Ovanlig":    "bg-yellow-200  text-yellow-950  ring-yellow-300  dark:bg-yellow-900/50  dark:text-yellow-100  dark:ring-yellow-700",
+  "Sällsynt":        "bg-orange-200  text-orange-950  ring-orange-300  dark:bg-orange-900/50  dark:text-orange-100  dark:ring-orange-700",
+  "M. sällsynt":   "bg-red-200     text-red-950     ring-red-300     dark:bg-red-900/50     dark:text-red-100     dark:ring-red-700"
+} %}
+
+
+<!DOCTYPE html>
+<html lang="sv" class="h-full">
+
+  <!-- The head element shared by all pages -->
+  {% include 'head.html' %}
+
+<body class="h-full min-h-screen flex flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
+ 
+  <!-- The header and nav elements shared by all pages -->
+  {% include 'header.html' %}
+
+    <!-- Main -->
+    <main class="mb-main">
+
+      <!-- Section with species -->
+      <section id="species-section" class="mb-left-section">
+        <div class="mb-card">
+
+          <!-- Map header -->
+          <div class="mb-card-header">
+            <h2 class="text-sm font-semibold">Arter (1800-01-01 -- 2026-01-08)</h2>
+          </div>
+
+          <!-- Grid with observations -->
+          <div class="grid grid-cols-1 lg:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
+              
+            {% if species %}
+              {% if species[0] == "Failed" %}
+                <div class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
+                  Failed to get species, probably because the database is empty.
+                </div>
+              {% else %}
+                {% for s in species %}
+                  {% if s.category == "Total" %}
+                    <div class="p-3 text-sm">
+                      <div class="grid grid-cols-[minmax(0,1fr)_auto_auto] items-baseline gap-x-2">
+                        <div class="text-base truncate">{{ s.name }}</div>
+                        <div class="text-center tabular-nums whitespace-nowrap">
+                          {{ s.observations }} obsar / {{ s.years_with_observations }} år
+                        </div>
+                        <div class="text-right">
+                          <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold leading-none ring-1 ring-inset whitespace-nowrap
+                                       {{ rarity_badge.get(s.rarity_classification, 'bg-neutral-200 text-neutral-900 ring-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:ring-neutral-700') }}">
+                            {{ s.rarity_classification }}
+                          </span>
+                      </div>
+                      </div>
+                      <div class="grid grid-cols-[minmax(0,1fr)_auto] pt-1 text-xs gap-x-2">
+                        <div class="truncate pl-2">Första obs: {{ s.earliest_date }}</div>
+                        <div class="text-right whitespace-nowrap">Senaste obs: {{ s.latest_date }}</div>
+                      </div>
+                      <div class="grid grid-cols-3 pt-1 text-xs gap-x-2">
+                        <div class="truncate pl-2">Tidigast: {{ s.earliest_date_any_year }}</div>
+                        <div class="truncate text-center">Median: {{ s.median_earliest_date_per_year }}</div>
+                        <div class="truncate text-right">Genomsnitt: {{ s.avg_earliest_date_per_year }}</div>
+                      </div>
+                      <div class="grid grid-cols-3 pt-1 text-xs gap-x-2">
+                        <div class="truncate pl-2">Senast: {{ s.latest_date_any_year }}</div>
+                        <div class="truncate text-center">Median: {{ s.median_latest_date_per_year }}</div>
+                        <div class="truncatetext-right">Genomsnitt: {{ s.avg_latest_date_per_year }}</div>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+          </div>
+
+
+          <!-- Table with observations for larger than mobile displays -->
+          <table class="hidden lg:table w-full table-fixed border-collapse divide-y divide-neutral-200 dark:divide-neutral-700">
+            <colgroup>
+              <col class="w-[13%]">
+              <col class="w-[9%]">
+              <col class="w-[9%]">
+              <col class="w-[9%]">
+              <col class="w-[8%]">
+              <col class="w-[8%]">
+              <col class="w-[8%]">
+              <col class="w-[8%]">
+              <col class="w-[8%]">
+              <col class="w-[8%]">
+              <col class="w-[12%]">
+            </colgroup>
+
+           <thead class="table-header-group">
+              <tr>
+                <th class="text-sm text-left px-3 py-2">Namn</th>
+                <th class="text-sm text-left px-3 py-2">Antal obsar</th>
+                <th class="text-sm text-left px-3 py-2">Första obs</th>
+                <th class="text-sm text-left px-3 py-2">Senaste obs</th>
+                <th class="text-sm text-left px-3 py-2">Tidigaste årsobs</th>
+                <th class="text-sm text-left px-3 py-2">Tidigaste årsobs (median)</th>
+                <th class="text-sm text-left px-3 py-2">Tidigaste årsobs (medel)</th>
+                <th class="text-sm text-left px-3 py-2">Senaste årsobs</th>
+                <th class="text-sm text-left px-3 py-2">Senaste årsobs (median)</th>
+                <th class="text-sm text-left px-3 py-2">Senaste årsobs (medel)</th>
+                <th class="text-sm text-left px-3 py-2">Sällsynthet</th>
+              </tr>
+            </thead>
+
+            <tbody class="table-row-group text-sm divide-y divide-neutral-200 dark:divide-neutral-700 [&>tr>td]:px-3 [&>tr>td]:py-2">
+              {% if species %}
+                {% if species[0] == "Failed" %}
+                   <li class="p-3 bg-neutral-50 dark:bg-neutral-800/70 italic text-red-600">
+                     Failed to get species, probably because the database is empty.
+                   </li>
+                {% else %}
+                  {% for s in species %}
+                    {% if s.category == "Total" %}
+                      <tr>
+                        <td class="align-baseline truncate">{{ s.name }}</td>
+                        <td class="align-baseline truncate">{{ s.observations }} / {{ s.years_with_observations }} år</td>
+                        <td class="align-baseline truncate">{{ s.earliest_date }}</td>
+                        <td class="align-baseline truncate">{{ s.latest_date }}</td>
+                        <td class="align-baseline truncate">{{ s.earliest_date_any_year }}</td>
+                        <td class="align-baseline truncate">{{ s.median_earliest_date_per_year }}</td>
+                        <td class="align-baseline truncate">{{ s.avg_earliest_date_per_year }}</td>
+                        <td class="align-baseline truncate">{{ s.latest_date_any_year }}</td>
+                        <td class="align-baseline truncate">{{ s.median_latest_date_per_year }}</td>
+                        <td class="align-baseline truncate">{{ s.avg_latest_date_per_year }}</td>
+                        <td class="align-baseline truncate">{{ s.rarity_classification }}</td>
+                      </tr>
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endif %}
+            </tbody>
+          </table>
+
+
+
+        </div>
+      </section>
+
+      <!-- Right hand area with birding sites -->
+      <section class="mb-right-section invisible md:visible">
+        <div class="mb-card">
+          <div class="mb-card-header">
+            <h2 class="text-sm font-semibold">Art: Busksångare (OBS! Dummy data nu)</h2>
+          </div>
+          <!--<div class="overflow-x-auto">-->
+          <div class="mb-card-last-contents">
+             Här listar man alla obsar på vald art och andra filtreringsattribut (från datum, till datum, aktivitet etc).
+          </div>
+        </div>
+      </section>
+ 
+  </main>
+
+  <!-- The footer element shared by all pages -->
+  {% include 'footer.html' %}
+
+</body>
+</html>
