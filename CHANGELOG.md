@@ -14,11 +14,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- [ ] Add species page that lists observation statistics for all observed species.
+- [ ] Add species page that shows observation statistics for all observed species in the SthlmBetong geopolygon area.
+- [ ] Add color and typographical styling of species names based on rarity classification, via file-based configuration.
 
 ### Miscellaneous
 
-- [ ] Add local database with all observations which is synced with observations in Artportalen every 5 minutes or every other minute.
+- [ ] Add support for downloading all observations up to the current time, within a given geopolygon area, and saving them in a local cache database.
+- [ ] Add support for downloading all new and modified observations since the last download, and updating the local cache database. The schedule for downloading new and modified observations is configurable.
+- [ ] Add support for generating rarity classification for species based on all observations in the cache database and according to a file-based configuration of classification rules. 
+- [ ] Updated the personal data policy to reflect the above changes. No personal data processing is done.
 
 ## 0.1.1
 

@@ -486,6 +486,8 @@ class ObservationsByTimeIntervalRequester:
                  from_date: datetime,
                  to_date: datetime,
                  taxon_ids: list[int],
+                 m_from_date: datetime = None,
+                 m_to_date: datetime = None,
                  take: int = 1000,
                  max_no: int = 50000):
         """Initialization."""
@@ -493,6 +495,8 @@ class ObservationsByTimeIntervalRequester:
         self.geopolygon = geopolygon
         self.from_date = from_date
         self.to_date = to_date
+        self.m_from_date = m_from_date
+        self.m_to_date = m_to_date
         self.taxon_ids = taxon_ids
         self.take = take
         self.max_no = max_no
@@ -507,11 +511,27 @@ class ObservationsByTimeIntervalRequester:
                                                         "coordinates": [self.geopolygon]}])
         sfilter.set_verification_status()
         sfilter.set_output(fieldSet="Extended")
-        sfilter.set_date(startDate=self.from_date.isoformat(),
-                         endDate=self.to_date.isoformat(),
+        if self.from_date:
+            f_date = self.from_date.isoformat()
+        else:
+            f_date = None
+        if self.to_date:
+            t_date = self.to_date.isoformat()
+        else:
+            t_date = None
+        sfilter.set_date(f_date,
+                         t_date,
                          dateFilterType="OverlappingStartDateAndEndDate",
                          timeRanges=[])
-        sfilter.set_modified_date()
+        if self.m_from_date:
+            mfdate = self.m_from_date.isoformat()
+        else:
+            mfdate = None
+        if self.m_from_date:
+            mtdate = self.m_to_date.isoformat()
+        else:
+            mtdate = None
+        sfilter.set_modified_date(mfdate, mtdate)
         sfilter.set_dataProvider()
         try:
             observations = self.oapi.observations(sfilter,
@@ -532,20 +552,26 @@ class ObservationsByTimeIntervalRequester:
             pass
             interval = DateTimeInterval(from_date=self.from_date, to_date=self.to_date)
             intervals = self.__interval_split__(interval)
-            subrequester_1 = ObservationsByTimeIntervalRequester(self.oapi,
-                                                                 self.geopolygon,
-                                                                 intervals[0].from_date,
-                                                                 intervals[0].to_date,
-                                                                 self.taxon_ids,
-                                                                 self.take,
-                                                                 self.max_no)
-            subrequester_2 = ObservationsByTimeIntervalRequester(self.oapi,
-                                                                 self.geopolygon,
-                                                                 intervals[1].from_date,
-                                                                 intervals[1].to_date,
-                                                                 self.taxon_ids,
-                                                                 self.take,
-                                                                 self.max_no)
+            import pprint
+            pprint.pprint(intervals)
+            subrequester_1 = ObservationsByTimeIntervalRequester(oapi=self.oapi,
+                                                                 geopolygon=self.geopolygon,
+                                                                 from_date=intervals[0].from_date,
+                                                                 to_date=intervals[0].to_date,
+                                                                 taxon_ids=self.taxon_ids,
+                                                                 m_from_date=self.m_from_date,
+                                                                 m_to_date=self.m_to_date,
+                                                                 take=self.take,
+                                                                 max_no=self.max_no)
+            subrequester_2 = ObservationsByTimeIntervalRequester(oapi=self.oapi,
+                                                                 geopolygon=self.geopolygon,
+                                                                 from_date=intervals[1].from_date,
+                                                                 to_date=intervals[1].to_date,
+                                                                 taxon_ids=self.taxon_ids,
+                                                                 m_from_date=self.m_from_date,
+                                                                 m_to_date=self.m_to_date,
+                                                                 take=self.take,
+                                                                 max_no=self.max_no)
             self.subrequesters = [subrequester_1, subrequester_2]
 
     def _short_polygon_repr_(self, polygon):
@@ -637,11 +663,27 @@ class ObservationsByTimeIntervalRequester:
                                                                 "coordinates": [self.geopolygon]}])
                 sfilter.set_verification_status()
                 sfilter.set_output(fieldSet="Extended")
-                sfilter.set_date(startDate=self.from_date.isoformat(),
-                                 endDate=self.to_date.isoformat(),
+                if self.from_date:
+                    fdate = self.from_date.isoformat()
+                else:
+                    fdate = None
+                if self.from_date:
+                    tdate = self.to_date.isoformat()
+                else:
+                    tdate = None
+                sfilter.set_date(fdate,
+                                 tdate,
                                  dateFilterType="OverlappingStartDateAndEndDate",
                                  timeRanges=[])
-                sfilter.set_modified_date()
+                if self.modified_from_date:
+                    mfdate = self.modified_from_date.isoformat()
+                else:
+                    mfdate = None
+                if self.modified_from_date:
+                    mtdate = self.modified_to_date.isoformat()
+                else:
+                    mtdate = None
+                sfilter.set_modified_date(mfdate, mtdate)
                 sfilter.set_dataProvider()
                 try:
                     _observations = self.oapi.observations(sfilter,
