@@ -23,9 +23,9 @@ import csv
 from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
-import app.artportalen as artportalen
+import app.artportalen.client as artportalen
 import app.mapping as mapping
-from app.mistune_tasklist_renderer import mistune_markdown_instance
+from app.utils.changelog_renderer import mistune_markdown_instance
 
 # Constants
 secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",

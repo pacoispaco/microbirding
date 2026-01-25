@@ -36,15 +36,6 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 
 # Copy app source
-#COPY app/main.py ./app/
-#COPY app/__init__.py ./app/
-#COPY app/httplogs.py ./app/
-#COPY app/artportalen.py ./app/
-#COPY app/mistune_tasklist_renderer.py ./app/
-#COPY app/mapping/__init__.py ./app/mapping/__init__.py
-#COPY app/mapping/models.py ./app/mapping/models.py
-#COPY app/mapping/repository.py ./app/mapping/repository.py
-#COPY app/resources/ ./resources
 COPY app ./app/
 COPY conf/ ./conf
 COPY data/ ./data
@@ -74,4 +65,3 @@ USER appuser
 
 # Run with Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-#CMD ["fastapi", "run", "main.py", "--host", "0.0.0.0", "--port", "8000"]
