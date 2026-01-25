@@ -4,45 +4,25 @@ All notable changes to the Microbirding/SthlmBetong web app are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.2.0-dev
+## 0.1.2
 
-**Date: In development**
+**Date: 2026-01-25**
 
-Added species page with statistics on all observations, and styling of species names based on rarity.
+Fix minor bug and refactor source code directory structure.
 
 ### Fixed
 
-- [ ] Fix issue with internal server error when observation data lacks "sex" attribute.
-- [ ] Fix issue with missing left and right margins on mid-sized displays.
-- [ ] Make text area on the Changelog page wider.
-
-### Added
-
-- [ ] Add species page that shows observation statistics for all observed species in the SthlmBetong geopolygon area.
-- [ ] Add color and typographical styling of species names based on rarity classification, via file-based configuration.
+- [x] Fix [issue 11](https://github.com/pacoispaco/microbirding/issues/11) with internal server error when observation data lacks "sex" attribute.
 
 ### Miscellaneous
 
-- [ ] Add support for downloading all observations up to the current time, within a given geopolygon area, and saving them in a local cache database.
-- [ ] Add support for downloading all new and modified observations since the last download, and updating the local cache database. The schedule for downloading new and modified observations is configurable.
-- [ ] Add support for generating rarity classification for species based on all observations in the cache database and according to a file-based configuration of classification rules. 
-- [ ] Updated the personal data policy to reflect the above changes. No personal data processing is done with the personnel data in the observations in the cache.
-
-## 0.1.2-dev
-
-**Date: In development**
-
-Refactor source-code directory structure.
-
-### Miscellaneous
-
-- [ ] Refactor source-code directory structure.
+- [x] Refactor source-code directory structure for Python code.
 
 ## 0.1.1
 
 **Date: 2026-01-03**
 
-Added tracking of selected date to see how users use that feature.
+Add tracking of selected date to see how users use that feature.
 
 ### Miscellaneous
 
@@ -52,7 +32,7 @@ Added tracking of selected date to see how users use that feature.
 
 **Date: 2025-12-26**
 
-The first proof-of-concept release.
+Release first proof-of-concept app.
 
 ### Fixed
 
