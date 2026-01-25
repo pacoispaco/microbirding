@@ -8,9 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 **Date: In development**
 
+Added species page with statistics on all observations, and styling of species names based on rarity.
+
 ### Fixed
 
-- [ ] Fix bug which causes internal server error when observation data lacks "sex" attribute.
+- [ ] Fix issue with internal server error when observation data lacks "sex" attribute.
+- [ ] Fix issue with missing left and right margins on mid-sized displays.
+- [ ] Make text area on the Changelog page wider.
 
 ### Added
 
@@ -22,11 +26,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - [ ] Add support for downloading all observations up to the current time, within a given geopolygon area, and saving them in a local cache database.
 - [ ] Add support for downloading all new and modified observations since the last download, and updating the local cache database. The schedule for downloading new and modified observations is configurable.
 - [ ] Add support for generating rarity classification for species based on all observations in the cache database and according to a file-based configuration of classification rules. 
-- [ ] Updated the personal data policy to reflect the above changes. No personal data processing is done.
+- [ ] Updated the personal data policy to reflect the above changes. No personal data processing is done with the personnel data in the observations in the cache.
+
+## 0.1.2-dev
+
+**Date: In development**
+
+Refactor source-code directory structure.
+
+### Miscellaneous
+
+- [ ] Refactor source-code directory structure.
 
 ## 0.1.1
 
 **Date: 2026-01-03**
+
+Added tracking of selected date to see how users use that feature.
 
 ### Miscellaneous
 

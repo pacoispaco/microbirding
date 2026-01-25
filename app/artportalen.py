@@ -11,9 +11,9 @@ from datetime import datetime, timedelta
 from tenacity import (
     retry, stop_after_attempt, wait_exponential,
     retry_if_exception, before_sleep_log)
-import httplogs
 from dataclasses import dataclass
 from pprint import pformat
+import app.httplogs as httplogs
 
 # Constants
 DEFAULT_FROM_DATE_RFC3339 = '1900-01-01T00:00'

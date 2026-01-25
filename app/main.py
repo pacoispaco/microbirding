@@ -23,9 +23,9 @@ import csv
 from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 # Application modules
-import artportalen
-import mapping
-from mistune_tasklist_renderer import mistune_markdown_instance
+import app.artportalen as artportalen
+import app.mapping as mapping
+from app.mistune_tasklist_renderer import mistune_markdown_instance
 
 # Constants
 secrets = ["ARTPORTALEN_OBSERVATIONS_API_KEY",
@@ -376,10 +376,9 @@ def observations_for_presentation(area_name: str, observations_date):
 
 
 # Set up FastAPI
-app = FastAPI(
-    title="Microbirding webapp",
-    version=settings.VERSION)
-app.mount("/resources", StaticFiles(directory="resources"), name="resources")
+app = FastAPI(title="Microbirding webapp", version=settings.VERSION)
+RESOURCES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources")
+app.mount("/app/resources", StaticFiles(directory=str(RESOURCES_DIR)), name="resources")
 
 
 # The application resources
