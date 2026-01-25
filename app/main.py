@@ -333,6 +333,50 @@ def transformed_observations(artportalen_observations):
             # if info["id"] begins with "http".
             info["data_source_observation_url"] = info["id"]
 
+        elif o["datasetName"] == "Lund University Biological Museum - Animal Collections":
+            info["occurrence"] = o["occurrence"]
+            locality = o["location"]["locality"].split(",")[0]
+            is_redlisted = o["taxon"]["attributes"]["isRedlisted"]
+            if is_redlisted:
+                redlist_category = o["taxon"]["attributes"]["redlistCategory"]
+            else:
+                redlist_category = None
+
+            # Set redlist info
+            info["isRedlisted"] = is_redlisted
+            info["redlistCategory"] = redlist_category
+
+            # Set number of individuals, sex, age and activity
+            if "organismQuantity" not in o["occurrence"].keys():
+                if "individualCount" not in o["occurrence"].keys():
+                    info["number"] = "?"
+                else:
+                    info["number"] = o["occurrence"]["individualCount"]
+            else:
+                info["number"] = o["occurrence"]["organismQuantity"]
+
+            if "sex" in o["occurrence"]:
+                sex = o["occurrence"]["sex"]["id"]
+                info["sex"] = artportalen.vocabulary_sex[sex]
+            else:
+                info["sex"] = None
+            if "lifeStage" in o["occurrence"]:
+                info["age"] = o["occurrence"]["lifeStage"]["value"]
+            else:
+                info["age"] = None
+            if "activity" in o["occurrence"]:
+                info["activity"] = o["occurrence"]["activity"]["value"]
+            else:
+                info["activity"] = None
+
+            # Set locality info
+            info["locality"] = locality
+            info["longitude"] = None
+            info["latitude"] = None
+
+            # Set URL to observation info at source
+            info["data_source_observation_url"] = o["occurrence"]["occurrenceId"]
+
         # Add the rarity level according to some model not yet decided!
         # TBD
 #        if info["name"] == "Ringnäbbad mås":
