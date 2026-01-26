@@ -40,7 +40,6 @@ COPY app ./app/
 COPY conf/ ./conf
 COPY data/ ./data
 COPY content/ ./content
-COPY templates/ ./templates
 COPY CHANGELOG.md .
 
 # Expose port

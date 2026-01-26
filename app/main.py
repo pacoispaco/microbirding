@@ -121,7 +121,7 @@ class Settings(BaseSettings):
        2) Key/values from a ".env" file. If they are not set there then from
        3) Default values set in this class."""
     VERSION: str = "0.0.1"
-    TEMPLATES_DIR: str = "templates"
+    TEMPLATES_DIR: str = "./app/page-templates"
     DATE_FORMAT: str = "Date: %a, %d %b %Y %H:%M:%S"
     ARTPORTALEN_OBSERVATIONS_API_KEY: Optional[str] = None
     ARTPORTALEN_SPECIES_API_KEY: Optional[str] = None
@@ -443,7 +443,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
         return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
     if not index_page:
-        index_page = "page-observations.html"
+        index_page = "./observations/page-observations.html"
 
     # Figure out which date to get observations for
     if date:
@@ -491,7 +491,7 @@ def get_changelog(request: Request):
 
     with open("./CHANGELOG.md") as f:
         html = markdown(f.read())
-    result = templates.TemplateResponse("page-changelog.html",
+    result = templates.TemplateResponse("./about/page-changelog.html",
                                         {"request": request,
                                          "changelog_html": html,
                                          "version_info": {"release": release_tag(),
@@ -511,7 +511,7 @@ def get_maps(request: Request):
     """The maps page (page-maps.html) displaying the map of SthlmBetong."""
     tic = time.perf_counter_ns()
 
-    result = templates.TemplateResponse("page-maps.html",
+    result = templates.TemplateResponse("./maps/page-maps.html",
                                         {"request": request,
                                          "version_info": {"release": release_tag(),
                                                           "built": build_datetime_tag(),
@@ -591,7 +591,7 @@ def get_species(request: Request):
 
     species = dummy_species_data()
 
-    result = templates.TemplateResponse("page-species.html",
+    result = templates.TemplateResponse("./species/page-species.html",
                                         {"request": request,
                                          "species": species,
                                          "version_info": {"release": release_tag(),
@@ -631,7 +631,7 @@ def get_about(request: Request, slug: str):
         html = markdown(f.read())
 
     result = templates.TemplateResponse(
-        "page-about.html",
+        "./about/page-about.html",
         {
             "request": request,
             "active_slug": slug,
@@ -661,7 +661,7 @@ def get_design_system(request: Request):
     observations_date = dt.fromisoformat(date)
     obs = observations_for_presentation(area_name, observations_date)
     obs_no = 5
-    result = templates.TemplateResponse("page-design-system.html",
+    result = templates.TemplateResponse("./page-design-system.html",
                                         {"request": request,
                                          "o": obs["observations"][obs_no],
                                          "version_info": {"release": release_tag(),
@@ -686,7 +686,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
-    return templates.TemplateResponse("hx-observations-list.html",
+    return templates.TemplateResponse("./observations/hx-observations-list.html",
                                       {"request": request,
                                        "day": obs["day"],
                                        "year": observations_date.year,
@@ -728,7 +728,7 @@ def get_map_style():
 async def not_found(request: Request, exc):
     """Render a 404 page for missing resources."""
     return templates.TemplateResponse(
-        "page-404.html",
+        "./page-404.html",
         {
             "request": request,
             "path": request.url.path,
