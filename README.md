@@ -8,7 +8,7 @@ The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm
 
 This app could be both fun and could contribute to create awareness of the natural diversity in urban areas like central Stockholm. You can see it up and running at [app.sthlmbetong.se](https://app.sthlmbetong.se).
 
-![Image of web app](./assets/app.sthlmbetong.se.png)
+![Image of web app](./app/assets/app.sthlmbetong.se.png)
 
 Eventually it will support more microbirding and urban locations in Sweden. You can read more about the aim and background in the [ROADMAP](./ROADMAP.md).
 
