@@ -421,11 +421,12 @@ def observations_for_presentation(area_name: str, observations_date):
 
 # Set up FastAPI
 app = FastAPI(title="Microbirding webapp", version=settings.VERSION)
-RESOURCES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "resources")
-app.mount("/app/resources", StaticFiles(directory=str(RESOURCES_DIR)), name="resources")
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
 # The application resources
+
 @app.get("/", response_class=HTMLResponse)
 def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
     """The main application page (page-observations.html) with observations for the given `date`.

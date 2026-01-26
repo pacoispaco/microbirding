@@ -8,7 +8,7 @@ The idea for the Microbirding SthlmBetong app is to provide birders in Stockholm
 
 This app could be both fun and could contribute to create awareness of the natural diversity in urban areas like central Stockholm. You can see it up and running at [app.sthlmbetong.se](https://app.sthlmbetong.se).
 
-![Image of web app](./resources/app.sthlmbetong.se.png)
+![Image of web app](./assets/app.sthlmbetong.se.png)
 
 Eventually it will support more microbirding and urban locations in Sweden. You can read more about the aim and background in the [ROADMAP](./ROADMAP.md).
 
@@ -68,7 +68,7 @@ You get these keys by registering at https://www.slu.se/artdatabanken/rapporteri
 
 To build the app locally, you must regenerate to TailwindCSS file if you've edited CSS classes in the template files:
 ```
-./tailwindcss -i ./tailwind.config.css -o ./resources/tailwind.css
+./tailwindcss -i ./tailwind.config.css -o ./app/assets/tailwind.css
 ```
 
 To build the Docker image locally:

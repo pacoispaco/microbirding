@@ -4,6 +4,14 @@ All notable changes to the Microbirding/SthlmBetong web app are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.3
+
+**Date: 2026-01-26**
+
+Refactor more code. 
+
+- [x] Refactor source-code directory structure for Jinja2 templates and static assets files.
+
 ## 0.1.2
 
 **Date: 2026-01-25**
