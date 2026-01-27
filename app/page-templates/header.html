@@ -1,10 +1,30 @@
   <!-- Header -->
  
+  <!-- DEV banner -->
   {% if environment == 'DEV' %}
-  <div class="fixed top-0 left-0 z-50 h-1 w-full bg-amber-500"></div>
+    <div class="fixed top-0 left-0 z-50 h-8 w-full bg-amber-400">
+      <div class="h-full w-full flex items-center justify-end px-3">
+        <!-- Right-side helper -->
+        <div class="flex items-center gap-2">
+          <div class="text-[11px] leading-none text-black/90 whitespace-nowrap flex items-center gap-1">
+            <span>Current Tailwind breakpoint →</span>
+          </div>
+
+          <!-- Circle badge -->
+          <div class="w-6 h-6 rounded-full bg-white font-semibold text-[11px] flex items-center justify-center shadow-sm sm:bg-red-600 md:bg-green-600 lg:bg-pink-600 xl:bg-blue-500 2xl:bg-gray-400">
+            <span class="sm:hidden">-</span>
+            <span class="hidden sm:inline md:hidden">sm</span>
+            <span class="hidden md:inline lg:hidden">md</span>
+            <span class="hidden lg:inline xl:hidden">lg</span>
+            <span class="hidden xl:inline 2xl:hidden">xl</span>
+            <span class="hidden 2xl:inline">2xl</span>
+          </div>
+        </div>
+      </div>
+    </div>
   {% endif %}
 
-  <header class="sticky top-0 z-40 bg-slate-100 border-b border-neutral-200 dark:bg-black dark:border-neutral-700">
+  <header class="sticky {{ 'top-8' if environment == 'DEV' else 'top-0' }} z-40 bg-slate-100 border-b border-neutral-200 dark:bg-black dark:border-neutral-700">
 
     <!-- Desktop menu -->
     <div class="px-3 sm:px-4 lg:px-6 h-14 flex items-center">
@@ -27,7 +47,7 @@
 <!--          <a href="#" class="mb-nav-link">Sök</a>
           <a href="#" class="mb-nav-link">Listor</a>-->
           <a href="/maps" class="mb-nav-link">Karta</a>
-<!--          <a href="/species" class="mb-nav-link">Arter</a>-->
+          <a href="/species" class="mb-nav-link">Arter</a>
           <a href="/about" class="mb-nav-link">Om</a>
         </div>
 
@@ -57,7 +77,7 @@
 <!--        <a href="#" class="mb-nav-link" title="Avancerad sökning">Sök</a>
         <a href="#" class="mb-nav-link" title="Alla sorters listor">Listor</a>-->
         <a href="/maps" class="mb-nav-link" title="Karta och lokaler">Karta</a>
-<!--        <a href="/species" class="mb-nav-link" title="Arter">Arter</a>-->
+        <a href="/species" class="mb-nav-link" title="Arter">Arter</a>
         <a href="/about" class="mb-nav-link" title="Om appen">Om</a>
       </div>
     </nav>

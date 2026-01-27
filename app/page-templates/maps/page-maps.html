@@ -4,7 +4,7 @@
   <!-- The head element shared by all pages -->
   {% include 'head.html' %}
 
-<body class="h-full min-h-screen flex flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
+<body class="{{ 'pt-8' if environment == 'DEV' else '' }} h-full min-h-screen flex flex-col bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-200">
  
   <!-- The header and nav elements shared by all pages -->
   {% include 'header.html' %}
