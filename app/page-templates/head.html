@@ -4,15 +4,30 @@
 
   <title>SthlmBetong</title>
 
-  <!-- Fallback + modern favicons -->
+  <!-- Favicons -->
   <link rel="icon" href="/app/assets/favicon.ico" sizes="any" />
-  
   {% if environment == 'DEV' %}
     <link rel="icon" type="image/png" sizes="32x32" href="/app/assets/favicon-DEV-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/app/assets/favicon-DEV-16x16.png" />
+
+    <!-- iOS home screen icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/app/assets/apple-touch-icon-DEV.png">
+
+    <!-- Installable app / shortcuts (Android + desktop Chrome/Edge, etc.) -->
+    <link rel="manifest" href="/app/assets/site.webmanifest-DEV">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
   {% else %}
-    <link rel="icon" type="image/png" sizes="32x32" href="/app/assets/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/app/assets/favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/app/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/app/assets/favicon-16x16.png">
+
+    <!-- iOS home screen icon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/app/assets/apple-touch-icon.png">
+
+    <!-- Installable app / shortcuts (Android + desktop Chrome/Edge, etc.) -->
+    <link rel="manifest" href="/app/assets/site.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
   {% endif %}
 
   <!-- MapLibre GL JS -->
