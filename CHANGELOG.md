@@ -4,6 +4,16 @@ All notable changes to the Microbirding/SthlmBetong web app are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.4
+
+**Date: 2026-01-28**
+
+Fix fav-icons for home screen shortcuts
+
+### Fixed
+
+- [x] Fix [issue 10](https://github.com/pacoispaco/microbirding/issues/10) and add desktop and home page shortcut icons for Linux, Mac, Windows, Android and iOS.
+
 ## 0.1.3
 
 **Date: 2026-01-26**
