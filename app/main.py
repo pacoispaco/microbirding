@@ -38,7 +38,8 @@ RELEASE_TAG_FILE = "./RELEASE_TAG_FILE"
 BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
 GIT_HASH_FILE = "./GIT_HASH_FILE"
 
-logger = logging.getLogger(__name__)
+APP_LOGGER_NAME = "microbirding"
+logger = logging.getLogger(APP_LOGGER_NAME)
 
 
 def release_tag():
@@ -396,8 +397,12 @@ def observations_for_presentation(area_name: str, observations_date):
 async def lifespan(app: FastAPI):
     settings = Settings()
     setup_logging(settings.LOGGING_CONFIG_FILE)
+    logger.info("Starting Microbirding app")
+    s = f"Release: {release_tag()}, Built: {build_datetime_tag()}, Git hash: {git_hash_tag()}"
+    logger.info(s)
     app.state.settings = settings
     yield
+    logging.info("Stopping Microbirding app")
 
 app = FastAPI(title="Microbirding webapp",
               version=settings.VERSION,
