@@ -1,10 +1,44 @@
 """
-Utility module with functions for logging info on HTTP requests. It assumes the Requests library
-is being used. Support for Httpx should be added.
+Module for setting up application logging.
 """
 
 import logging
+import os.path
 import json
+import atexit
+
+
+logger = logging.getLogger(__name__)
+
+
+def get_handler_by_name(name: str):
+    """This can be removed in Python 3.12 since there we have logging.getHandlerByName."""
+    for logger_name in logging.root.manager.loggerDict:
+        logger = logging.getLogger(logger_name)
+        for handler in logger.handlers:
+            if handler.name == name:
+                return handler
+    # also check root logger
+    for handler in logging.getLogger().handlers:
+        if handler.name == name:
+            return handler
+    return None
+
+
+def setup_logging(config_filepath):
+    """Set up logging. If no logging config file is found, set up default logging."""
+    if os.path.exists(config_filepath):
+        with open(config_filepath) as f:
+            config = json.load(f)
+        logging.config.dictConfig(config)
+        queue_handler = get_handler_by_name("queue_handler")
+        if queue_handler is not None:
+            queue_handler.listener.start()
+            atexit.register(queue_handler.listener.stop)
+    else:
+        logger.setLevel("DEBUG")
+        logger.warning(f"Configuration file '{config_filepath}' for logging not found. "
+                       "Using default logging settings.")
 
 
 def log_request(logger,

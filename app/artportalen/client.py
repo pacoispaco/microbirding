@@ -13,7 +13,8 @@ from tenacity import (
     retry_if_exception, before_sleep_log)
 from dataclasses import dataclass
 from pprint import pformat
-import app.utils.httplogs as httplogs
+# import app.utils.httplogs as httplogs
+from app.utils.logging import log_request
 
 # Constants
 DEFAULT_FROM_DATE_RFC3339 = '1900-01-01T00:00'
@@ -142,10 +143,10 @@ class SpeciesAPI:
         """Returns list of all taxa that match the name."""
         url = self.search_url + f"/search?searchString={name}"
         r = requests.get(url, headers=self.headers)
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Species API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+        log_request(logger,
+                    r,
+                    message="HTTP request to Species API",
+                    request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         if r.status_code == 200:
             for d in r.json():
                 if exact_match:
@@ -160,10 +161,10 @@ class SpeciesAPI:
         """Returns the taxon with the given id."""
         url = self.search_url + f"?taxa={id}"
         r = requests.get(url, headers=self.headers)
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Species API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+        log_request(logger,
+                    r,
+                    message="HTTP request to Species API",
+                    request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         if r.json() == []:
             return None
         else:
@@ -320,10 +321,10 @@ class ObservationsAPI:
            api=sos-api-v1&operation=ApiInfo_GetApiInfo"""
         url = self.url + "api/ApiInfo"
         r = requests.get(url, headers=self.headers)
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Observations API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+        log_request(logger,
+                    r,
+                    message="HTTP request to Observations API",
+                    request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         return r.json()
 
     def data_providers(self):
@@ -332,10 +333,10 @@ class ObservationsAPI:
            api=sos-api-v1&operation=DataProviders_GetDataProviders"""
         url = self.url + "/DataProviders"
         r = requests.get(url, headers=self.headers)
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Observations API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+        log_request(logger,
+                    r,
+                    message="HTTP request to Observations API",
+                    request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         return r.json()
 
     def observations_test(self):
@@ -348,10 +349,10 @@ class ObservationsAPI:
         headers = self.headers | {"Content-Type": "application/json"}
         search_filter = EXAMPLE_SEARCH_FILTER_STR
         r = requests.post(url, params=params, headers=headers, data=search_filter)
-        httplogs.log_request(logger,
-                             r,
-                             message="HTTP request to Observations API",
-                             request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+        log_request(logger,
+                    r,
+                    message="HTTP request to Observations API",
+                    request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
         self.last_response = r
         if r.ok:
             return r.json()
@@ -402,10 +403,10 @@ class ObservationsAPI:
                                               "validateSearchFilter": validateSearchFilter,
                                               "translationCultureCode": translationCultureCode,
                                               "sensitiveObservations": sensitiveObservations}})
-            httplogs.log_request(logger,
-                                 r,
-                                 message="HTTP request to Observations API",
-                                 request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+            log_request(logger,
+                        r,
+                        message="HTTP request to Observations API",
+                        request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
             self.last_response = r
 
             # If the request triggered the rate limit, raise HTTPError tied to this response
@@ -450,10 +451,10 @@ class ObservationsAPI:
             logger.info("Call to artportalen.observation_by_id()",
                         extra={"attributes": {"id": id,
                                               "outputFieldSet": outputFieldSet}})
-            httplogs.log_request(logger,
-                                 r,
-                                 message="HTTP request to Observations API",
-                                 request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
+            log_request(logger,
+                        r,
+                        message="HTTP request to Observations API",
+                        request_headers_to_strip_away=[API_KEY_HTTP_HEADER])
             self.last_response = r
         except HTTPError as e:
             logger.warning("HTTPError in artportalen.observation_by_id()",

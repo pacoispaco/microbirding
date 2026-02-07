@@ -3,6 +3,7 @@
 """This is the SthlmBetong web app."""
 
 # FastAPI and Pydantic
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, status, Request, Query, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -14,8 +15,8 @@ from typing import Optional
 import sys
 import os.path
 import locale
-import json
-import atexit
+# import json
+# import atexit
 import logging
 import logging.config
 import time
@@ -25,6 +26,7 @@ from datetime import datetime as dtime
 # Application modules
 import app.artportalen.client as artportalen
 import app.mapping as mapping
+from app.utils.logging import setup_logging
 from app.utils.changelog_renderer import mistune_markdown_instance
 
 # Constants
@@ -37,36 +39,6 @@ BUILD_DATETIME_FILE = "./BUILD_DATETIME_FILE"
 GIT_HASH_FILE = "./GIT_HASH_FILE"
 
 logger = logging.getLogger(__name__)
-
-
-def get_handler_by_name(name: str):
-    """This can be removed in Python 3.12 since there we have logging.getHandlerByName."""
-    for logger_name in logging.root.manager.loggerDict:
-        logger = logging.getLogger(logger_name)
-        for handler in logger.handlers:
-            if handler.name == name:
-                return handler
-    # also check root logger
-    for handler in logging.getLogger().handlers:
-        if handler.name == name:
-            return handler
-    return None
-
-
-def setup_logging(config_filepath):
-    """Set up logging. If no logging config file is found, set up default logging."""
-    if os.path.exists(config_filepath):
-        with open(config_filepath) as f:
-            config = json.load(f)
-        logging.config.dictConfig(config)
-        queue_handler = get_handler_by_name("queue_handler")
-        if queue_handler is not None:
-            queue_handler.listener.start()
-            atexit.register(queue_handler.listener.stop)
-    else:
-        logger.setLevel("DEBUG")
-        logger.warning(f"Configuration file '{config_filepath}' for logging not found. "
-                       "Using default logging settings.")
 
 
 def release_tag():
@@ -420,7 +392,16 @@ def observations_for_presentation(area_name: str, observations_date):
 
 
 # Set up FastAPI
-app = FastAPI(title="Microbirding webapp", version=settings.VERSION)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    settings = Settings()
+    setup_logging(settings.LOGGING_CONFIG_FILE)
+    app.state.settings = settings
+    yield
+
+app = FastAPI(title="Microbirding webapp",
+              version=settings.VERSION,
+              lifespan=lifespan)
 ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
