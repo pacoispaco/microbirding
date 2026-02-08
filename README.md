@@ -29,7 +29,7 @@ Apart from those two blockers, there are other limitations in the Artportalen th
 
 Clone the repository:
 ```
-git clone URL-TO-REPO
+git clone <URL-TO-REPO>
 ```
 
 Create a virtual environment:
@@ -66,6 +66,8 @@ You get these keys by registering at https://www.slu.se/artdatabanken/rapporteri
 
 ## Locally
 
+Make sure you are in the Python virtual environment.
+
 To build the app locally, you must regenerate to TailwindCSS file if you've edited CSS classes in the template files:
 ```
 ./tailwindcss -i ./tailwind.config.css -o ./app/assets/tailwind.css
@@ -90,17 +92,24 @@ The [CHANGELOG.md](./CHANGELOG.md) file contains information on the released ver
 
 # Run and debug
 
+Make sure you are in the Python virtual environment.
+
 To run the app locally and automatically restart the app on changed files:
 ```
-uvicorn main:app --reload
-```
-
-To run the app locally as a Docker container:
-```
-docker run --rm --name="sthlmbetong" -p 8000:8000 -e ARTPORTALEN_OBSERVATIONS_API_KEY=<SECRET-KEY> -e ARTPORTALEN_SPECIES_API_KEY=<SECRETKEY microbirding-app
+uvicorn app.main:app --reload
 ```
 
 Remember that if you change CSS classes in the template files, you need to regenerate the `tailwind.css` file.
+
+To run the app locally as a Docker container, first make sure you have set the API keys as environment variables:
+```
+export ARTPORTALEN_SPECIES_API_KEY=<ARTPORTALEN_SPECIES_API_KEY>
+export ARTPORTALEN_OBSERVATIONS_API_KEY=<ARTPORTALEN_OBSERVATIONS_API_KEY>
+```
+Then just run:
+./scripts/run-dev.sh
+```
+Which will 1) regenerate the `tailwind.css` file, 2) build the Dockerfile and 3) Run the Docker file locally.
 
 # The apps
 
