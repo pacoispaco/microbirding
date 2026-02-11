@@ -13,6 +13,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 # Release and build info files
+# These are created in:
+# a) the Github actions script when it's triggered to run.
+# b) the ./scripts/rund-dev.sh when run locally
 RELEASE_TAG_FILE = Path("./RELEASE_TAG_FILE")
 BUILD_DATETIME_FILE = Path("./BUILD_DATETIME_FILE")
 GIT_HASH_FILE = Path("./GIT_HASH_FILE")
