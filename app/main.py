@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
-"""This is the SthlmBetong web app."""
+"""This is the Microbirding/SthlmBetong web app."""
 
-# FastAPI and Pydantic
+# FastAPI modules
 from fastapi import FastAPI, status, Request, Query, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from requests.exceptions import HTTPError
 
-# Basic Python modules
+# Standard Python modules
 from contextlib import asynccontextmanager
 from pathlib import Path
 import locale
@@ -21,7 +20,8 @@ from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 
 # Application modules
-import app.artportalen.client as artportalen
+from .observations.sources.artportalen.provider import ArtportalenProvider
+from .observations import model
 import app.mapping as mapping
 from app.utils.logging import setup_logging
 from app.utils.changelog_renderer import mistune_markdown_instance
@@ -57,10 +57,10 @@ async def lifespan(app: FastAPI):
     app.state.settings = settings
     app.state.templates = Jinja2Templates(directory=str(settings.TEMPLATES_DIR))
 
-    v = settings.ARTPORTALEN_SPECIES_API_KEY.get_secret_value()
-    app.state.sapi = artportalen.SpeciesAPI(v)
-    v = settings.ARTPORTALEN_OBSERVATIONS_API_KEY.get_secret_value()
-    app.state.oapi = artportalen.ObservationsAPI(v)
+    # Create the ArtportalenProvider
+    app.state.artportalen_provider = ArtportalenProvider(
+        settings=app.state.settings,
+        logger=logger)
 
     mapping.configure(str(settings.MICROBIRDING_AREA_DIRECTORY))
     locale.setlocale(locale.LC_TIME, "sv_SE.UTF-8")
@@ -70,10 +70,8 @@ async def lifespan(app: FastAPI):
     logger.info("Stopping Microbirding app")
 
 
-settings = get_settings()  # safe: cached; used here for FastAPI metadata
 app = FastAPI(
     title="Microbirding webapp",
-    version=settings.VERSION,
     lifespan=lifespan,
 )
 
@@ -81,243 +79,21 @@ ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
-def get_observations(area_name, from_date, to_date, taxon_name=None, observer_name=None):
-    """Get observations from the Artportalen API, make them tidy and consumable by the Jinja2
-       templates and put them into a list."""
-    # Get the taxa ids that match the given `taxon_name`.
-    taxon_ids = [settings.DEFAULT_TAXON_SEARCH_ID]
-    if taxon_name:
-        taxa = app.state.sapi.taxa_by_name(taxon_name,
-                                           exact_match=True)
-        if not taxa:
-            settings.debug(f"No taxa matching {taxon_name} found in Artportalen Species API")
-        else:
-            taxon_ids = [t["taxonId"] for t in taxa]
-
-    # Set up the search filter for the Artportalen Observations API
-    sfilter = artportalen.SearchFilter()
-    sfilter.set_taxon(ids=taxon_ids)
-
-    area = mapping.area_by_name(area_name)
-    polygon = area.geopolygons[0].serialize_as_list()
-    sfilter.set_geographics_geometries(geometries=[{"type": "polygon",
-                                                    "coordinates": [polygon]}])
-    sfilter.set_verification_status()
-    sfilter.set_output(fieldSet="Extended")
-    sfilter.set_date(startDate=from_date,
-                     endDate=to_date,
-                     dateFilterType="OverlappingStartDateAndEndDate",
-                     timeRanges=[])
-    sfilter.set_modified_date()
-    sfilter.set_dataProvider()
-    try:
-        observations = app.state.oapi.observations(sfilter,
-                                                   skip=0,
-                                                   take=1000,
-                                                   sort_descending=True)
-    except HTTPError as e:
-        logger.warning("HTTPError in artportalen.observations()",
-                       extra={"exception": e})
-        return None
-
-    return observations
-
-
-def transformed_observations(artportalen_observations):
-    """List of transformed observations suitable for rendering in HTML with a Jinja2 template.
-       Here we can add rarity data and other stuff which affects how observations is presented."""
-    result = []
-    for o in artportalen_observations["records"]:
-        # Establish what name of the taxon to use
-        if "vernacularName" in o.get("taxon", {}):
-            name = o["taxon"]["vernacularName"].capitalize()
-        else:
-            name = o["taxon"]["scientificName"]
-        info = {"name": name}
-
-        # Fix a compact representation of the time of the observation
-        d = dtime.fromisoformat(o["event"]["startDate"])
-        starttime = d.astimezone().strftime("%H:%M")
-        d = dtime.fromisoformat(o["event"]["endDate"])
-        endtime = d.astimezone().strftime("%H:%M")
-        if starttime == "00:00" and endtime == "23:59":
-            t = ""
-        elif starttime == endtime:
-            t = starttime
-        else:
-            t = f"{starttime}-{endtime}"
-        info["time"] = t
-
-        # Establish observers or data source
-        if "recordedBy" in o.get("occurrence", {}):
-            observers = o["occurrence"]["recordedBy"]
-        else:
-            observers = o["datasetName"]
-        info["observers"] = observers
-
-        # Establish longitude and latitude
-        info["longitude"] = o["location"]["decimalLongitude"]
-        info["latitude"] = o["location"]["decimalLatitude"]
-
-        # Establish dataset name, eg. "Artportalen", "iNaturalist" etc.
-        info["data_source"] = o["datasetName"]
-        if info["data_source"] == "Artportalen":
-            info["data_source_abbreviation"] = "AP"
-        elif info["data_source"] == "iNaturalist":
-            info["data_source_abbreviation"] = "IN"
-        elif info["data_source"] == "Bird ringing centre in Sweden, via GBIF":
-            info["data_source_abbreviation"] = "BR"
-        else:
-            info["data_source_abbreviation"] = info["data_source"]
-
-        # Establish id in data set
-        info["id"] = o["occurrence"]["occurrenceId"]
-
-        # Get additional data on the observation from Artportalen
-        if o["datasetName"] == "Artportalen":
-            info["occurrence"] = o["occurrence"]
-            locality = o["location"]["locality"].split(",")[0]
-            is_redlisted = o["taxon"]["attributes"]["isRedlisted"]
-            if is_redlisted:
-                redlist_category = o["taxon"]["attributes"]["redlistCategory"]
-            else:
-                redlist_category = None
-
-            # Set redlist info
-            info["isRedlisted"] = is_redlisted
-            info["redlistCategory"] = redlist_category
-
-            # Set number of individuals, sex, age and activity
-            info["number"] = o["occurrence"]["organismQuantity"]
-            if "sex" in o["occurrence"]:
-                sex = o["occurrence"]["sex"]["id"]
-                info["sex"] = artportalen.vocabulary_sex[sex]
-            else:
-                info["sex"] = None
-            if "lifeStage" in o["occurrence"]:
-                info["age"] = o["occurrence"]["lifeStage"]["value"]
-            else:
-                info["age"] = None
-            if "activity" in o["occurrence"]:
-                info["activity"] = o["occurrence"]["activity"]["value"]
-            else:
-                info["activity"] = None
-
-            # Set locality info
-            info["locality"] = locality
-            info["longitude"] = None
-            info["latitude"] = None
-
-            # Set URL to observation info at source
-            info["data_source_observation_url"] = o["occurrence"]["url"]
-
-        elif o["datasetName"] == "iNaturalist":
-            # Set number of indviduals, sex, age and activity
-            info["number"] = None
-            info["sex"] = None
-            info["age"] = None
-            info["activity"] = None
-            # There's no info in these records about redlisting, sof or now we just ignore it
-
-            # Set locality info
-            municipality = o['location']['municipality']['name']
-            county = o['location']['county']['name']
-            info["locality"] = f"{municipality}, {county}"
-
-            # Set URL to observation info at source
-            info["data_source_observation_url"] = o["occurrence"]["occurrenceId"]
-
-        elif o["datasetName"] == "Bird ringing centre in Sweden, via GBIF":
-            # No info on observers
-            info["observers"] = ""
-
-            # Set redlist info
-            info["isRedlisted"] = is_redlisted
-            info["redlistCategory"] = redlist_category
-
-            # Set number of indviduals, sex, age and activity
-            info["number"] = o["occurrence"]["individualCount"]
-            info["sex"] = None
-            info["age"] = None
-            info["activity"] = None
-
-            # Set locality info
-            municipality = o['location']['municipality']['name']
-            county = o['location']['county']['name']
-            info["locality"] = f"{municipality}, {county}"
-
-            # Set URL to observation info at source. The Jinja2 template will only create links
-            # if info["id"] begins with "http".
-            info["data_source_observation_url"] = info["id"]
-
-        elif o["datasetName"] == "Lund University Biological Museum - Animal Collections":
-            info["occurrence"] = o["occurrence"]
-            locality = o["location"]["locality"].split(",")[0]
-            is_redlisted = o["taxon"]["attributes"]["isRedlisted"]
-            if is_redlisted:
-                redlist_category = o["taxon"]["attributes"]["redlistCategory"]
-            else:
-                redlist_category = None
-
-            # Set redlist info
-            info["isRedlisted"] = is_redlisted
-            info["redlistCategory"] = redlist_category
-
-            # Set number of individuals, sex, age and activity
-            if "organismQuantity" not in o["occurrence"].keys():
-                if "individualCount" not in o["occurrence"].keys():
-                    info["number"] = "?"
-                else:
-                    info["number"] = o["occurrence"]["individualCount"]
-            else:
-                info["number"] = o["occurrence"]["organismQuantity"]
-
-            if "sex" in o["occurrence"]:
-                sex = o["occurrence"]["sex"]["id"]
-                info["sex"] = artportalen.vocabulary_sex[sex]
-            else:
-                info["sex"] = None
-            if "lifeStage" in o["occurrence"]:
-                info["age"] = o["occurrence"]["lifeStage"]["value"]
-            else:
-                info["age"] = None
-            if "activity" in o["occurrence"]:
-                info["activity"] = o["occurrence"]["activity"]["value"]
-            else:
-                info["activity"] = None
-
-            # Set locality info
-            info["locality"] = locality
-            info["longitude"] = None
-            info["latitude"] = None
-
-            # Set URL to observation info at source
-            info["data_source_observation_url"] = o["occurrence"]["occurrenceId"]
-
-        # Add the rarity level according to some model not yet decided!
-        # TBD
-#        if info["name"] == "Ringnäbbad mås":
-#            info["rarity"] = 10
-#        else:
-#            info["rarity"] = 1
-
-        result.append(info)
-    return result
-
-
 def observations_for_presentation(area_name: str, observations_date):
     """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
        all attribute values needed for the Jinja2 template file
-       "hx-observations-list.html" to render HTML."""
+       "hx-observations-list.html" to render HTML.
+       THIS SHOULD LIVE IN ./app/observations/model.py"""
     previous_date = (observations_date - timedelta(days=1)).isoformat()
     next_date = (observations_date + timedelta(days=1)).isoformat()
 
     # Get obeservations from the Artportalen API
-    observations = get_observations(area_name,
-                                    observations_date.isoformat(),
-                                    observations_date.isoformat(),
-                                    None,
-                                    None)
+    ap_provider = app.state.artportalen_provider
+    observations = ap_provider.get_observations(area_name,
+                                                observations_date.isoformat(),
+                                                observations_date.isoformat(),
+                                                None,
+                                                None)
     if not observations:
         extra = {"info": "Failed to get data on observations for a given date",
                  "date": f"{observations_date.isoformat()}"}
@@ -326,7 +102,7 @@ def observations_for_presentation(area_name: str, observations_date):
         observations = ["Failed"]
     else:
         # Transform the observations to representations suitable for Jinja2
-        observations = transformed_observations(observations)
+        observations = model.transformed_observations(observations)
     return {"day": observations_date.strftime('%A, %-d/%-m').capitalize(),
             "is_today": observations_date == dt.today(),
             "year": observations_date.year,
@@ -370,20 +146,20 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
 
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
-    result = app.state.templates.TemplateResponse(index_page,
-                                                  {"request": request,
-                                                   "day": obs["day"],
-                                                   "year": observations_date.year,
-                                                   "is_today": obs["is_today"],
-                                                   "previous_date": obs["previous_date"],
-                                                   "date": obs["date"],
-                                                   "next_date": obs["next_date"],
-                                                   "observations": obs["observations"],
-                                                   "version_info": {"release": release_tag(),
-                                                                    "built": build_datetime_tag(),
-                                                                    "git_hash": git_hash_tag()},
-                                                   "environment": settings.ENVIRONMENT,
-                                                   "umami_website_id": settings.UMAMI_WEBSITE_ID})
+    jinja2_data = {"request": request,
+                   "day": obs["day"],
+                   "year": observations_date.year,
+                   "is_today": obs["is_today"],
+                   "previous_date": obs["previous_date"],
+                   "date": obs["date"],
+                   "next_date": obs["next_date"],
+                   "observations": obs["observations"],
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse(index_page, jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -401,14 +177,14 @@ def get_changelog(request: Request):
 
     with open("./CHANGELOG.md") as f:
         html = markdown(f.read())
-    result = app.state.templates.TemplateResponse("./about/page-changelog.html",
-                                                  {"request": request,
-                                                   "changelog_html": html,
-                                                   "version_info": {"release": release_tag(),
-                                                                    "built": build_datetime_tag(),
-                                                                    "git_hash": git_hash_tag()},
-                                                   "environment": settings.ENVIRONMENT,
-                                                   "umami_website_id": settings.UMAMI_WEBSITE_ID})
+    jinja2_data = {"request": request,
+                   "changelog_html": html,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse("./about/page-changelog.html", jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -421,13 +197,13 @@ def get_maps(request: Request):
     """The maps page (page-maps.html) displaying the map of SthlmBetong."""
     tic = time.perf_counter_ns()
 
-    result = app.state.templates.TemplateResponse("./maps/page-maps.html",
-                                                  {"request": request,
-                                                   "version_info": {"release": release_tag(),
-                                                                    "built": build_datetime_tag(),
-                                                                    "git_hash": git_hash_tag()},
-                                                   "environment": settings.ENVIRONMENT,
-                                                   "umami_website_id": settings.UMAMI_WEBSITE_ID})
+    jinja2_data = {"request": request,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse("./maps/page-maps.html", jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -500,15 +276,14 @@ def get_species(request: Request):
     tic = time.perf_counter_ns()
 
     species = dummy_species_data()
-
-    result = app.state.templates.TemplateResponse("./species/page-species.html",
-                                                  {"request": request,
-                                                   "species": species,
-                                                   "version_info": {"release": release_tag(),
-                                                                    "built": build_datetime_tag(),
-                                                                    "git_hash": git_hash_tag()},
-                                                   "environment": settings.ENVIRONMENT,
-                                                   "umami_website_id": settings.UMAMI_WEBSITE_ID})
+    jinja2_data = {"request": request,
+                   "species": species,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -520,7 +295,7 @@ def get_species(request: Request):
 async def about_root():
     """The root resource for the about pages. Redirects to the default about page."""
     return RedirectResponse(
-        url=f"/about/{settings.ABOUT_DEFAULT_SLUG}",
+        url=f"/about/{app.state.settings.ABOUT_DEFAULT_SLUG}",
         status_code=307
     )
 
@@ -530,28 +305,24 @@ def get_about(request: Request, slug: str):
     """The about page (page-about.html) with information on the app."""
     tic = time.perf_counter_ns()
 
-    if slug not in settings.ABOUT_SECTIONS:
+    if slug not in app.state.settings.ABOUT_SECTIONS:
         raise HTTPException(status_code=404, detail="Unknown section")
 
     markdown = mistune_markdown_instance(disabled=True)
-    md_path = settings.CONTENT_DIRECTORY / settings.ABOUT_SECTIONS[slug]
+    md_path = app.state.settings.CONTENT_DIRECTORY / app.state.settings.ABOUT_SECTIONS[slug]
     if not md_path.exists():
         raise HTTPException(status_code=500, detail="Missing content file")
     html = markdown(md_path.read_text(encoding="utf-8"))
 
-    result = app.state.templates.TemplateResponse(
-        "./about/page-about.html",
-        {
-            "request": request,
-            "active_slug": slug,
-            "section_html": html,
-            "version_info": {"release": release_tag(),
-                             "built": build_datetime_tag(),
-                             "git_hash": git_hash_tag()},
-            "environment": settings.ENVIRONMENT,
-            "umami_website_id": settings.UMAMI_WEBSITE_ID
-        },
-    )
+    jinja2_data = {"request": request,
+                   "active_slug": slug,
+                   "section_html": html,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse("./about/page-about.html", jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -570,14 +341,14 @@ def get_design_system(request: Request):
     observations_date = dt.fromisoformat(date)
     obs = observations_for_presentation(area_name, observations_date)
     obs_no = 5
-    result = app.state.templates.TemplateResponse("./page-design-system.html",
-                                                  {"request": request,
-                                                   "o": obs["observations"][obs_no],
-                                                   "version_info": {"release": release_tag(),
-                                                                    "built": build_datetime_tag(),
-                                                                    "git_hash": git_hash_tag()},
-                                                   "environment": settings.ENVIRONMENT,
-                                                   "umami_website_id": settings.UMAMI_WEBSITE_ID})
+    jinja2_data = {"request": request,
+                   "o": obs["observations"][obs_no],
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
 
     toc = time.perf_counter_ns()
     # Set Server-timing header (server excution time in ms, not including FastAPI itself)
@@ -595,17 +366,18 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
+    jinja2_data = {"request": request,
+                   "day": obs["day"],
+                   "year": observations_date.year,
+                   "is_today": obs["is_today"],
+                   "previous_date": obs["previous_date"],
+                   "date": obs["date"],
+                   "next_date": obs["next_date"],
+                   "observations": obs["observations"],
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
     return app.state.templates.TemplateResponse("./observations/hx-observations-list.html",
-                                                {"request": request,
-                                                 "day": obs["day"],
-                                                 "year": observations_date.year,
-                                                 "is_today": obs["is_today"],
-                                                 "previous_date": obs["previous_date"],
-                                                 "date": obs["date"],
-                                                 "next_date": obs["next_date"],
-                                                 "observations": obs["observations"],
-                                                 "environment": settings.ENVIRONMENT,
-                                                 "umami_website_id": settings.UMAMI_WEBSITE_ID})
+                                                jinja2_data)
 
 
 # MapLibre GL JS resources (experimental)
@@ -636,18 +408,11 @@ def get_map_style():
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
     """Render a 404 page for missing resources."""
-    return app.state.templates.TemplateResponse(
-        "./page-404.html",
-        {
-            "request": request,
-            "path": request.url.path,
-            "version_info": {
-                "release": release_tag(),
-                "built": build_datetime_tag(),
-                "git_hash": git_hash_tag(),
-            },
-            "environment": settings.ENVIRONMENT,
-            "umami_website_id": settings.UMAMI_WEBSITE_ID
-        },
-        status_code=404,
-    )
+    jinja2_data = {"request": request,
+                   "path": request.url.path,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "environment": app.state.settings.ENVIRONMENT,
+                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+    return app.state.templates.TemplateResponse("./page-404.html", jinja2_data, status_code=404)
