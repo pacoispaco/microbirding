@@ -4,6 +4,20 @@ All notable changes to the Microbirding/SthlmBetong web app are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the versioning convention is [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.5
+
+**Date: 2026-02-15**
+
+Refactor code before starting work on database cache for Artportalen, and fix some UI issues.
+
+### Miscellaneous
+
+- [x] Ensure HTMX resources `/hx/` are only returned if the HTTP header `HX-Request: true` is set.
+- [x] Make the `/design-system` resource available only in DEV.
+- [x] Remove OpenAPI doc resources in PROD.
+- [x] Refactor and simplify configuration and settings to entirely use Pydantic-settings.
+- [x] Refactor utility code for handling observations and make it easier to add other sources of observations with API:s, like eBird and iNaturalist.
+
 ## 0.1.4
 
 **Date: 2026-01-28**
