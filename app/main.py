@@ -337,38 +337,16 @@ def get_about(request: Request, slug: str):
     return result
 
 
-@app.get("/design-system", response_class=HTMLResponse)
-def get_design_system(request: Request):
-    """The design system page (page-design-system.html) displaying UI stuff used in the app."""
-    tic = time.perf_counter_ns()
-
-    # We want to display an observation for development and debugging purposes
-    date = "2025-12-15"
-    area_name = "SthlmBetong"
-    observations_date = dt.fromisoformat(date)
-    obs = observations_for_presentation(area_name, observations_date)
-    obs_no = 5
-    jinja2_data = {"request": request,
-                   "o": obs["observations"][obs_no],
-                   "version_info": {"release": release_tag(),
-                                    "built": build_datetime_tag(),
-                                    "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
-    result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
-
-    toc = time.perf_counter_ns()
-    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
-    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
-    return result
-
-
 # The application hypermedia control resources.
 # All of these resources have the prefix "/hx/" in their URL path.
 
 @app.get("/hx/observations-section", response_class=HTMLResponse)
 def hx_observations_section(request: Request, date: str = Query(None)):
     """The observations HTML <section> element with the observations for the given `date`."""
+    # We only return this resource if it was triggered by an HTMX control. HTTP requests generated
+    # by HTMX set the HTTP header "HX-request: true", so we can check for that.
+    if request.headers.get("HX-Request") != "true":
+        raise HTTPException(404)
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
@@ -423,3 +401,33 @@ async def not_found(request: Request, exc):
                    "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
     return app.state.templates.TemplateResponse("./page-404.html", jinja2_data, status_code=404)
+
+
+# Resource only meant to bes served in DEV environment.None
+
+if settings.ENVIRONMENT == "DEV":
+
+    @app.get("/design-system", response_class=HTMLResponse)
+    def get_design_system(request: Request):
+        """The design system page (page-design-system.html) displaying UI stuff used in the app."""
+        tic = time.perf_counter_ns()
+
+        # We want to display an observation for development and debugging purposes
+        date = "2025-12-15"
+        area_name = "SthlmBetong"
+        observations_date = dt.fromisoformat(date)
+        obs = observations_for_presentation(area_name, observations_date)
+        obs_no = 5
+        jinja2_data = {"request": request,
+                       "o": obs["observations"][obs_no],
+                       "version_info": {"release": release_tag(),
+                                        "built": build_datetime_tag(),
+                                        "git_hash": git_hash_tag()},
+                       "environment": app.state.settings.ENVIRONMENT,
+                       "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+        result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
+
+        toc = time.perf_counter_ns()
+        # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+        result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+        return result
