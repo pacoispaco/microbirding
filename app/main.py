@@ -70,10 +70,17 @@ async def lifespan(app: FastAPI):
     logger.info("Stopping Microbirding app")
 
 
-app = FastAPI(
-    title="Microbirding webapp",
-    lifespan=lifespan,
-)
+settings = get_settings()
+if settings.ENVIRONMENT != "DEV":
+    # Turn of API documentation
+    app = FastAPI(title="Microbirding webapp",
+                  lifespan=lifespan,
+                  docs_url=None,
+                  redoc_url=None,
+                  openapi_url=None)
+else:
+    app = FastAPI(title="Microbirding webapp",
+                  lifespan=lifespan)
 
 ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")

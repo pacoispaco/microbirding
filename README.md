@@ -94,22 +94,25 @@ The [CHANGELOG.md](./CHANGELOG.md) file contains information on the released ver
 
 Make sure you are in the Python virtual environment.
 
-To run the app locally and automatically restart the app on changed files:
-```
-uvicorn app.main:app --reload
-```
-
-Remember that if you change CSS classes in the template files, you need to regenerate the `tailwind.css` file.
-
 To run the app locally as a Docker container, first make sure you have set the API keys as environment variables:
 ```
 export ARTPORTALEN_SPECIES_API_KEY=<ARTPORTALEN_SPECIES_API_KEY>
 export ARTPORTALEN_OBSERVATIONS_API_KEY=<ARTPORTALEN_OBSERVATIONS_API_KEY>
 ```
 Then just run:
+```
 ./scripts/run-dev.sh
 ```
-Which will 1) regenerate the `tailwind.css` file, 2) build the Dockerfile and 3) Run the Docker file locally.
+Which will 1) regenerate the `tailwind.css` file, 2) build the Docker file and 3) Run the Docker file locally.
+
+Note that the app reads the environment variable `ENVIRONMENT` which tells the app what runtime environment it's running in. Currently it will show an orange banner and icon and also show Tailwind breakpoints if `ENVIRONMENT=DEV`. If it's anything else, it will assume it's running in a production environment. You can set `ENVIRONMENT=PROD` if you want to be explicit. In that case the app will turn off showing OpenAPI documentation at the `/docs`, `/redoc`and `/openapi.json` URL:s. 
+
+To run the app locally, but not as a Docker container, and automatically restart the app on changed files:
+```
+uvicorn app.main:app --reload
+```
+
+Remember that if you change CSS classes in the template files, you need to regenerate the `tailwind.css` file.
 
 # The apps
 
