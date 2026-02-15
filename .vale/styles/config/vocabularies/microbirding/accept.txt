@@ -5,6 +5,10 @@ geopolygon
 apget
 Artportalen
 Artportalens
+eBird
+eBirds
+iNaturalist
+iNaturalists
 API
 APIs
 CI
