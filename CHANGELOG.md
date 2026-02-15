@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 **Date: 2026-02-15**
 
-Refactor code before starting work on database cache for Artportalen, and fix some UI issues.
+Refactor code before starting work on database cache for Artportalen, and tidy up app resources.
 
 ### Miscellaneous
 
