@@ -153,6 +153,8 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
 
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "day": obs["day"],
                    "year": observations_date.year,
@@ -165,7 +167,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse(index_page, jinja2_data)
 
     toc = time.perf_counter_ns()
@@ -184,13 +186,15 @@ def get_changelog(request: Request):
 
     with open("./CHANGELOG.md") as f:
         html = markdown(f.read())
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "changelog_html": html,
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./about/page-changelog.html", jinja2_data)
 
     toc = time.perf_counter_ns()
@@ -204,12 +208,14 @@ def get_maps(request: Request):
     """The maps page (page-maps.html) displaying the map of SthlmBetong."""
     tic = time.perf_counter_ns()
 
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./maps/page-maps.html", jinja2_data)
 
     toc = time.perf_counter_ns()
@@ -283,13 +289,15 @@ def get_species(request: Request):
     tic = time.perf_counter_ns()
 
     species = dummy_species_data()
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "species": species,
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
 
     toc = time.perf_counter_ns()
@@ -321,6 +329,8 @@ def get_about(request: Request, slug: str):
         raise HTTPException(status_code=500, detail="Missing content file")
     html = markdown(md_path.read_text(encoding="utf-8"))
 
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "active_slug": slug,
                    "section_html": html,
@@ -328,7 +338,7 @@ def get_about(request: Request, slug: str):
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./about/page-about.html", jinja2_data)
 
     toc = time.perf_counter_ns()
@@ -351,6 +361,8 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
     obs = observations_for_presentation(area_name, observations_date)
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "day": obs["day"],
                    "year": observations_date.year,
@@ -360,7 +372,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                    "next_date": obs["next_date"],
                    "observations": obs["observations"],
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./observations/hx-observations-list.html",
                                                 jinja2_data)
 
@@ -393,13 +405,15 @@ def get_map_style():
 @app.exception_handler(404)
 async def not_found(request: Request, exc):
     """Render a 404 page for missing resources."""
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
                    "path": request.url.path,
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
                    "environment": app.state.settings.ENVIRONMENT,
-                   "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                   "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./page-404.html", jinja2_data, status_code=404)
 
 
@@ -418,13 +432,15 @@ if settings.ENVIRONMENT == "DEV":
         observations_date = dt.fromisoformat(date)
         obs = observations_for_presentation(area_name, observations_date)
         obs_no = 5
+        secret = app.state.settings.UMAMI_WEBSITE_ID
+        umami_id = secret.get_secret_value() if secret else None
         jinja2_data = {"request": request,
                        "o": obs["observations"][obs_no],
                        "version_info": {"release": release_tag(),
                                         "built": build_datetime_tag(),
                                         "git_hash": git_hash_tag()},
                        "environment": app.state.settings.ENVIRONMENT,
-                       "umami_website_id": app.state.settings.UMAMI_WEBSITE_ID}
+                       "umami_website_id": umami_id}
         result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
 
         toc = time.perf_counter_ns()

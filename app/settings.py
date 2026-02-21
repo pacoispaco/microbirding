@@ -11,6 +11,7 @@ from typing import Mapping
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+_SECRETS_DIR = Path("/run/secrets")
 
 # Release and build info files
 # These are created in:
@@ -51,12 +52,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
-        secrets_dir="/run/secrets")
+        secrets_dir=str(_SECRETS_DIR) if _SECRETS_DIR.is_dir() else None)
 
     # App
     VERSION: str = "0.0.1"
     ENVIRONMENT: str | None = None
-    UMAMI_WEBSITE_ID: str | None = None
+    UMAMI_WEBSITE_ID: SecretStr | None = None
 
     # Paths
     TEMPLATES_DIR: Path = Path("./app/page-templates")
@@ -68,6 +69,10 @@ class Settings(BaseSettings):
     DATE_FORMAT: str = "Date: %a, %d %b %Y %H:%M:%S"
     DEFAULT_TAXON_SEARCH_ID: int = 4000104
     DEFAULT_NUMBER_OF_OBSERVATIONS: int = 50
+
+    # Database cache directories
+    CACHE_DATABASE_DIR: Path = Path("./cache")
+    CACHE_SCHEMA_DIR: Path = Path("./cache/sql/")
 
     ABOUT_SECTIONS: Mapping[str, str] = {
         "about-app": "about-app.md",
