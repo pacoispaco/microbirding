@@ -6,7 +6,7 @@ the local Artportalen cache database.
 
 from enum import StrEnum
 from requests.exceptions import HTTPError
-import app.mapping as mapping
+from app.mapping import MappingService
 from . import client
 
 
@@ -32,6 +32,7 @@ class ArtportalenProvider():
         self.oapi = client.ObservationsAPI(v)
 
     def get_observations(self,
+                         mapping: MappingService,
                          area_name: str,
                          from_date: str,
                          to_date: str,

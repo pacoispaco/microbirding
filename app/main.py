@@ -22,7 +22,7 @@ from datetime import datetime as dtime
 # Application modules
 from .observations.sources.artportalen.provider import ArtportalenProvider
 from .observations import model
-import app.mapping as mapping
+from app.mapping.service import MappingService
 from app.utils.logging import setup_logging
 from app.utils.changelog_renderer import mistune_markdown_instance
 from .settings import get_settings, release_tag, build_datetime_tag, git_hash_tag
@@ -62,7 +62,7 @@ async def lifespan(app: FastAPI):
         settings=app.state.settings,
         logger=logger)
 
-    mapping.configure(str(settings.MICROBIRDING_AREA_DIRECTORY))
+    app.state.mapping = MappingService(settings.MICROBIRDING_AREA_DIRECTORY)
     locale.setlocale(locale.LC_TIME, "sv_SE.UTF-8")
 
     logger.info("Application initialized.")
@@ -86,7 +86,7 @@ ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
-def observations_for_presentation(area_name: str, observations_date):
+def observations_for_presentation(mapping: MappingService, area_name: str, observations_date):
     """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
        all attribute values needed for the Jinja2 template file
        "hx-observations-list.html" to render HTML.
@@ -96,7 +96,8 @@ def observations_for_presentation(area_name: str, observations_date):
 
     # Get obeservations from the Artportalen API
     ap_provider = app.state.artportalen_provider
-    observations = ap_provider.get_observations(area_name,
+    observations = ap_provider.get_observations(mapping,
+                                                area_name,
                                                 observations_date.isoformat(),
                                                 observations_date.isoformat(),
                                                 None,
@@ -152,7 +153,7 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
         observations_date = dt.today()
 
     area_name = "SthlmBetong"
-    obs = observations_for_presentation(area_name, observations_date)
+    obs = observations_for_presentation(app.state.mapping, area_name, observations_date)
     secret = app.state.settings.UMAMI_WEBSITE_ID
     umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
@@ -360,7 +361,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
-    obs = observations_for_presentation(area_name, observations_date)
+    obs = observations_for_presentation(app.state.mapping, area_name, observations_date)
     secret = app.state.settings.UMAMI_WEBSITE_ID
     umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
@@ -379,23 +380,25 @@ def hx_observations_section(request: Request, date: str = Query(None)):
 
 # MapLibre GL JS resources (experimental)
 
-@app.get("/mapping/pins")
-def get_mapping_pins():
-    """Get some geo pins."""
-    return JSONResponse(mapping.models.some_pins())
+# @app.get("/mapping/pins")
+# def get_mapping_pins():
+#     """Get some geo pins."""
+#     return JSONResponse(mapping.models.some_pins())
 
 
 @app.get("/mapping/areas")
 def get_mapping_areas():
     """Get a geo areas."""
-    geojson = mapping.geojson_area_by_name("SthlmBetong")
+#    geojson = mapping.geojson_area_by_name("SthlmBetong")
+    geojson = app.state.mapping.geojson_area_by_name("SthlmBetong")
     return JSONResponse(geojson.dict())
 
 
 @app.get("/mapping/style")
 def get_map_style():
     """Get a map style."""
-    style = mapping.default_maplibre_style().dict()
+#    style = mapping.default_maplibre_style().dict()
+    style = app.state.mapping.default_maplibre_style().dict()
     # Set low TTL if data changes often
     return JSONResponse(style, headers={"Cache-Control": "no-cache"})
 
@@ -430,7 +433,7 @@ if settings.ENVIRONMENT == "DEV":
         date = "2025-12-15"
         area_name = "SthlmBetong"
         observations_date = dt.fromisoformat(date)
-        obs = observations_for_presentation(area_name, observations_date)
+        obs = observations_for_presentation(app.state.mapping, area_name, observations_date)
         obs_no = 5
         secret = app.state.settings.UMAMI_WEBSITE_ID
         umami_id = secret.get_secret_value() if secret else None
