@@ -57,19 +57,26 @@ async def lifespan(app: FastAPI):
     app.state.settings = settings
     app.state.templates = Jinja2Templates(directory=str(settings.TEMPLATES_DIR))
 
+    # Make feature toggles globally available in all Jinja2 templates
+    app.state.templates.env.globals["features"] = settings.features
+    # Make environment setting globally available in all Jinja2 templates
+    app.state.templates.env.globals["environment"] = settings.ENVIRONMENT
+
     # Create the ArtportalenProvider
-    app.state.artportalen_provider = ArtportalenProvider(
-        settings=app.state.settings,
-        logger=logger)
+    app.state.artportalen_provider = ArtportalenProvider(settings=app.state.settings,
+                                                         logger=logger)
 
     app.state.mapping = MappingService(settings.MICROBIRDING_AREA_DIRECTORY)
     locale.setlocale(locale.LC_TIME, "sv_SE.UTF-8")
 
     logger.info("Application initialized.")
+    logger.info(f"Feature toggles: {app.state.settings.features.enabled_flags()}")
+
     yield
     logger.info("Stopping Microbirding app")
 
 
+# We need to get settings here too, to know how to initalize FastAPI
 settings = get_settings()
 if settings.ENVIRONMENT != "DEV":
     # Turn of API documentation
@@ -167,7 +174,6 @@ def get_index_file(request: Request, date: str = Query(None), index_page: str = 
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse(index_page, jinja2_data)
 
@@ -194,7 +200,6 @@ def get_changelog(request: Request):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./about/page-changelog.html", jinja2_data)
 
@@ -215,7 +220,6 @@ def get_maps(request: Request):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./maps/page-maps.html", jinja2_data)
 
@@ -297,7 +301,6 @@ def get_species(request: Request):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
 
@@ -338,7 +341,6 @@ def get_about(request: Request, slug: str):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./about/page-about.html", jinja2_data)
 
@@ -372,7 +374,6 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                    "date": obs["date"],
                    "next_date": obs["next_date"],
                    "observations": obs["observations"],
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./observations/hx-observations-list.html",
                                                 jinja2_data)
@@ -415,12 +416,11 @@ async def not_found(request: Request, exc):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
-                   "environment": app.state.settings.ENVIRONMENT,
                    "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./page-404.html", jinja2_data, status_code=404)
 
 
-# Resource only meant to bes served in DEV environment.None
+# Resource only meant to be served in DEV environment.None
 
 if settings.ENVIRONMENT == "DEV":
 
@@ -442,7 +442,6 @@ if settings.ENVIRONMENT == "DEV":
                        "version_info": {"release": release_tag(),
                                         "built": build_datetime_tag(),
                                         "git_hash": git_hash_tag()},
-                       "environment": app.state.settings.ENVIRONMENT,
                        "umami_website_id": umami_id}
         result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
 

@@ -8,7 +8,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Mapping
 
-from pydantic import SecretStr
+from pydantic import SecretStr, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _SECRETS_DIR = Path("/run/secrets")
@@ -41,6 +41,22 @@ def git_hash_tag() -> str:
     return _read_tag_file(GIT_HASH_FILE, "No GIT_HASH_FILE found")
 
 
+class FeatureToggles(BaseModel):
+    """The toggable features in the app."""
+    # Turn off cache database until its implemented. In the meantime
+    # do online calls to the Artportalen API.
+    cache_database_enabled: bool = False
+    # Turn off species pages until we have a cache database.
+    species_page_enabled: bool = False
+
+    def enabled_flags(self) -> dict[str, bool]:
+        return {
+            name: getattr(self, name)
+            for name in self.model_fields
+            if name.endswith("_enabled")
+        }
+
+
 class Settings(BaseSettings):
     """Settings sources precedence (pydantic-settings v2 default):
       1) init kwargs
@@ -52,7 +68,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         extra="ignore",
-        secrets_dir=str(_SECRETS_DIR) if _SECRETS_DIR.is_dir() else None)
+        secrets_dir=str(_SECRETS_DIR) if _SECRETS_DIR.is_dir() else None,
+        # FEATURE__SPECIES_PAGE_ENABLED to be mapped to features.species_page_enabled
+        env_nested_delimiter="__")
 
     # App
     VERSION: str = "0.0.1"
@@ -85,6 +103,9 @@ class Settings(BaseSettings):
     # Secrets
     ARTPORTALEN_OBSERVATIONS_API_KEY: SecretStr | None = None
     ARTPORTALEN_SPECIES_API_KEY: SecretStr | None = None
+
+    # Features (nested)
+    features: FeatureToggles = FeatureToggles()
 
 
 @lru_cache
