@@ -5,7 +5,7 @@
       <p>
         Release:
         <a href="/changelog"
-           class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+           class="py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
           {{ version_info.release }}
         </a>
         <br class="sm:hidden">
@@ -14,6 +14,19 @@
       </p>
 
       <!-- Row 2 -->
+      {% if features.cache_database_enabled %}
+      <p class="mt-2">
+        <a href="/cache-database-info"
+           class="py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+           Cache database
+        </a> last updated 8 seconds ago.
+        <br class="sm:hidden">
+        <span class="hidden sm:inline"> </span>
+        Next update in 2 seconds.
+      </p>
+      {% endif %}
+
+      <!-- Row 3 -->
       <p class="mt-2">
         Questions, problems and suggestions to
         <br class="sm:hidden">
@@ -35,12 +48,12 @@
         </span>
       </p>
 
-      <!-- Row 3 -->
+      <!-- Row 4 -->
       <p class="mt-2">
         Put together by
         <a href="https://paulcohen.se/"
            target="_blank"
-           class="px-1 py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
+           class="py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
           Paul Cohen
         </a>
         <a href="https://github.com/pacoispaco/microbirding"

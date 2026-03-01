@@ -287,27 +287,29 @@ def dummy_species_data():
     return species
 
 
-@app.get("/species", response_class=HTMLResponse)
-def get_species(request: Request):
-    """The species page (page-species.html) displaying info on all species that have been observed
-       in the area."""
-    tic = time.perf_counter_ns()
+if settings.features.species_page_enabled:
 
-    species = dummy_species_data()
-    secret = app.state.settings.UMAMI_WEBSITE_ID
-    umami_id = secret.get_secret_value() if secret else None
-    jinja2_data = {"request": request,
-                   "species": species,
-                   "version_info": {"release": release_tag(),
-                                    "built": build_datetime_tag(),
-                                    "git_hash": git_hash_tag()},
-                   "umami_website_id": umami_id}
-    result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
+    @app.get("/species", response_class=HTMLResponse)
+    def get_species(request: Request):
+        """The species page (page-species.html) displaying info on all species that have been
+           observed in the area."""
+        tic = time.perf_counter_ns()
 
-    toc = time.perf_counter_ns()
-    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
-    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
-    return result
+        species = dummy_species_data()
+        secret = app.state.settings.UMAMI_WEBSITE_ID
+        umami_id = secret.get_secret_value() if secret else None
+        jinja2_data = {"request": request,
+                       "species": species,
+                       "version_info": {"release": release_tag(),
+                                        "built": build_datetime_tag(),
+                                        "git_hash": git_hash_tag()},
+                       "umami_website_id": umami_id}
+        result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
+
+        toc = time.perf_counter_ns()
+        # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+        result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+        return result
 
 
 @app.get("/about", response_class=HTMLResponse)
