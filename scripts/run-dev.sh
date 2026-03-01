@@ -51,4 +51,5 @@ docker run \
   --name="$CONTAINER_NAME" \
   -p "$PORT" \
   --env-file .env \
+  -e TZ=$(cat /etc/timezone) \
   "${IMAGE_NAME}:latest"
