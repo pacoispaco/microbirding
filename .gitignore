@@ -107,4 +107,6 @@ venv.bak/
 
 .idea/*
 
+# Secrets and local .env files.
 secrets/
+.env
