@@ -676,12 +676,12 @@ class ObservationsByTimeIntervalRequester:
                                  tdate,
                                  dateFilterType="OverlappingStartDateAndEndDate",
                                  timeRanges=[])
-                if self.modified_from_date:
-                    mfdate = self.modified_from_date.isoformat()
+                if self.m_from_date:
+                    mfdate = self.m_from_date.isoformat()
                 else:
                     mfdate = None
-                if self.modified_from_date:
-                    mtdate = self.modified_to_date.isoformat()
+                if self.m_from_date:
+                    mtdate = self.m_to_date.isoformat()
                 else:
                     mtdate = None
                 sfilter.set_modified_date(mfdate, mtdate)
