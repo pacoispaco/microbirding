@@ -4,12 +4,19 @@ be created and initialized once in any app using the mapping module.
 """
 
 from __future__ import annotations
+
+# Basic Python modules
+import logging
+
+# Application modules
 from .repository import AreaRepository
 from .models import MicrobirdingArea, GeoJSON, MapLibreStyle
 
 
 class MappingService:
     def __init__(self, storage_dir: str) -> None:
+        self._logger = logging.getLogger(__name__)
+        self._logger.info(f"Initalizing MappingService object with storage dir: '{storage_dir}'")
         self._repo = AreaRepository(storage_dir)
 
     def areas(self) -> list[str]:

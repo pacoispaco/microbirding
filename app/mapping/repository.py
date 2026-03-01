@@ -4,13 +4,14 @@ Repository for accessing microbirding areas.
 
 from __future__ import annotations
 
+# Basic Python modules
 import logging
 from pathlib import Path
 import slugify
 from pydantic import BaseModel
-from .models import MicrobirdingArea
 
-logger = logging.getLogger(__name__)
+# Application modules
+from .models import MicrobirdingArea
 
 
 class AreaRepositoryIndexEntry(BaseModel):
@@ -25,18 +26,22 @@ class AreaRepository:
     def __init__(self, dir: str):
         """Initialize the AreaRepository and read MicrobirdingArea:s from JSON-files in `dir`."""
         self.storage_dir = Path(dir).expanduser().resolve()
+        self._logger = logging.getLogger(__name__)
         if not self.storage_dir.exists():
-            logger.warning(f"Directory for AreaRepository {dir!r} does not exist.")
+            self._logger.warning(f"Directory for AreaRepository {dir!r} does not exist.")
+        else:
+            self._logger.info(f"Initalized AreaRepository object with directory '{dir}'")
         self.index = {}
         for file_path in self.storage_dir.glob("*.json"):
             try:
                 arie = AreaRepositoryIndexEntry(file_path=file_path,
                                                 area=self.__load__(file_path))
             except Exception as e:
-                logger.warning(f"Failed to read MicrobirdingArea JSON-file {file_path!r}.",
-                               exc_info=True,
-                               extra={"exception": e})
+                self._logger.warning(f"Failed to read MicrobirdingArea JSON-file {file_path!r}.",
+                                     exc_info=True,
+                                     extra={"exception": e})
             self.index[arie.area.name] = arie
+        self._logger.info(f"AreaRepository.index: {self.index.keys()}")
 
     def __load__(self, file_path: Path) -> MicrobirdingArea:
         """Load a MicrobirdingArea from the given `file_path`."""
