@@ -1,13 +1,17 @@
 """
-Provides the class ArtportalenProvider which encapsulates the code for calling the Artportalen
+Provides the class ArtportalenService which encapsulates the code for calling the Artportalen
 API:s and also provides features for accessing Artportalen data, both via API calls and calls to
 the local Artportalen cache database.
 """
 
+# Basic Python modules
 from enum import StrEnum
+from typing import List
 from requests.exceptions import HTTPError
+
+# Application modules
 from app.mapping import MappingService
-from . import client
+from . import client, cache
 
 
 class Vocabulary(StrEnum):
@@ -19,17 +23,31 @@ class Language(StrEnum):
     EN = "en"
 
 
-class ArtportalenProvider():
+class ArtportalenService():
     """The high level interface to Artportalen for the web app."""
-    def __init__(self, *, settings, logger):
+    def __init__(self, *,
+                 settings,
+                 area_name,
+                 logger,
+                 cache_open_mode: cache.CacheOpenMode = cache.CacheOpenMode.OPEN):
         self.settings = settings
+        self.area_name = area_name
         self.logger = logger
 
-        # Set up the API objects
+        # Set up the API client
         v = self.settings.ARTPORTALEN_SPECIES_API_KEY.get_secret_value()
         self.sapi = client.SpeciesAPI(v)
         v = self.settings.ARTPORTALEN_OBSERVATIONS_API_KEY.get_secret_value()
         self.oapi = client.ObservationsAPI(v)
+
+        # Set up the cache database
+        self.cachedb = cache.DuckDBCache(self.settings,
+                                         self.area_name,
+                                         cache_open_mode)
+
+    def cache_timestamp(self):
+        """The timestamp of the cache database in "YYYY-MM-DD HH:MM:SS" format."""
+        return self.cachedb.timestamp()
 
     def get_observations(self,
                          mapping: MappingService,
@@ -77,6 +95,14 @@ class ArtportalenProvider():
             return None
 
         return observations
+
+    def species_data(self,
+                     from_date: str = None,
+                     to_date: str = None,
+                     taxon_names: List[str] = None,
+                     observer_name: str = None):
+        """Get species data from Artportalen cache database."""
+        return self.cachedb.species_data()
 
     def vocabulary_term(self,
                         code: int,

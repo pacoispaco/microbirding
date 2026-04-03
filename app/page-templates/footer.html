@@ -16,13 +16,10 @@
       <!-- Row 2 -->
       {% if features.cache_database_enabled %}
       <p class="mt-2">
-        <a href="/cache-database-info"
-           class="py-1 rounded-md text-blue-800 dark:text-blue-200 hover:bg-neutral-100 dark:hover:bg-neutral-700">
-           Cache database
-        </a> last updated 8 seconds ago.
+        Cache database last updated {{ cache_timestamp }}
         <br class="sm:hidden">
+        (267.023 observations, 1823-01-01 -- 2026-03-02)
         <span class="hidden sm:inline"> </span>
-        Next update in 2 seconds.
       </p>
       {% endif %}
 

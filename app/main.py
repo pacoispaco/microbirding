@@ -20,7 +20,7 @@ from datetime import date as dt, timedelta
 from datetime import datetime as dtime
 
 # Application modules
-from .observations.sources.artportalen.provider import ArtportalenProvider
+from .observations.sources.artportalen.provider import ArtportalenService
 from .observations import model
 from app.mapping.service import MappingService
 from app.utils.logging import setup_logging
@@ -63,8 +63,10 @@ async def lifespan(app: FastAPI):
     app.state.templates.env.globals["environment"] = settings.ENVIRONMENT
 
     # Create the ArtportalenProvider
-    app.state.artportalen_provider = ArtportalenProvider(settings=app.state.settings,
-                                                         logger=logger)
+    area_name = "SthlmBetong"
+    app.state.artportalen_service = ArtportalenService(settings=app.state.settings,
+                                                       area_name=area_name,
+                                                       logger=logger)
 
     app.state.mapping = MappingService(settings.MICROBIRDING_AREA_DIRECTORY)
     locale.setlocale(locale.LC_TIME, "sv_SE.UTF-8")
@@ -93,7 +95,7 @@ ASSETS_DIR = Path(__file__).resolve().parent / "assets"
 app.mount("/app/assets", StaticFiles(directory=str(ASSETS_DIR)), name="assets")
 
 
-def observations_for_presentation(mapping: MappingService, area_name: str, observations_date):
+def observations_for_presentation(area_name: str, observations_date):
     """Dictionary with observations for the given `observations_date` (in "YYYY--MM-DD" format) and
        all attribute values needed for the Jinja2 template file
        "hx-observations-list.html" to render HTML.
@@ -102,8 +104,8 @@ def observations_for_presentation(mapping: MappingService, area_name: str, obser
     next_date = (observations_date + timedelta(days=1)).isoformat()
 
     # Get obeservations from the Artportalen API
-    ap_provider = app.state.artportalen_provider
-    observations = ap_provider.get_observations(mapping,
+    ap_provider = app.state.artportalen_service
+    observations = ap_provider.get_observations(app.state.mapping,
                                                 area_name,
                                                 observations_date.isoformat(),
                                                 observations_date.isoformat(),
@@ -125,124 +127,6 @@ def observations_for_presentation(mapping: MappingService, area_name: str, obser
             "date": observations_date.isoformat(),
             "next_date": next_date,
             "observations": observations}
-
-
-# The application resources
-
-@app.get("/", response_class=HTMLResponse)
-def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
-    """The main application page (page-observations.html) with observations for the given `date`.
-        The `index_page` query parameter is a development for easily chosing which Jinja2 template
-       to use as the index_page."""
-    tic = time.perf_counter_ns()
-
-    # TBD: Redirect to this page removing unrecognized query parameters or simply remove them by
-    # pushing a path that only contains the valid query parameters.
-
-    if not date:
-        today = dt.today().isoformat()
-        url = request.url.include_query_params(date=today)
-        return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
-
-    if not index_page:
-        index_page = "./observations/page-observations.html"
-
-    # Figure out which date to get observations for
-    if date:
-        try:
-            observations_date = dt.fromisoformat(date)
-            if observations_date > dt.today():
-                return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-        except ValueError:
-            # Redirect to root without query parameters
-            return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    else:
-        observations_date = dt.today()
-
-    area_name = "SthlmBetong"
-    obs = observations_for_presentation(app.state.mapping, area_name, observations_date)
-    secret = app.state.settings.UMAMI_WEBSITE_ID
-    umami_id = secret.get_secret_value() if secret else None
-    jinja2_data = {"request": request,
-                   "day": obs["day"],
-                   "year": observations_date.year,
-                   "is_today": obs["is_today"],
-                   "previous_date": obs["previous_date"],
-                   "date": obs["date"],
-                   "next_date": obs["next_date"],
-                   "observations": obs["observations"],
-                   "version_info": {"release": release_tag(),
-                                    "built": build_datetime_tag(),
-                                    "git_hash": git_hash_tag()},
-                   "umami_website_id": umami_id}
-    result = app.state.templates.TemplateResponse(index_page, jinja2_data)
-
-    toc = time.perf_counter_ns()
-    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
-    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
-    return result
-
-
-@app.get("/changelog", response_class=HTMLResponse)
-def get_changelog(request: Request):
-    """The changelog page page (page-changelog.html) displaying the version and changelog history
-       of the app."""
-    tic = time.perf_counter_ns()
-
-    markdown = mistune_markdown_instance(disabled=True)
-
-    with open("./CHANGELOG.md") as f:
-        html = markdown(f.read())
-    secret = app.state.settings.UMAMI_WEBSITE_ID
-    umami_id = secret.get_secret_value() if secret else None
-    jinja2_data = {"request": request,
-                   "changelog_html": html,
-                   "version_info": {"release": release_tag(),
-                                    "built": build_datetime_tag(),
-                                    "git_hash": git_hash_tag()},
-                   "umami_website_id": umami_id}
-    result = app.state.templates.TemplateResponse("./about/page-changelog.html", jinja2_data)
-
-    toc = time.perf_counter_ns()
-    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
-    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
-    return result
-
-
-@app.get("/maps", response_class=HTMLResponse)
-def get_maps(request: Request):
-    """The maps page (page-maps.html) displaying the map of SthlmBetong."""
-    tic = time.perf_counter_ns()
-
-    secret = app.state.settings.UMAMI_WEBSITE_ID
-    umami_id = secret.get_secret_value() if secret else None
-    jinja2_data = {"request": request,
-                   "version_info": {"release": release_tag(),
-                                    "built": build_datetime_tag(),
-                                    "git_hash": git_hash_tag()},
-                   "umami_website_id": umami_id}
-    result = app.state.templates.TemplateResponse("./maps/page-maps.html", jinja2_data)
-
-    toc = time.perf_counter_ns()
-    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
-    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
-    return result
-
-
-SWEDISH_MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun",
-                  "jul", "aug", "sep", "okt", "nov", "dec"]
-SWEDISH_RARITY_CATEGORIES = {"Very common": "M. vanlig",
-                             "Common": "Vanlig",
-                             "Uncommon": "Ovanlig",
-                             "Rare": "Sällsynt",
-                             "Very rare": "M. sällsynt"}
-
-
-def format_mm_dd_swedish(mm_dd: str) -> str:
-    """Change dates from MM-DD to numerical day of the month followed by the initial three letters
-       of the name of the month in Swedish."""
-    dt = dtime.strptime(f"2000-{mm_dd}", "%Y-%m-%d")
-    return f"{dt.day} {SWEDISH_MONTHS[dt.month - 1]}"
 
 
 def dummy_species_data():
@@ -287,6 +171,136 @@ def dummy_species_data():
     return species
 
 
+def species_for_presentation(area_name: str):
+    """List of species and their observation data."""
+    return dummy_species_data()
+    # Get species data from the Artportalen API
+    ap_provider = app.state.artportalen_provider
+    species = ap_provider.get_species(app.state.mapping, area_name)
+    return species
+
+
+# The application resources
+
+@app.get("/", response_class=HTMLResponse)
+def get_index_file(request: Request, date: str = Query(None), index_page: str = Query(None)):
+    """The main application page (page-observations.html) with observations for the given `date`.
+        The `index_page` query parameter is a development for easily chosing which Jinja2 template
+       to use as the index_page."""
+    tic = time.perf_counter_ns()
+
+    # TBD: Redirect to this page removing unrecognized query parameters or simply remove them by
+    # pushing a path that only contains the valid query parameters.
+
+    if not date:
+        today = dt.today().isoformat()
+        url = request.url.include_query_params(date=today)
+        return RedirectResponse(str(url), status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+    if not index_page:
+        index_page = "./observations/page-observations.html"
+
+    # Figure out which date to get observations for
+    if date:
+        try:
+            observations_date = dt.fromisoformat(date)
+            if observations_date > dt.today():
+                return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+        except ValueError:
+            # Redirect to root without query parameters
+            return RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    else:
+        observations_date = dt.today()
+
+    area_name = "SthlmBetong"
+    obs = observations_for_presentation(area_name, observations_date)
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
+    jinja2_data = {"request": request,
+                   "day": obs["day"],
+                   "year": observations_date.year,
+                   "is_today": obs["is_today"],
+                   "previous_date": obs["previous_date"],
+                   "date": obs["date"],
+                   "next_date": obs["next_date"],
+                   "observations": obs["observations"],
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
+                   "umami_website_id": umami_id}
+    result = app.state.templates.TemplateResponse(index_page, jinja2_data)
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+@app.get("/changelog", response_class=HTMLResponse)
+def get_changelog(request: Request):
+    """The changelog page page (page-changelog.html) displaying the version and changelog history
+       of the app."""
+    tic = time.perf_counter_ns()
+
+    markdown = mistune_markdown_instance(disabled=True)
+
+    with open("./CHANGELOG.md") as f:
+        html = markdown(f.read())
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
+    jinja2_data = {"request": request,
+                   "changelog_html": html,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
+                   "umami_website_id": umami_id}
+    result = app.state.templates.TemplateResponse("./about/page-changelog.html", jinja2_data)
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+@app.get("/maps", response_class=HTMLResponse)
+def get_maps(request: Request):
+    """The maps page (page-maps.html) displaying the map of SthlmBetong."""
+    tic = time.perf_counter_ns()
+
+    secret = app.state.settings.UMAMI_WEBSITE_ID
+    umami_id = secret.get_secret_value() if secret else None
+    jinja2_data = {"request": request,
+                   "version_info": {"release": release_tag(),
+                                    "built": build_datetime_tag(),
+                                    "git_hash": git_hash_tag()},
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
+                   "umami_website_id": umami_id}
+    result = app.state.templates.TemplateResponse("./maps/page-maps.html", jinja2_data)
+
+    toc = time.perf_counter_ns()
+    # Set Server-timing header (server excution time in ms, not including FastAPI itself)
+    result.headers["Server-timing"] = f"API;dur={(toc - tic)/1000000}"
+    return result
+
+
+SWEDISH_MONTHS = ["jan", "feb", "mar", "apr", "maj", "jun",
+                  "jul", "aug", "sep", "okt", "nov", "dec"]
+SWEDISH_RARITY_CATEGORIES = {"Very common": "M. vanlig",
+                             "Common": "Vanlig",
+                             "Uncommon": "Ovanlig",
+                             "Rare": "Sällsynt",
+                             "Very rare": "M. sällsynt"}
+
+
+def format_mm_dd_swedish(mm_dd: str) -> str:
+    """Change dates from MM-DD to numerical day of the month followed by the initial three letters
+       of the name of the month in Swedish."""
+    dt = dtime.strptime(f"2000-{mm_dd}", "%Y-%m-%d")
+    return f"{dt.day} {SWEDISH_MONTHS[dt.month - 1]}"
+
+
 if settings.features.species_page_enabled:
 
     @app.get("/species", response_class=HTMLResponse)
@@ -295,7 +309,9 @@ if settings.features.species_page_enabled:
            observed in the area."""
         tic = time.perf_counter_ns()
 
-        species = dummy_species_data()
+        area_name = "SthlmBetong"
+        species = species_for_presentation(area_name)
+
         secret = app.state.settings.UMAMI_WEBSITE_ID
         umami_id = secret.get_secret_value() if secret else None
         jinja2_data = {"request": request,
@@ -303,6 +319,7 @@ if settings.features.species_page_enabled:
                        "version_info": {"release": release_tag(),
                                         "built": build_datetime_tag(),
                                         "git_hash": git_hash_tag()},
+                       "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
                        "umami_website_id": umami_id}
         result = app.state.templates.TemplateResponse("./species/page-species.html", jinja2_data)
 
@@ -343,6 +360,7 @@ def get_about(request: Request, slug: str):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
                    "umami_website_id": umami_id}
     result = app.state.templates.TemplateResponse("./about/page-about.html", jinja2_data)
 
@@ -365,7 +383,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
     # We assume we have a valid date that isn't ahead of today's date.
     observations_date = dt.fromisoformat(date)
     area_name = "SthlmBetong"
-    obs = observations_for_presentation(app.state.mapping, area_name, observations_date)
+    obs = observations_for_presentation(area_name, observations_date)
     secret = app.state.settings.UMAMI_WEBSITE_ID
     umami_id = secret.get_secret_value() if secret else None
     jinja2_data = {"request": request,
@@ -376,6 +394,7 @@ def hx_observations_section(request: Request, date: str = Query(None)):
                    "date": obs["date"],
                    "next_date": obs["next_date"],
                    "observations": obs["observations"],
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
                    "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./observations/hx-observations-list.html",
                                                 jinja2_data)
@@ -418,6 +437,7 @@ async def not_found(request: Request, exc):
                    "version_info": {"release": release_tag(),
                                     "built": build_datetime_tag(),
                                     "git_hash": git_hash_tag()},
+                   "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
                    "umami_website_id": umami_id}
     return app.state.templates.TemplateResponse("./page-404.html", jinja2_data, status_code=404)
 
@@ -444,6 +464,7 @@ if settings.ENVIRONMENT == "DEV":
                        "version_info": {"release": release_tag(),
                                         "built": build_datetime_tag(),
                                         "git_hash": git_hash_tag()},
+                       "cache_timestamp": app.state.artportalen_service.cache_timestamp(),
                        "umami_website_id": umami_id}
         result = app.state.templates.TemplateResponse("./page-design-system.html", jinja2_data)
 
